@@ -1,8 +1,23 @@
-# HATE-UML - The UNDERTALE corruptor, but using UndertaleModLib
+# HATE-UML
 
-Hi, \[NO NAME] here. [The guy that made this](https://github.com/RedSpah) is not here, so I'm here to tell you some basic stuff, while I'm messing with the code to add a little [~~Grossley~~ UndertaleModTool](https://github.com/krzys-h/UndertaleModTool) into this tool.
+[HATE (the UNDERTALE corruptor)](https://www.reddit.com/r/Undertale/comments/41lb16/hate_the_undertale_corruptor/) is a tool that shuffles the RPG's game data, and as a result, corrupts music, graphics, text, etc. This is a fork of the corruptor, that makes it use the data I/O interface library (UndertaleModLib) that [UndertaleModTool](https://github.com/krzys-h/UndertaleModTool) uses, in hope that so the tool can corrupt DELTARUNE Chapter 1&2 (maybe other games made with GameMaker - but that's not a goal of this tool).
 
-HATE (the UNDERTALE corruptor) is a tool that shuffles the RPG's game data, and as a result, corrupts music, graphics, text, etc. This is a fork of the corruptor, that makes it use the data I/O interface library (UndertaleModLib) that UndertaleModTool uses, so the tool can corrupt DELTARUNE Chapter 1&2 (maybe other GameMaker games - but that's not a goal of this tool). TL;DR this thing should support DELTARUNE if UndertaleModTool catchs up. Interested? ~~Follow the installation guide below and try it today~~ Give me time to finish this.
+TL;DR this is a modification of the good old HATE that you may have came across, that should support the latest version of DELTARUNE (at least if UndertaleModTool catchs up).
+
+I heard you want to destroy the fabric of time-space continuum and bring living hell to the second dark world you have access to? Or do you want to make the underground a boiling mess (maybe again, for some reason)? If so, ~~follow the installation guide below and try it today~~ Just give me time to finish this.
+
+## The original              corruptor
+
+Bing gave me this page when I searched for HATE on the search engine, however this fork is not ready yet.
+So it's best to not disappoint the newcomers, I have to give them something to use.
+
+At least you can check the original corruptor out. Note that it only supports UNDERTALE versions <=1.08, and the original release of DELTARUNE Chapter 1 in 2018.
+
+* [Original version](https://www.reddit.com/r/Undertale/comments/41lb16/hate_the_undertale_corruptor/);
+* [DELTARUNE Chapter 1 special version](https://www.reddit.com/r/Deltarune/comments/9v1vd7/hate_the_deltarune_corruptor/);
+* The [source code](https://github.com/RedSpah/HATE).
+
+Also, shout out to RedSpah. Dude definitely heavily suffered during the development of the original.
 
 ## Installation
 
@@ -35,11 +50,13 @@ Linux: (Note - make sure you're not root.)
 
 * **Q:** Windows - HATE doesn't start and/or displays an error message instantly.
 
-    **A:** You may need to install the [.NET 6 Desktop Runtime](https://dotnet.microsoft.com/en-us/download/dotnet/6.0/runtime) (one of the downloads below `Run desktop apps`, depending on your computer). I decided to not bundle framework-related files with the release, because it makes the download's size **huge**.
+    **A:** You may need to install the [.NET 6 Desktop Runtime](https://dotnet.microsoft.com/en-us/download/dotnet/6.0/runtime) (one of the downloads below `Run desktop apps`, depending on your computer). I decided to not bundle framework-related code with the release, because it makes the download's size *absurdly huge*.
 
 * **Q:** Linux/macOS - HATE doesn't start and/or displays an error message instantly.
 
-    **A:** I'm not sure if these steps even work, so this may be a issue on my side. Please submit an [issue](https://github.com/Dobby233Liu/HATE-UML/issues) so I can look into it.
+    **A:** If it is hinted by the error, your system may have `libgdiplus` missing; try to install it.
+           For example, macOS users can install `mono-libgdiplus` with [Homebrew](https://brew.sh).
+           For anything else, this may be a issue on my side. Please submit an [issue](https://github.com/Dobby233Liu/HATE-UML/issues) on GitHub so I can look into it.
 
 ## Building
 
@@ -63,29 +80,5 @@ Source code can be found on GitHub: https://github.com/Dobby233Liu/HATE-UML
 
 ## License
 
-This program is licensed under the [GNU General Public License v3.0](COPYING). The UndertaleModLib library used in this program is also licensed under the GNU General Public License v3.0.
-
-```
-UndertaleModLib: A library for unpacking, decompiling, and modding Undertale
-(and other GameMaker: Studio games)
-Copyright (C) 2018-2022 krzys-h and contributors
-```
-
-```
-HATE-UML: The UNDERTALE corruptor, but using UndertaleModLib.
-Copyright (C) 2016 RedSpah
-Copyright (C) 2022 Dobby233Liu
-
-This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this program.  If not, see <https://www.gnu.org/licenses/>.
-```
+This program is licensed under the [GNU General Public License v3.0](COPYING).
+The original program this is based on is licensed under the [MIT License](LICENSE).
