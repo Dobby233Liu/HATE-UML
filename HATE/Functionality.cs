@@ -94,11 +94,11 @@ namespace HATE
 
         public bool ShuffleText_Func(Random random_, float chance, StreamWriter logstream_)
         {
-            if (Directory.Exists("./lang") && Safe.GetFiles("./lang").Count > 0)
+            if (Directory.Exists("./lang") && SafeMethods.GetFiles("./lang").Count > 0)
             {
                 bool success = true;
 
-                foreach (string path in Safe.GetFiles("./lang"))
+                foreach (string path in SafeMethods.GetFiles("./lang"))
                 {
                     success = success && Shuffle.JSONStringShuffle(path, path, random_, chance, logstream_);
                 }
