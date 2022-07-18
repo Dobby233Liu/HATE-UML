@@ -1,8 +1,6 @@
 # HATE-UML
 
-Hi, \[NO NAME] here. [The guy that made the original tool](https://github.com/RedSpah) is not here, so I'm here to tell you some basic stuff, while I'm messing with the code to add a little [~~Grossley~~ UndertaleModTool](https://github.com/krzys-h/UndertaleModTool) into this tool.
-
-[HATE (the UNDERTALE corruptor)](https://www.reddit.com/r/Undertale/comments/41lb16/hate_the_undertale_corruptor/) is a tool that shuffles the RPG's game data, and as a result, corrupts music, graphics, text, etc. This is a fork of the corruptor, that makes it use the data I/O interface library (UndertaleModLib) that UndertaleModTool uses, in hope that so the tool can corrupt DELTARUNE Chapter 1&2 (maybe other games made with GameMaker - but that's not a goal of this tool).
+[HATE (the UNDERTALE corruptor)](https://www.reddit.com/r/Undertale/comments/41lb16/hate_the_undertale_corruptor/) is a tool that shuffles the RPG's game data, and as a result, corrupts music, graphics, text, etc. This is a fork of the corruptor, that makes it use the data I/O interface library (UndertaleModLib) that [UndertaleModTool](https://github.com/krzys-h/UndertaleModTool) uses, in hope that so the tool can corrupt DELTARUNE Chapter 1&2 (maybe other games made with GameMaker - but that's not a goal of this tool).
 
 TL;DR this is a modification of the good old HATE that you may have came across, that should support the latest version of DELTARUNE (at least if UndertaleModTool catchs up).
 
@@ -83,3 +81,4 @@ Source code can be found on GitHub: https://github.com/Dobby233Liu/HATE-UML
 ## License
 
 This program is licensed under the [GNU General Public License v3.0](COPYING).
+The original codebase this is based on is licensed under the [MIT License](LICENSE).
