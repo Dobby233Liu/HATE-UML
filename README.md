@@ -1,8 +1,8 @@
-# HATE-UML - The UNDERTALE corruptor, UndertaleModLib edition
+# HATE-UML - The UNDERTALE corruptor, but using UndertaleModLib
 
 Hi, \[NO NAME] here. [The guy that made this](https://github.com/RedSpah) is not here, so I'm here to tell you some basic stuff, while I'm messing with the code to add a little [~~Grossley~~ UndertaleModTool](https://github.com/krzys-h/UndertaleModTool) into this tool.
 
-HATE (the UNDERTALE corruptor) is a tool that shuffles the RPG's game data, and as a result, corrupts music, graphics, text, etc. This is a fork of the corruptor, that makes it use the data I/O interface library (UndertaleModLib) that UndertaleModTool uses, so the tool can corrupt DELTARUNE Chapter 1&2 (maybe other GameMaker games - but that's not a goal of this tool). TL;DR this thing should support DELTARUNE if UndertaleModTool catchs up. Interested? ~~Follow the installation guide below and try it today~~ Come back later so I can finish this.
+HATE (the UNDERTALE corruptor) is a tool that shuffles the RPG's game data, and as a result, corrupts music, graphics, text, etc. This is a fork of the corruptor, that makes it use the data I/O interface library (UndertaleModLib) that UndertaleModTool uses, so the tool can corrupt DELTARUNE Chapter 1&2 (maybe other GameMaker games - but that's not a goal of this tool). TL;DR this thing should support DELTARUNE if UndertaleModTool catchs up. Interested? ~~Follow the installation guide below and try it today~~ Give me time to finish this.
 
 ## Installation
 
@@ -35,7 +35,7 @@ Linux: (Note - make sure you're not root.)
 
 * **Q:** Windows - HATE doesn't start and/or displays an error message instantly.
 
-    **A:** If the error dialog box has the `HATE` title, please refer to the text below. If not, please submit an [issue](https://github.com/Dobby233Liu/HATE-UML/issues) so I can look into it.
+    **A:** If the error dialog box has the `HATE` title, please read what it prompted. If not, please submit an [issue](https://github.com/Dobby233Liu/HATE-UML/issues) so I can look into it.
 
 * **Q:** Linux/macOS - HATE doesn't start and/or displays an error message instantly.
 
@@ -63,8 +63,16 @@ Source code can be found on GitHub: https://github.com/Dobby233Liu/HATE-UML
 
 ## License
 
+This program is licensed under the [GNU General Public License v3.0](COPYING). The UndertaleModLib library used in this program is also licensed under the GNU General Public License v3.0.
+
 ```
-HATE-UML: The UNDERTALE corruptor, UndertaleModLib edition.
+UndertaleModLib: A library for unpacking, decompiling, and modding Undertale
+(and other GameMaker: Studio games)
+Copyright (C) 2018-2022 krzys-h and contributors
+```
+
+```
+HATE-UML: The UNDERTALE corruptor, but using UndertaleModLib.
 Copyright (C) 2016 RedSpah
 Copyright (C) 2022 Dobby233Liu
 
@@ -81,5 +89,3 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 ```
-
-[GNU General Public License v3.0](LICENSE)

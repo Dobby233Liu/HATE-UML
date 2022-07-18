@@ -1,5 +1,5 @@
 ﻿/*
-    HATE-UML: The UNDERTALE corruptor, UndertaleModLib edition.
+    HATE-UML: The UNDERTALE corruptor, but using UndertaleModLib.
     Copyright (C) 2016 RedSpah
     Copyright (C) 2022 Dobby233Liu
 
