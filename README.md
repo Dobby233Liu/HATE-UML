@@ -14,7 +14,7 @@ Windows:
 1. Move everything in the ZIP file you downloaded to the directory with the game files - the place you can find `data.win` in.
 2. Tada! Open `HATE.exe` and start messing with stuff.
 
-NOTE: macOS and Linux versions are untested.
+NOTE: macOS and Linux versions are untested. TODO: dotnet CLI.
 
 macOS:
 1. Move everything in the ZIP file you downloaded to `<game>.app\Contents\Resources`.
@@ -35,7 +35,7 @@ Linux: (Note - make sure you're not root.)
 
 * **Q:** Windows - HATE doesn't start and/or displays an error message instantly.
 
-    **A:** If the error dialog box has the `HATE` title, please read what it prompted. If not, please submit an [issue](https://github.com/Dobby233Liu/HATE-UML/issues) so I can look into it.
+    **A:** You may need to install the [.NET 6 Desktop Runtime](https://dotnet.microsoft.com/en-us/download/dotnet/6.0/runtime) (one of the downloads below `Run desktop apps`, depending on your computer). I decided to not bundle framework-related files with the release, because it makes the download's size **huge**.
 
 * **Q:** Linux/macOS - HATE doesn't start and/or displays an error message instantly.
 
