@@ -2,7 +2,18 @@
 
 Hi, \[NO NAME] here. [The guy that made this](https://github.com/RedSpah) is not here, so I'm here to tell you some basic stuff, while I'm messing with the code to add a little [~~Grossley~~ UndertaleModTool](https://github.com/krzys-h/UndertaleModTool) into this tool.
 
-HATE (the UNDERTALE corruptor) is a tool that shuffles the RPG's game data, and as a result, corrupts music, graphics, text, etc. This is a fork of the corruptor, that makes it use the data I/O interface library (UndertaleModLib) that UndertaleModTool uses, in hope that so the tool can corrupt DELTARUNE Chapter 1&2 (maybe other GameMaker games - but that's not a goal of this tool). TL;DR this thing should support DELTARUNE if UndertaleModTool catchs up. Interested? ~~Follow the installation guide below and try it today~~ Give me time to finish this.
+[HATE (the UNDERTALE corruptor)](https://www.reddit.com/r/Undertale/comments/41lb16/hate_the_undertale_corruptor/) is a tool that shuffles the RPG's game data, and as a result, corrupts music, graphics, text, etc. This is a fork of the corruptor, that makes it use the data I/O interface library (UndertaleModLib) that UndertaleModTool uses, in hope that so the tool can corrupt DELTARUNE Chapter 1&2 (maybe other games made with GameMaker - but that's not a goal of this tool).
+
+TL;DR this is a modification of the good old HATE that you may have came across, that should support the latest version of DELTARUNE (at least if UndertaleModTool catchs up).
+
+I heard you want to destroy the fabric of time-space continuum and bring living hell to the dark world? Or do you want to make the underground a boiling mess? If so, ~~follow the installation guide below and try it today~~ Just give me time to finish this.
+
+## The original              corruptor
+
+This fork is not ready yet, but at least you can check the original corruptor out: (apparently you get this page in Bing search results???)
+[Original version](https://www.reddit.com/r/Undertale/comments/41lb16/hate_the_undertale_corruptor/);
+[DELTARUNE Chapter 1 special version](https://www.reddit.com/r/Deltarune/comments/9v1vd7/hate_the_deltarune_corruptor/);
+and also the [source code](https://github.com/RedSpah/HATE).
 
 ## Installation
 
@@ -35,11 +46,13 @@ Linux: (Note - make sure you're not root.)
 
 * **Q:** Windows - HATE doesn't start and/or displays an error message instantly.
 
-    **A:** You may need to install the [.NET 6 Desktop Runtime](https://dotnet.microsoft.com/en-us/download/dotnet/6.0/runtime) (one of the downloads below `Run desktop apps`, depending on your computer). I decided to not bundle framework-related files with the release, because it makes the download's size **huge**.
+    **A:** You may need to install the [.NET 6 Desktop Runtime](https://dotnet.microsoft.com/en-us/download/dotnet/6.0/runtime) (one of the downloads below `Run desktop apps`, depending on your computer). I decided to not bundle framework-related code with the release, because it makes the download's size *absurdly huge*.
 
 * **Q:** Linux/macOS - HATE doesn't start and/or displays an error message instantly.
 
-    **A:** I'm not sure if these steps even work, so this may be a issue on my side. Please submit an [issue](https://github.com/Dobby233Liu/HATE-UML/issues) so I can look into it.
+    **A:** If it is hinted by the error, your system may have `libgdiplus` missing; try to install it.
+           For example, macOS users can install `mono-libgdiplus` with [Homebrew](https://brew.sh).
+           For anything else, this may be a issue on my side. Please submit an [issue](https://github.com/Dobby233Liu/HATE-UML/issues) on GitHub so I can look into it.
 
 ## Building
 
