@@ -46,14 +46,20 @@ Linux: (Note - make sure you're not root.)
 In order to compile the tool yourself, the .NET Core 6 SDK is required. The source tree also contains a `UndertaleModLib` submodule for the version of the ModLib it uses; you will need to download the submodule before building.
 
 ### Compiling Via IDE
+
 * Open the UndertaleModTool.sln in the IDE of your choice (Visual Studio, JetBrains Rider, Visual Studio Code etc.)
 * Select the `HATE` project.
 * Compile.
 
 ### Compiling Via Command Line
+
 * Open a terminal and navigate to the project root.
 * Execute `dotnet publish HATE`.
-    You can also provide arguments for compiling, such as `--no-self-contained` or `-c release`. For a full list of arguments, consult [this document](https://docs.microsoft.com/dotnet/core/tools/dotnet-publish).
+  * You can also provide arguments for compiling, such as `--no-self-contained` or `-c release`. For a full list of arguments, consult [this document](https://docs.microsoft.com/dotnet/core/tools/dotnet-publish).
+
+## Source Code
+
+Source code can be found on GitHub: https://github.com/Dobby233Liu/HATE-UML
 
 ## License
 
