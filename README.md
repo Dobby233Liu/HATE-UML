@@ -17,7 +17,7 @@ At least you can check the original corruptor out. Note that it only supports UN
 * [DELTARUNE Chapter 1 special version](https://www.reddit.com/r/Deltarune/comments/9v1vd7/hate_the_deltarune_corruptor/);
 * The [source code](https://github.com/RedSpah/HATE).
 
-Also, shout out to RedSpah. Dude suffered during the development of the original.
+Also, shout out to RedSpah. Dude definitely heavily suffered during the development of the original.
 
 ## Installation
 
@@ -81,4 +81,4 @@ Source code can be found on GitHub: https://github.com/Dobby233Liu/HATE-UML
 ## License
 
 This program is licensed under the [GNU General Public License v3.0](COPYING).
-The original codebase this is based on is licensed under the [MIT License](LICENSE).
+The original program this is based on is licensed under the [MIT License](LICENSE).
