@@ -1,4 +1,4 @@
-# HATE - UndertaleModLib edition
+# HATE-UML - The UNDERTALE corruptor, UndertaleModLib edition
 
 Hi, \[NO NAME] here. [The guy that made this](https://github.com/RedSpah) is not here, so I'm here to tell you some basic stuff, while I'm messing with the code to add a little [~~Grossley~~ UndertaleModTool](https://github.com/krzys-h/UndertaleModTool) into this tool.
 
@@ -40,3 +40,21 @@ Linux: (Note - make sure you're not root.)
 * **Q:** Linux/macOS - HATE doesn't start and/or displays an error message instantly.
 
     **A:** I'm not sure if these steps even work, so this may be a issue on my side. Please submit an [issue](https://github.com/Dobby233Liu/HATE-UML/issues) so I can look into it.
+
+## Building
+
+In order to compile the tool yourself, the .NET Core 6 SDK is required. The source tree also contains a `UndertaleModLib` submodule for the version of the ModLib it uses; you will need to download the submodule before building.
+
+### Compiling Via IDE
+* Open the UndertaleModTool.sln in the IDE of your choice (Visual Studio, JetBrains Rider, Visual Studio Code etc.)
+* Select the `HATE` project.
+* Compile.
+
+### Compiling Via Command Line
+* Open a terminal and navigate to the project root.
+* Execute `dotnet publish HATE`.
+    You can also provide arguments for compiling, such as `--no-self-contained` or `-c release`. For a full list of arguments, consult [this document](https://docs.microsoft.com/dotnet/core/tools/dotnet-publish).
+
+## License
+
+[GPL-3.0](LICENSE)
