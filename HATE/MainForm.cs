@@ -1,28 +1,10 @@
-﻿/*
-    HATE-UML: The UNDERTALE corruptor, but using UndertaleModLib.
-    Copyright (C) 2016 RedSpah
-    Copyright (C) 2022 Dobby233Liu
-
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program.  If not, see <https://www.gnu.org/licenses/>.
-*/
-
-using System;
+﻿using System;
 using System.Drawing;
 using System.Windows.Forms;
 using System.IO;
 using System.Diagnostics;
 using System.Security.Principal;
+using System.Runtime.InteropServices;
 
 namespace HATE
 {
@@ -62,9 +44,45 @@ namespace HATE
         private static readonly DateTime _unixTimeZero = new DateTime(1970, 1, 1);
         private Random _random;
 
+        private WindowsPrincipal windowsPrincipal;
+
         public MainForm()
         {
             InitializeComponent();
+
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            {
+                windowsPrincipal = new WindowsPrincipal(WindowsIdentity.GetCurrent());
+
+                //This is so it doesn't keep starting the program over and over in case something messes up
+                if (Process.GetProcessesByName("HATE").Length == 1)
+                {
+                    if (Directory.GetCurrentDirectory().Contains(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles)) || Directory.GetCurrentDirectory().Contains(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86)) && !IsElevated)
+                    {
+                        string message = $"The game is in a system protected folder and we need elevated permissions in order to mess with {_dataWin}.\nDo you allow us to get elevated permissions (if you press no this will just close the program as we can't do anything)";
+                        if (ShowMessage(message, MessageBoxButtons.YesNo, MessageBoxIcon.Information) == DialogResult.Yes)
+                        {
+                            // Restart program and run as admin
+                            var exeName = Process.GetCurrentProcess().MainModule.FileName;
+                            ProcessStartInfo startInfo = new ProcessStartInfo(exeName);
+                            startInfo.Arguments = "true";
+                            startInfo.Verb = "runas";
+                            Process.Start(startInfo);
+                            Close();
+                            return;
+                        }
+                        else
+                        {
+                            Close();
+                            return;
+                        }
+                    }
+                }
+            }
+
+            _random = new Random();
+
+            UpdateCorrupt();
 
             if (!File.Exists(_dataWin))
             {
@@ -88,43 +106,24 @@ namespace HATE
                     MessageBox.Show("We couldn't find any game in this folder, check that this is in the right folder.");
                 }
             }
-            
-            //This is so it doesn't keep starting the program over and over in case something messes up
-            if (Process.GetProcessesByName("HATE").Length == 1)
-            {
-                if (Directory.GetCurrentDirectory().Contains(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles)) || Directory.GetCurrentDirectory().Contains(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86)) && !IsElevated)
-                {
-                    DialogResult dialogResult = MessageBox.Show($"The game is in a system protected folder and we need elevated permissions in order to mess with {_dataWin}, Do you allow us to get elevated permissions (if you press no this will just close the program as we can't do anything)", "HATE", MessageBoxButtons.YesNo, MessageBoxIcon.Information);
-                    if (dialogResult == DialogResult.Yes)
-                    {
-                        // Restart program and run as admin
-                        var exeName = Process.GetCurrentProcess().MainModule.FileName;
-                        ProcessStartInfo startInfo = new ProcessStartInfo(exeName);
-                        startInfo.Arguments = "true";
-                        startInfo.Verb = "runas";
-                        Process.Start(startInfo);
-                        Close();
-                    }
-                    else
-                    {
-                        Close();
-                    }
-                }
-            }
-
-            _random = new Random();
-            
-            UpdateCorrupt();
         }
 
         public bool IsElevated
         {
             get
             {
-                return new WindowsPrincipal(WindowsIdentity.GetCurrent()).IsInRole(WindowsBuiltInRole.Administrator);
+                return RuntimeInformation.IsOSPlatform(OSPlatform.Windows)
+                    ?
+                    windowsPrincipal.IsInRole(WindowsBuiltInRole.Administrator)
+                    : false;
             }
         }
-            
+
+        private DialogResult ShowMessage(string message, MessageBoxButtons buttons, MessageBoxIcon icon)
+        {
+            return MessageBox.Show(message, "HATE", buttons, icon);
+        }
+
         public string GetGame()
         {
             if (File.Exists("DELTARUNE.exe")) { return $"{LinuxWine()} DELTARUNE.exe"; }
@@ -212,10 +211,9 @@ namespace HATE
 
             /** SEED PARSING AND RNG SETUP **/
             _friskMode = false;
-            byte power = 0;
             _random = new Random();
-            int timeSeed = (int)DateTime.Now.Subtract(_unixTimeZero).TotalSeconds;
 
+            byte power;
             if (!byte.TryParse(txtPower.Text, out power) && _corrupt)
             {
                 MessageBox.Show("Please set Power to a number between 0 and 255 and try again.");
@@ -223,15 +221,32 @@ namespace HATE
             }
             _truePower = (float)power / 255;
 
-            if (txtSeed.Text.ToUpper() == "FRISK" && !File.Exists("DELTARUNE.exe"))
+            int timeSeed = 0;
+            string seed = txtSeed.Text.Trim();
+            bool textSeed = false;
+
+            if (seed.ToUpper() == "FRISK")
                 _friskMode = true;
 
-            if (_showSeed)
-                txtSeed.Text = $"#{timeSeed}";
-            else
-                txtSeed.Text = "";
+            /* checking # for: Now it will change the corruption every time you press the button */
+            else if (seed == "" || txtSeed.Text[0] == '#')
+            {
+                timeSeed = (int)DateTime.Now.Subtract(_unixTimeZero).TotalSeconds;
 
-            _logWriter.WriteLine($"Time seed - {timeSeed}");
+                if (_showSeed)
+                    txtSeed.Text = $"#{timeSeed}";
+            }
+            else if (!int.TryParse(seed, out timeSeed))
+            {
+                _logWriter.WriteLine($"Text seed - {txtSeed.Text.GetHashCode()}");
+                _random = new Random(txtSeed.Text.GetHashCode());
+                textSeed = true;
+            }
+
+            if (!textSeed)
+            {
+                _logWriter.WriteLine($"Numeric seed - {timeSeed}");
+            }
             _logWriter.WriteLine($"Power - {power}");
             _logWriter.WriteLine($"TruePower - {_truePower}");
 
@@ -249,33 +264,33 @@ namespace HATE
             }
             else if (!Directory.Exists("Data"))
             {
-                if (!Safe.CreateDirectory("Data")) { return false; }
-                if (!Safe.CopyFile(_dataWin, $"Data/{_dataWin}")) { return false; }
+                if (!SafeMethods.CreateDirectory("Data")) { return false; }
+                if (!SafeMethods.CopyFile(_dataWin, $"Data/{_dataWin}")) { return false; }
                 if (Directory.Exists("./lang"))
                 {
-                    if (!Safe.CopyFile("./lang/lang_en.json", "./Data/lang_en.json")) { return false; };
-                    if (!Safe.CopyFile("./lang/lang_ja.json", "./Data/lang_ja.json")) { return false; };
+                    if (!SafeMethods.CopyFile("./lang/lang_en.json", "./Data/lang_en.json")) { return false; };
+                    if (!SafeMethods.CopyFile("./lang/lang_ja.json", "./Data/lang_ja.json")) { return false; };
                 }
                 _logWriter.WriteLine($"Finished setting up the Data folder.");
             }
 
-            if (!Safe.DeleteFile(_dataWin)) { return false; }
+            if (!SafeMethods.DeleteFile(_dataWin)) { return false; }
             _logWriter.WriteLine($"Deleted {_dataWin}.");
             if (Directory.Exists("./lang"))
             {
-                if (!Safe.DeleteFile("./lang/lang_en.json")) { return false; }
+                if (!SafeMethods.DeleteFile("./lang/lang_en.json")) { return false; }
                 _logWriter.WriteLine($"Deleted ./lang/lang_en.json.");
-                if (!Safe.DeleteFile("./lang/lang_ja.json")) { return false; }
+                if (!SafeMethods.DeleteFile("./lang/lang_ja.json")) { return false; }
                 _logWriter.WriteLine($"Deleted ./lang/lang_ja.json.");
             }
 
-            if (!Safe.CopyFile($"Data/{_dataWin}", _dataWin)) { return false; }
+            if (!SafeMethods.CopyFile($"Data/{_dataWin}", _dataWin)) { return false; }
             _logWriter.WriteLine($"Copied {_dataWin}.");
             if (Directory.Exists("./lang"))
             {
-                if (!Safe.CopyFile("./Data/lang_en.json", "./lang/lang_en.json")) { return false; }
+                if (!SafeMethods.CopyFile("./Data/lang_en.json", "./lang/lang_en.json")) { return false; }
                 _logWriter.WriteLine($"Copied ./lang/lang_en.json.");
-                if (!Safe.CopyFile("./Data/lang_ja.json", "./lang/lang_ja.json")) { return false; }
+                if (!SafeMethods.CopyFile("./Data/lang_ja.json", "./lang/lang_ja.json")) { return false; }
                 _logWriter.WriteLine($"Copied ./lang/lang_ja.json.");
             }
 
