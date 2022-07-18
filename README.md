@@ -6,14 +6,20 @@ Hi, \[NO NAME] here. [The guy that made the original tool](https://github.com/Re
 
 TL;DR this is a modification of the good old HATE that you may have came across, that should support the latest version of DELTARUNE (at least if UndertaleModTool catchs up).
 
-I heard you want to destroy the fabric of time-space continuum and bring living hell to the second dark world you got access from? Or do you want to make the underground a boiling mess (maybe again, after trying the original out after 6 years, for some reason)? If so, ~~follow the installation guide below and try it today~~ Just give me time to finish this.
+I heard you want to destroy the fabric of time-space continuum and bring living hell to the second dark world you have access to? Or do you want to make the underground a boiling mess (maybe again, for some reason)? If so, ~~follow the installation guide below and try it today~~ Just give me time to finish this.
 
 ## The original              corruptor
 
-This fork is not ready yet, but at least you can check the original corruptor out: (apparently you get this page in Bing search results???)
-[Original version](https://www.reddit.com/r/Undertale/comments/41lb16/hate_the_undertale_corruptor/);
-[DELTARUNE Chapter 1 special version](https://www.reddit.com/r/Deltarune/comments/9v1vd7/hate_the_deltarune_corruptor/);
-and also the [source code](https://github.com/RedSpah/HATE).
+Bing gave me this page when I searched for HATE on the search engine, however this fork is not ready yet.
+So it's best to not disappoint the newcomers, I have to give them something to use.
+
+At least you can check the original corruptor out. Note that it only supports UNDERTALE versions <=1.08, and the original release of DELTARUNE Chapter 1 in 2018.
+
+* [Original version](https://www.reddit.com/r/Undertale/comments/41lb16/hate_the_undertale_corruptor/);
+* [DELTARUNE Chapter 1 special version](https://www.reddit.com/r/Deltarune/comments/9v1vd7/hate_the_deltarune_corruptor/);
+* The [source code](https://github.com/RedSpah/HATE).
+
+Also, shout out to RedSpah. Dude suffered during the development of the original.
 
 ## Installation
 
