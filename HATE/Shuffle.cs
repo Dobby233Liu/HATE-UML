@@ -251,8 +251,6 @@ namespace HATE
             {
                 StreamReader text_reader = new StreamReader(stream);
                 logstream.WriteLine($"Opened {resource_file}.");
-                long date = 0;
-                
 
                 while (stream.Position != stream.Length)
                 {
@@ -262,11 +260,7 @@ namespace HATE
                     Match m = json_line_regex.Match(cur_line);
 
 
-                  //  logstream.WriteLine($"line: {cur_line} | group_size: {m.Groups.Count}");
-                  //  logstream.Flush();
-
                     string[] match = {m.Groups[1].ToString(), m.Groups[2].ToString() };
-                   // logstream.WriteLine($"aaaaa: {match[0]} _ {match[1]}");
 
                     strings.Add(new JSONStringEntry(match[0], match[1]));
                 }
