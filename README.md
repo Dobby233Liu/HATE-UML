@@ -1,8 +1,8 @@
-# HATE-UML - The UNDERTALE corruptor, but using UndertaleModLib
+# HATE-UML
 
 Hi, \[NO NAME] here. [The guy that made this](https://github.com/RedSpah) is not here, so I'm here to tell you some basic stuff, while I'm messing with the code to add a little [~~Grossley~~ UndertaleModTool](https://github.com/krzys-h/UndertaleModTool) into this tool.
 
-HATE (the UNDERTALE corruptor) is a tool that shuffles the RPG's game data, and as a result, corrupts music, graphics, text, etc. This is a fork of the corruptor, that makes it use the data I/O interface library (UndertaleModLib) that UndertaleModTool uses, so the tool can corrupt DELTARUNE Chapter 1&2 (maybe other GameMaker games - but that's not a goal of this tool). TL;DR this thing should support DELTARUNE if UndertaleModTool catchs up. Interested? ~~Follow the installation guide below and try it today~~ Give me time to finish this.
+HATE (the UNDERTALE corruptor) is a tool that shuffles the RPG's game data, and as a result, corrupts music, graphics, text, etc. This is a fork of the corruptor, that makes it use the data I/O interface library (UndertaleModLib) that UndertaleModTool uses, in hope that so the tool can corrupt DELTARUNE Chapter 1&2 (maybe other GameMaker games - but that's not a goal of this tool). TL;DR this thing should support DELTARUNE if UndertaleModTool catchs up. Interested? ~~Follow the installation guide below and try it today~~ Give me time to finish this.
 
 ## Installation
 
