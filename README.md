@@ -32,14 +32,16 @@ Windows:
 NOTE: macOS and Linux versions are untested. TODO: dotnet CLI.
 
 macOS:
+0. Install .NET 6.0 Runtime; see [Install .NET on macOS](https://docs.microsoft.com/en-us/dotnet/core/install/macos) on Microsoft website. Also install `libgdiplus` (instructions is in the same document).
 1. Move everything in the ZIP file you downloaded to `<game>.app\Contents\Resources`.
 2. Create a "Data" folder in the Resources folder.
 3. Copy game.ios into the Data folder.
-4. Tada! Open `HATE` and start messing with stuff.
+4. Tada! Execute `HATE.sh` and start messing with stuff.
 
 Linux: (Note - make sure you're not root.)
-1. Move everything in the ZIP file you downloaded to the directory with the game files - the place you can find an `assets` folder in, or the place you can find a `data.win` in if you want to run a Windows game.
-2. Tada! Open `HATE` and start messing with stuff.
+0. Install .NET 6.0 Runtime; see [Install .NET on Linux](https://docs.microsoft.com/en-us/dotnet/core/install/linux) on Microsoft website. Also install `libgdiplus`.
+1. Move everything in the ZIP file you downloaded to the directory with the game files - the place you can find an `assets` folder in, or the place you can find a `data.win` in if you want to corrupt a Windows game (in that case, also install Wine).
+2. Tada! Execute `HATE.sh` and start messing with stuff.
 
 ## Uninstallation
 
@@ -50,13 +52,11 @@ Linux: (Note - make sure you're not root.)
 
 * **Q:** Windows - HATE doesn't start and/or displays an error message instantly.
 
-    **A:** You may need to install the [.NET 6 Desktop Runtime](https://dotnet.microsoft.com/en-us/download/dotnet/6.0/runtime) (one of the downloads below `Run desktop apps`, depending on your computer). I decided to not bundle framework-related code with the release, because it makes the download's size *absurdly huge*.
+    **A:** You may need to install the [.NET 6.0 Desktop Runtime](https://dotnet.microsoft.com/en-us/download/dotnet/6.0/runtime) (one of the downloads below `Run desktop apps`, depending on your computer). I decided to not bundle framework-related code with the release, because it makes the download's size *absurdly huge*.
 
 * **Q:** Linux/macOS - HATE doesn't start and/or displays an error message instantly.
 
-    **A:** If it is hinted by the error, your system may have `libgdiplus` missing; try to install it.
-           For example, macOS users can install `mono-libgdiplus` with [Homebrew](https://brew.sh).
-           For anything else, this may be a issue on my side. Please submit an [issue](https://github.com/Dobby233Liu/HATE-UML/issues) on GitHub so I can look into it.
+    **A:** This may be a issue on my side. Please submit an [issue](https://github.com/Dobby233Liu/HATE-UML/issues) on GitHub so I can look into it.
 
 ## Building
 

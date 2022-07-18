@@ -99,11 +99,11 @@ namespace HATE
                 lblGameName.Text = GetGame().Replace(".exe", "");
                 if (!string.IsNullOrWhiteSpace(lblGameName.Text))
                 {
-                    MessageBox.Show($"We couldn't find Deltarune or Undertale in this folder, if you're using this for another game then as long there is a {_dataWin} file and the game was made with GameMaker then this program should work but there are no guarantees that it will.", "HATE", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    ShowMessage($"We couldn't find Deltarune or Undertale in this folder, if you're using this for another game then as long there is a {_dataWin} file and the game was made with GameMaker then this program should work but there are no guarantees that it will.", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 }
                 else
                 {
-                    MessageBox.Show("We couldn't find any game in this folder, check that this is in the right folder.");
+                    ShowMessage("We couldn't find any game in this folder, check that this is in the right folder.");
                 }
             }
         }
@@ -123,12 +123,23 @@ namespace HATE
         {
             return MessageBox.Show(message, "HATE", buttons, icon);
         }
+        private DialogResult ShowMessage(string message)
+        {
+            return MessageBox.Show(message, "HATE");
+        }
 
+        public string WindowsExecPrefix
+        {
+            get => RuntimeInformation.IsOSPlatform(OSPlatform.Linux)
+                    || RuntimeInformation.IsOSPlatform(OSPlatform.OSX)
+                    || RuntimeInformation.IsOSPlatform(OSPlatform.FreeBSD) /* unix platforms */
+                    ? "wine" : "";
+        }
         public string GetGame()
         {
-            if (File.Exists("DELTARUNE.exe")) { return $"{LinuxWine()} DELTARUNE.exe"; }
+            if (File.Exists("DELTARUNE.exe")) { return $"{WindowsExecPrefix} DELTARUNE.exe"; }
             else if (File.Exists("../../SURVEY_PROGRAM.app")) { return "../../SURVEY_PROGRAM.app"; }
-            else if (File.Exists("UNDERTALE.exe")) { return $"{LinuxWine()} UNDERTALE.exe"; }
+            else if (File.Exists("UNDERTALE.exe")) { return $"{WindowsExecPrefix} UNDERTALE.exe"; }
             else if (File.Exists("../../UNDERTALE.app")) { return "../../UNDERTALE.app"; }
             else
             {
@@ -139,17 +150,6 @@ namespace HATE
 
                 return "";
             }
-        }
-
-        public string LinuxWine()
-        {
-            PlatformID pid = (Environment.OSVersion).Platform;
-            switch (pid)
-            {
-                case PlatformID.Unix:
-                    return "wine";
-            }
-            return "";
         }
 
         private void btnLaunch_Clicked(object sender, EventArgs e)
