@@ -249,7 +249,7 @@ namespace HATE
 
             logstream.WriteLine($"Gathered {strings.Count} JSON String Entries. ");
 
-            string[] bannedStrings = { "_" };
+            string[] bannedStrings = { "_", "||" };
             string[] bannedKeys = { "date" };
 
             List<JSONStringEntry> good_strings = new List<JSONStringEntry>();

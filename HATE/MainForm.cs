@@ -5,6 +5,10 @@ using System.IO;
 using System.Diagnostics;
 using System.Security.Principal;
 using System.Runtime.InteropServices;
+using UndertaleModLib;
+using System.Runtime;
+using System.Threading.Tasks;
+using UndertaleModLib.Models;
 
 namespace HATE
 {
@@ -33,18 +37,72 @@ namespace HATE
         private bool _shuffleBG = false;
         private bool _shuffleAudio = false;
         private bool _corrupt = false;
-        private bool _showSeed = false;
         private bool _friskMode = false;
         private float _truePower = 0;
         private readonly string _defaultPowerText = "0 - 255";
         private readonly string _dataWin = "data.win";
 
-        private readonly string[] _friskSpriteHandles = { "spr_maincharal", "spr_maincharau", "spr_maincharar", "spr_maincharad", "spr_maincharau_stark", "spr_maincharar_stark", "spr_maincharal_stark", "spr_maincharad_pranked", "spr_maincharal_pranked", "spr_maincharad_umbrellafall", "spr_maincharau_umbrellafall", "spr_maincharar_umbrellafall", "spr_maincharal_umbrellafall", "spr_maincharad_umbrella", "spr_maincharau_umbrella", "spr_maincharar_umbrella", "spr_maincharal_umbrella", "spr_charad", "spr_charad_fall", "spr_charar", "spr_charar_fall", "spr_charal", "spr_charal_fall", "spr_charau", "spr_charau_fall", "spr_maincharar_shadow", "spr_maincharal_shadow", "spr_maincharau_shadow", "spr_maincharad_shadow", "spr_maincharal_tomato", "spr_maincharal_burnt", "spr_maincharal_water", "spr_maincharar_water", "spr_maincharau_water", "spr_maincharad_water", "spr_mainchara_pourwater", "spr_maincharad_b", "spr_maincharau_b", "spr_maincharar_b", "spr_maincharal_b", "spr_doorA", "spr_doorB", "spr_doorC", "spr_doorD", "spr_doorX" };
+        private readonly string[] _friskSpriteHandles = {
+            // UNDERTALE
+            "spr_maincharal", "spr_maincharau", "spr_maincharar", "spr_maincharad",
+            "spr_maincharau_stark", "spr_maincharar_stark", "spr_maincharal_stark",
+            "spr_maincharad_pranked", "spr_maincharal_pranked",
+            "spr_maincharad_umbrellafall", "spr_maincharau_umbrellafall", "spr_maincharar_umbrellafall", "spr_maincharal_umbrellafall",
+            "spr_maincharad_umbrella", "spr_maincharau_umbrella", "spr_maincharar_umbrella", "spr_maincharal_umbrella",
+            "spr_charad", "spr_charad_fall", "spr_charar", "spr_charar_fall", "spr_charal", "spr_charal_fall", "spr_charau", "spr_charau_fall",
+            "spr_maincharar_shadow", "spr_maincharal_shadow", "spr_maincharau_shadow", "spr_maincharad_shadow",
+            "spr_maincharal_tomato", "spr_maincharal_burnt", "spr_maincharal_water",
+            "spr_maincharar_water", "spr_maincharau_water", "spr_maincharad_water", "spr_mainchara_pourwater",
+            "spr_maincharad_b", "spr_maincharau_b", "spr_maincharar_b", "spr_maincharal_b",
+            "spr_doorA", "spr_doorB", "spr_doorC", "spr_doorD", "spr_doorX",
+            // DELTARUNE
+            "spr_krisr", "spr_krisl", "spr_krisd", "spr_krisu", "spr_kris_fall", "spr_krisr_sit",
+            "spr_krisd_dark", "spr_krisr_dark", "spr_krisu_dark", "spr_krisl_dark",
+            "spr_krisd_slide", "spr_krisd_slide_light",
+            "spr_krisd_heart", "spr_krisd_slide_heart", "spr_krisu_heart", "spr_krisl_heart", "spr_krisr_heart",
+            "spr_kris_fallen_dark", "spr_krisu_run", "spr_kris_fall_d_white", "spr_kris_fall_turnaround",
+            "spr_kris_fall_d_lw", "spr_kris_fall_d_dw", "spr_kris_fall_smear", "spr_kris_dw_landed",
+            "spr_kris_fall_ball", "spr_kris_jump_ball", "spr_kris_dw_land_example_dark", "spr_kris_fall_example_dark",
+            "spr_krisu_fall_lw", "spr_kris_pose", "spr_kris_dance",
+            "spr_kris_sword_jump", "spr_kris_sword_jump_down", "spr_kris_sword_jump_settle", "spr_kris_sword_jump_up",
+            "spr_kris_coaster", "spr_kris_coaster_hurt_front", "spr_kris_coaster_hurt_back",
+            "spr_kris_coaster_front", "spr_kris_coaster_empty", "spr_kris_coaster_back",
+            "spr_kris_hug_left", "spr_kris_peace", "spr_kris_rude_gesture",
+            "spr_kris_sit_wind", "spr_kris_hug", "spr_krisb_pirouette", "spr_krisb_bow",
+            "spr_krisb_victory", "spr_krisb_defeat", "spr_krisb_attackready",
+            "spr_krisb_act", "spr_krisb_actready", "spr_krisb_itemready", "spr_krisb_item",
+            "spr_krisb_attack", "spr_krisb_hurt", "spr_krisb_intro", "spr_krisb_idle", "spr_krisb_defend",
+            "spr_krisb_virokun", "spr_krisb_virokun_doctor", "spr_krisb_virokun_nurse", "spr_krisb_wan",
+            "spr_krisb_wan_tail", "spr_krisb_wiggle",
+            "spr_krisb_ready_throw_torso", "spr_krisb_ready_throw_full", "spr_krisb_throw",
+            "spr_krisd_bright", "spr_krisl_bright", "spr_krisr_bright", "spr_krisu_bright",
+            "spr_kris_fell",
+            "spr_teacup_kris", "spr_teacup_kris_tea", "spr_teacup_kris_tea2", "spr_kris_tea",
+            "spr_kris_hug_ch1",
+            "spr_krisb_pirouette_ch1", "spr_krisb_bow_ch1", "spr_krisb_victory_ch1",
+            "spr_krisb_defeat_ch1", "spr_krisb_attackready_ch1", "spr_krisb_act_ch1",
+            "spr_krisb_actready_ch1", "spr_krisb_itemready_ch1", "spr_krisb_item_ch1",
+            "spr_krisb_attack_ch1", "spr_krisb_attack_old_ch1", "spr_krisb_hurt_ch1",
+            "spr_krisb_intro_ch1", "spr_krisb_idle_ch1", "spr_krisb_defend_ch1",
+            "spr_kris_drop_ch1", "spr_kris_fell_ch1",
+            "spr_krisr_kneel_ch1", "spr_krisd_bright_ch1", "spr_krisl_bright_ch1",
+            "spr_krisr_bright_ch1", "spr_krisu_bright_ch1", "spr_krisd_heart_ch1",
+            "spr_krisd_slide_heart_ch1", "spr_krisu_heart_ch1", "spr_krisl_heart_ch1",
+            "spr_krisr_heart_ch1", "spr_kris_fallen_dark_ch1",
+            "spr_krisd_dark_ch1", "spr_krisr_dark_ch1", "spr_krisu_dark_ch1", "spr_krisl_dark_ch1",
+            "spr_krisd_slide_ch1", "spr_krisd_slide_light_ch1",
+            "spr_krisr_ch1", "spr_krisl_ch1", "spr_krisd_ch1", "spr_krisu_ch1",
+            "spr_krisr_sit_ch1", "spr_kris_fall_ch1",
+            "spr_doorAny", "spr_doorE", "spr_doorF", "spr_doorW",
+            "spr_doorE_ch1", "spr_doorF_ch1", "spr_doorW_ch1"
+        };
 
         private static readonly DateTime _unixTimeZero = new DateTime(1970, 1, 1);
         private Random _random;
 
         private WindowsPrincipal windowsPrincipal;
+
+        private UndertaleData Data;
 
         public MainForm()
         {
@@ -82,30 +140,77 @@ namespace HATE
 
             _random = new Random();
 
-            UpdateCorrupt();
+            EnableControls(false);
 
             if (!File.Exists(_dataWin))
             {
                 if (File.Exists("game.ios"))
                     _dataWin = "game.ios";
+                else if (File.Exists("assets/game.unx"))
+                    _dataWin = "assets/game.unx";
                 else if (File.Exists("game.unx"))
                     _dataWin = "game.unx";
-            }
-
-            if (File.Exists("DELTARUNE.exe") || File.Exists("../../SURVEY_PROGRAM.app")) { lblGameName.Text = "Deltarune"; }
-            else if (File.Exists("UNDERTALE.exe") || File.Exists("../../UNDERTALE.app")) { lblGameName.Text = "Undertale"; } 
-            else
-            {
-                lblGameName.Text = GetGame().Replace(".exe", "");
-                if (!string.IsNullOrWhiteSpace(lblGameName.Text))
-                {
-                    ShowMessage($"We couldn't find Deltarune or Undertale in this folder, if you're using this for another game then as long there is a {_dataWin} file and the game was made with GameMaker then this program should work but there are no guarantees that it will.", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                }
                 else
                 {
                     ShowMessage("We couldn't find any game in this folder, check that this is in the right folder.");
+                    Close();
+                    return;
                 }
             }
+        }
+        private async void MainForm_Load(object sender, EventArgs e)
+        {
+            EnableControls(false);
+            await LoadFile(_dataWin);
+            this.Invoke(delegate
+            {
+                EnableControls(true);
+                lblGameName.Text = Data.GeneralInfo.DisplayName.Content;
+                UpdateCorrupt();
+            });
+        }
+
+        private async Task LoadFile(string filename)
+        {
+            Task t = Task.Run(() =>
+            {
+                UndertaleData data = null;
+                try
+                {
+                    using (var stream = new FileStream(filename, FileMode.Open, FileAccess.Read))
+                    {
+                        data = UndertaleIO.Read(stream, warning =>
+                        {
+                            this.ShowWarning(warning, "Loading warning");
+                        });
+                    }
+
+                    UndertaleEmbeddedTexture.TexData.ClearSharedStream();
+                }
+                catch (Exception e)
+                {
+                    this.ShowError("An error occured while trying to load:\n" + e.Message, "Load error");
+                }
+
+                if (data != null)
+                {
+                    if (data.UnsupportedBytecodeVersion)
+                    {
+                        this.ShowWarning("Only bytecode versions 13 to 17 are supported for now, you are trying to load " + data.GeneralInfo.BytecodeVersion + ". A lot of code is disabled and something will likely break.", "Unsupported bytecode version");
+                    }
+
+                    Data = data;
+
+                    Data.ToolInfo.ProfileMode = false;
+                    Data.ToolInfo.AppDataProfiles = "";
+                }
+            });
+            await t;
+
+            // Clear "GC holes" left in the memory in process of data unserializing
+            // https://docs.microsoft.com/en-us/dotnet/api/system.runtime.gcsettings.largeobjectheapcompactionmode?view=net-6.0
+            GCSettings.LargeObjectHeapCompactionMode = GCLargeObjectHeapCompactionMode.CompactOnce;
+            GC.Collect();
         }
 
         public bool IsElevated
@@ -121,11 +226,19 @@ namespace HATE
 
         private DialogResult ShowMessage(string message, MessageBoxButtons buttons, MessageBoxIcon icon)
         {
-            return MessageBox.Show(message, "HATE", buttons, icon);
+            return MessageBox.Show(message, "HATE-UML", buttons, icon);
         }
         private DialogResult ShowMessage(string message)
         {
-            return MessageBox.Show(message, "HATE");
+            return MessageBox.Show(message, "HATE-UML");
+        }
+        private DialogResult ShowWarning(string message, string caption)
+        {
+            return MessageBox.Show(message, caption, MessageBoxButtons.OK, MessageBoxIcon.Warning);
+        }
+        private DialogResult ShowError(string message, string caption)
+        {
+            return MessageBox.Show(message, caption, MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
 
         public string WindowsExecPrefix
@@ -133,14 +246,12 @@ namespace HATE
             get => RuntimeInformation.IsOSPlatform(OSPlatform.Linux)
                     || RuntimeInformation.IsOSPlatform(OSPlatform.OSX)
                     || RuntimeInformation.IsOSPlatform(OSPlatform.FreeBSD) /* unix platforms */
-                    ? "wine" : "";
+                    ? "wine " : "";
         }
         public string GetGame()
         {
-            if (File.Exists("DELTARUNE.exe")) { return $"{WindowsExecPrefix} DELTARUNE.exe"; }
-            else if (File.Exists("../../SURVEY_PROGRAM.app")) { return "../../SURVEY_PROGRAM.app"; }
-            else if (File.Exists("UNDERTALE.exe")) { return $"{WindowsExecPrefix} UNDERTALE.exe"; }
-            else if (File.Exists("../../UNDERTALE.app")) { return "../../UNDERTALE.app"; }
+            if (File.Exists("runner")) { return "runner"; }
+            else if (File.Exists(Data.GeneralInfo.FileName + ".exe")) { return $"{WindowsExecPrefix}{Data.GeneralInfo.FileName}.exe"; }
             else
             {
                 var files = Directory.EnumerateFiles(Directory.GetCurrentDirectory());
@@ -174,8 +285,6 @@ namespace HATE
             catch (Exception) { MessageBox.Show("Could not set up the log file."); }
 
             if (!Setup()) { goto End; };
-            //DebugListChunks(_dataWin, _logWriter);
-            //Shuffle.LoadDataAndFind("STRG", _random, 0, _logWriter, _dataWin, Shuffle.ComplexShuffle(Shuffle.StringDumpAccumulator, Shuffle.SimpleShuffler, Shuffle.SimpleWriter));
             if (_hitboxFix && !HitboxFix_Func(_random, _truePower, _logWriter)) { goto End; }
             if (_shuffleGFX && !ShuffleGFX_Func(_random, _truePower, _logWriter)) { goto End; }
             if (_shuffleText && !ShuffleText_Func(_random, _truePower, _logWriter)) { goto End; }
@@ -198,7 +307,6 @@ namespace HATE
             chbShuffleFont.Enabled = state;
             chbShuffleBG.Enabled = state;
             chbShuffleAudio.Enabled = state;
-            chbShowSeed.Enabled = state;
             label1.Enabled = state;
             label2.Enabled = state;
             txtPower.Enabled = state;
@@ -233,8 +341,7 @@ namespace HATE
             {
                 timeSeed = (int)DateTime.Now.Subtract(_unixTimeZero).TotalSeconds;
 
-                if (_showSeed)
-                    txtSeed.Text = $"#{timeSeed}";
+                txtSeed.Text = $"#{timeSeed}";
             }
             else if (!int.TryParse(seed, out timeSeed))
             {
@@ -346,12 +453,6 @@ namespace HATE
             UpdateCorrupt();
         }
 
-        private void chbShowSeed_CheckedChanged(object sender, EventArgs e)
-        {
-            _showSeed = chbShowSeed.Checked;
-            chbShowSeed.ForeColor = Style.GetOptionColor(_showSeed);
-        }
-
         private void txtPower_Enter(object sender, EventArgs e)
         {
             txtPower.Text = (txtPower.Text == _defaultPowerText) ? "" : txtPower.Text;
@@ -360,11 +461,6 @@ namespace HATE
         private void txtPower_Leave(object sender, EventArgs e)
         {
             txtPower.Text = string.IsNullOrWhiteSpace(txtPower.Text) ? _defaultPowerText : txtPower.Text;
-        }
-
-        private void MainForm_Load(object sender, EventArgs e)
-        {
-
         }
     }
 }
