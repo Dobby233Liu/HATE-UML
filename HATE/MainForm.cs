@@ -308,7 +308,6 @@ namespace HATE
                         // We need to delete the temp file though (if it exists).
                         if (File.Exists(filename + "temp"))
                             File.Delete(filename + "temp");
-                        // No profile system changes, since the save failed, like a save was never attempted.
                     }
                 }
                 catch (Exception exc)
@@ -353,9 +352,9 @@ namespace HATE
                 var dir = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
                 foreach (string file in Directory.EnumerateFiles(dir))
                 {
-                    if (Path.GetFileNameWithoutExtension(file) != "HATE" && (file.Contains(".exe") || file.Contains(".app")))
+                    if (Path.GetFileNameWithoutExtension(file) != "HATE" && file.EndsWith(".exe"))
                     {
-                        var executable = file.Remove(0, file.LastIndexOf("\\") + 1);
+                        var executable = Path.GetFileName(file);
                         return executable;
                     }
                 }
@@ -490,38 +489,49 @@ namespace HATE
                 MsgBoxHelpers.ShowError($"You seem to be missing your resource file, {_dataWin}. Make sure you've placed HATE.exe in the proper location.");
                 return false;
             }
-            else if (!Directory.Exists("Data"))
+            else if (!Directory.Exists("HATE_backup"))
             {
-                if (!SafeMethods.CreateDirectory("Data")) { return false; }
+                if (!SafeMethods.CreateDirectory("HATE_backup")) { return false; }
                 if (!SafeMethods.CopyFile(_dataWin, $"HATE_backup/{_dataWin}")) { return false; }
                 if (Directory.Exists("./lang"))
                 {
-                    if (!SafeMethods.CopyFile("./lang/lang_en.json", "./HATE_backup/lang_en.json")) { return false; };
-                    if (!SafeMethods.CopyFile("./lang/lang_ja.json", "./HATE_backup/lang_ja.json")) { return false; };
+                    if (File.Exists("./lang/lang_en.json") && !SafeMethods.CopyFile("./lang/lang_en.json", "./HATE_backup/lang_en.json")) { return false; };
+                    if (File.Exists("./lang/lang_ja.json") && !SafeMethods.CopyFile("./lang/lang_ja.json", "./HATE_backup/lang_ja.json")) { return false; };
+                    if (File.Exists("./lang/lang_en_ch1.json") && !SafeMethods.CopyFile("./lang/lang_en_ch1.json", "./HATE_backup/lang_en_ch1.json")) { return false; };
+                    if (File.Exists("./lang/lang_ja_ch1.json") && !SafeMethods.CopyFile("./lang/lang_ja_ch1.json", "./HATE_backup/lang_ja_ch1.json")) { return false; };
                 }
                 _logWriter.WriteLine($"Finished setting up the Data folder.");
+            }else
+            {
+                if (!SafeMethods.DeleteFile(_dataWin)) { return false; }
+                _logWriter.WriteLine($"Deleted {_dataWin}.");
+                if (Directory.Exists("./lang"))
+                {
+                    if (File.Exists("./lang/lang_en.json") && !SafeMethods.DeleteFile("./lang/lang_en.json")) { return false; }
+                    _logWriter.WriteLine($"Deleted ./lang/lang_en.json.");
+                    if (File.Exists("./lang/lang_ja.json") && !SafeMethods.DeleteFile("./lang/lang_ja.json")) { return false; }
+                    _logWriter.WriteLine($"Deleted ./lang/lang_ja.json.");
+                    if (File.Exists("./lang/lang_en_ch1.json") && !SafeMethods.DeleteFile("./lang/lang_en_ch1.json")) { return false; }
+                    _logWriter.WriteLine($"Deleted ./lang/lang_en_ch1.json.");
+                    if (File.Exists("./lang/lang_ja_ch1.json") && !SafeMethods.DeleteFile("./lang/lang_ja_ch1.json")) { return false; }
+                    _logWriter.WriteLine($"Deleted ./lang/lang_ja_ch1.json.");
+                }
+
+                if (!SafeMethods.CopyFile($"HATE_backup/{_dataWin}", _dataWin)) { return false; }
+                _logWriter.WriteLine($"Copied {_dataWin}.");
+                if (Directory.Exists("./lang"))
+                {
+                    if (File.Exists("./HATE_backup/lang_en_ch1.json") && !SafeMethods.CopyFile("./HATE_backup/lang_en.json", "./lang/lang_en.json")) { return false; }
+                    _logWriter.WriteLine($"Copied ./lang/lang_en.json.");
+                    if (File.Exists("./HATE_backup/lang_en_ch1.json") && !SafeMethods.CopyFile("./HATE_backup/lang_ja.json", "./lang/lang_ja.json")) { return false; }
+                    _logWriter.WriteLine($"Copied ./lang/lang_ja.json.");
+                    if (File.Exists("./HATE_backup/lang_en_ch1.json") && !SafeMethods.CopyFile("./HATE_backup/lang_en_ch1.json", "./lang/lang_en_ch1.json")) { return false; }
+                    _logWriter.WriteLine($"Copied ./lang/lang_en_ch1.json.");
+                    if (File.Exists("./HATE_backup/lang_ja_ch1.json") && !SafeMethods.CopyFile("./HATE_backup/lang_ja_ch1.json", "./lang/lang_ja_ch1.json")) { return false; }
+                    _logWriter.WriteLine($"Copied ./lang/lang_ja_ch1.json.");
+                }
             }
             await LoadFile(_dataWin);
-
-            if (!SafeMethods.DeleteFile(_dataWin)) { return false; }
-            _logWriter.WriteLine($"Deleted {_dataWin}.");
-            if (Directory.Exists("./lang"))
-            {
-                if (!SafeMethods.DeleteFile("./lang/lang_en.json")) { return false; }
-                _logWriter.WriteLine($"Deleted ./lang/lang_en.json.");
-                if (!SafeMethods.DeleteFile("./lang/lang_ja.json")) { return false; }
-                _logWriter.WriteLine($"Deleted ./lang/lang_ja.json.");
-            }
-
-            if (!SafeMethods.CopyFile($"HATE_backup/{_dataWin}", _dataWin)) { return false; }
-            _logWriter.WriteLine($"Copied {_dataWin}.");
-            if (Directory.Exists("./lang"))
-            {
-                if (!SafeMethods.CopyFile("./HATE_backup/lang_en.json", "./lang/lang_en.json")) { return false; }
-                _logWriter.WriteLine($"Copied ./lang/lang_en.json.");
-                if (!SafeMethods.CopyFile("./HATE_backup/lang_ja.json", "./lang/lang_ja.json")) { return false; }
-                _logWriter.WriteLine($"Copied ./lang/lang_ja.json.");
-            }
 
             return true;
         }
