@@ -4,6 +4,8 @@ using System.Linq;
 using System.IO;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
+using UndertaleModLib;
+using System.Collections;
 
 namespace HATE
 {
@@ -12,173 +14,60 @@ namespace HATE
         public const int WordSize = 4;
         public const int NumDataSegments = 25;
 
-        public static bool LoadDataAndFind(string seeked_header, Random random, float shufflechance, StreamWriter logstream, string resource_file, Func<FileStream, Random, float, string, StreamWriter, bool> shufflefunc)
+        public static bool LoadDataAndFind(IList<UndertaleObject> chuck, Random random, float shufflechance, StreamWriter logstream, Func<IList<UndertaleObject>, Random, float, StreamWriter, bool> shufflefunc)
         {
             if (random == null)
                 throw new ArgumentNullException(nameof(random));
-
-            byte[] readBuffer = new byte[WordSize];
-
-            using (FileStream stream = new FileStream(resource_file, FileMode.OpenOrCreate))
+            try
             {
-                logstream.WriteLine($"Opened {resource_file}.");
-                stream.Position = 8;
-
-                int dataSegmentCounter = 0;
-
-                while (dataSegmentCounter++ < NumDataSegments)
+                if (!shufflefunc(chuck, random, shufflechance, logstream))
                 {
-                    stream.Read(readBuffer, 0, WordSize);
-
-                    string headerName = new string(readBuffer.Select(x => (char)x).ToArray());
-
-                    if (headerName == seeked_header)
-                    {
-                        logstream.WriteLine($"{seeked_header} Memory Region Found at {stream.Position.ToString("X")}.");
-
-                        stream.Position += WordSize;
-
-                        try
-                        {
-                            if (!shufflefunc(stream, random, shufflechance, seeked_header, logstream))
-                            {
-                                logstream.WriteLine($"An Error Occured While Attempting To Modify {seeked_header} Memory Region.");
-                                return false;
-                            }
-                        }
-                        catch (Exception e)
-                        {
-                            logstream.Write($"Exception Caught While Attempting To Modify {seeked_header} Memory Region. -> {e}");
-                            throw;
-                        }
-
-                        logstream.WriteLine($"{seeked_header} Memory Region Modified Successfully.");
-                        logstream.WriteLine($"Closed {resource_file}.");
-                        return true;
-                    }
-
-                    stream.Read(readBuffer, 0, WordSize);
-                    stream.Position += BitConverter.ToInt32(readBuffer, 0);
+                    logstream.WriteLine($"Error occured while modifying chuck.");
+                    return false;
                 }
-
-                logstream.WriteLine($"Could not find {seeked_header} Memory Region.");
-                logstream.WriteLine($"Closed {resource_file}.");
+            }
+            catch (Exception e)
+            {
+                logstream.Write($"Caught exception during modification of the chuck. -> {e}");
+                throw;
             }
             return false;
         }
 
+        enum ComplexShuffleStep : byte { Shuffling, SecondLog, }
 
-
-        enum ComplexShuffleStep : byte { Accumulation, FirstLog, Shuffling, SecondLog, Writing, ThirdLog }
-
-        public static Func<FileStream, Random, float, string, StreamWriter, bool> ComplexShuffle(
-            Func<FileStream, Random, float, StreamWriter, List<ResourcePointer>> accumulator,
-            Func<FileStream, Random, float, StreamWriter, List<ResourcePointer>, List<ResourcePointer>> shuffler,
-            Func<FileStream, Random, float, StreamWriter, List<ResourcePointer>, bool> writer)
+        public static Func<IList<UndertaleObject>, Random, float, StreamWriter, bool> ComplexShuffle(
+            Func<IList<UndertaleObject>, Random, float, StreamWriter, IList<UndertaleObject>> shuffler)
         {
-            return (FileStream stream, Random random, float chance, string header, StreamWriter logstream) =>
+            return (IList<UndertaleObject> chuck, Random random, float chance, StreamWriter logstream) =>
             {
-                bool success = false;
-                ComplexShuffleStep step = ComplexShuffleStep.Accumulation;
+                ComplexShuffleStep step = ComplexShuffleStep.Shuffling;
                 try
                 {
-                    List<ResourcePointer> pointerList = accumulator(stream, random, chance, logstream);
-                    step = ComplexShuffleStep.FirstLog;
-                    logstream.WriteLine($"Added {pointerList.Count} pointers to {header} List.");
-                    step = ComplexShuffleStep.Shuffling;
-                    pointerList = shuffler(stream, random, chance, logstream, pointerList);
+                    var newChuck = shuffler(chuck, random, chance, logstream);
+                    chuck.Clear();
+                    foreach (UndertaleObject obj in newChuck)
+                        chuck.Add(obj);
                     step = ComplexShuffleStep.SecondLog;
-                    logstream.WriteLine($"Shuffled {pointerList.Count} pointers to {header} List.");
-                    step = ComplexShuffleStep.Writing;
-                    success = writer(stream, random, chance, logstream, pointerList);
-                    step = ComplexShuffleStep.ThirdLog;
-                    logstream.WriteLine($"Written {pointerList.Count} shuffled pointers to {header} List.");
+                    logstream.WriteLine($"Shuffled {chuck.Count} pointers.");
                 }
                 catch (Exception ex)
                 {
-                    logstream.WriteLine($"Caught exception [{ex}] while editing {header} memory block, during step {step}.");
+                    logstream.WriteLine($"Caught exception [{ex}] while modifying chunk, during step {step}.");
                     throw;
                 }
 
-                return success;
+                return true;
             };
         }
 
-        public static List<ResourcePointer> SimpleAccumulator(FileStream stream, Random random, float shufflechance, StreamWriter logstream)
+        public static IList<UndertaleObject> SimpleShuffler(IList<UndertaleObject> chuck, Random random, float shuffleChance, StreamWriter logStream)
         {
-            byte[] readBuffer = new byte[WordSize];
-            int pointerNum = 0;
-            List<ResourcePointer> pointerList = new List<ResourcePointer>();
-
-            stream.Read(readBuffer, 0, WordSize);
-            pointerNum = BitConverter.ToInt32(readBuffer, 0);
-
-            for (int i = 0; i < pointerNum; i++)
-            {
-                stream.Read(readBuffer, 0, WordSize);
-
-                if (random.NextDouble() < shufflechance)
-                    pointerList.Add(new ResourcePointer(BitConverter.ToInt32(readBuffer, 0), (int)(stream.Position - WordSize)));
-            }
-
-            return pointerList;
+            chuck.Shuffle(random);
+            return chuck;
         }
 
-        public static List<ResourcePointer> SimpleShuffler(FileStream stream, Random random, float shufflechance, StreamWriter logstream, List<ResourcePointer> pointerlist)
-        {
-            pointerlist.Shuffle(PointerSwapLoc, random);
-            return pointerlist;
-        }
-
-        public static bool SimpleWriter(FileStream stream, Random random, float shufflechance, StreamWriter logstream, List<ResourcePointer> pointerlist)
-        {
-            foreach (ResourcePointer ptr in pointerlist)
-            {
-                stream.Position = ptr.Location;
-                stream.Write(BitConverter.GetBytes(ptr.Address), 0, WordSize);
-            }
-            return true;
-        }
-
-        public static Func<FileStream, Random, float, string, StreamWriter, bool> SimpleShuffle = ComplexShuffle(SimpleAccumulator, SimpleShuffler, SimpleWriter);
-
-        public static List<ResourcePointer> StringDumpAccumulator(FileStream stream, Random random, float shufflechance, StreamWriter logstream)
-        {
-            byte[] readBuffer = new byte[WordSize];
-            int pointerNum = 0;
-            List<ResourcePointer> pointerList = new List<ResourcePointer>();
-
-            stream.Read(readBuffer, 0, WordSize);
-            pointerNum = BitConverter.ToInt32(readBuffer, 0);
-
-            for (int i = 0; i < pointerNum; i++)
-            {
-                stream.Read(readBuffer, 0, WordSize);
-                long cur_pos = stream.Position;
-                int str_ptr = BitConverter.ToInt32(readBuffer, 0);
-
-                stream.Position = str_ptr;
-                stream.Read(readBuffer, 0, WordSize);
-                int str_size = BitConverter.ToInt32(readBuffer, 0);
-
-                byte[] byteBuf = new byte[str_size];
-
-                stream.Read(byteBuf, 0, str_size);
-                string output = new string(byteBuf.Select(x => (char)x).ToArray());
-
-                logstream.WriteLine($"Str at: {cur_pos}, ptr_to: {str_ptr}, str: {output}");
-                stream.Position = cur_pos;
-            }
-
-            return pointerList;
-        }
-
-        public static void PointerSwapLoc(ResourcePointer lref, ResourcePointer rref)
-        {
-            int tmp = lref.Location;
-            lref.Location = rref.Location;
-            rref.Location = tmp;
-        }
+        public static Func<IList<UndertaleObject>, Random, float, StreamWriter, bool> SimpleShuffle = ComplexShuffle(SimpleShuffler);
 
         public static readonly Regex json_line_regex = new Regex("\\s*\"(.+)\":\\s*\"(.+)\",", RegexOptions.ECMAScript);
 
@@ -276,17 +165,12 @@ namespace HATE
 
             foreach (JSONStringEntry s in good_strings)
             {
-                //if (!string.IsNullOrWhiteSpace(s.Ending))
-                //{
-                    if (!stringDict.ContainsKey(s.Ending))
-                        stringDict[s.Ending] = new List<JSONStringEntry>();
+                if (!stringDict.ContainsKey(s.Ending))
+                    stringDict[s.Ending] = new List<JSONStringEntry>();
 
-                    stringDict[s.Ending].Add(s);
-                    totalStrings++;
-                //}
+                stringDict[s.Ending].Add(s);
+                totalStrings++;
             }
-
-            
 
             foreach (string ending in stringDict.Keys)
             {

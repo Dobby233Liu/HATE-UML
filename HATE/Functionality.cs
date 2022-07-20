@@ -3,25 +3,30 @@ using System.Collections.Generic;
 using System.Linq;
 using System.IO;
 using System.Windows.Forms;
+using UndertaleModLib;
+using UndertaleModLib.Models;
+using System.Drawing;
+using UndertaleModLib.Util;
+using System.Collections;
 
 namespace HATE
 {
     public class StringPointer
     {
-        public ResourcePointer Base;
+        public UndertaleString Base;
         public string Ending;
         public string Str;
 
-        public StringPointer(ResourcePointer ptr, string str)
+        public StringPointer(UndertaleString ptr)
         {
             Base = ptr;
-            Str = str;
+            Str = ptr.Content;
             char[] FormatChars = { '%', '/', 'C' };
             List<char> Ending = new List<char>();
 
-            for (int i = 1; i < str.Length; i++)
+            for (int i = 1; i < Str.Length; i++)
             {
-                char C = str[str.Length - i];
+                char C = Str[Str.Length - i];
 
                 if (FormatChars.Contains(C))
                     Ending.Add(C);
@@ -47,157 +52,139 @@ namespace HATE
 
     partial class MainForm
     {
+
         public bool ShuffleAudio_Func(Random random, float chance, StreamWriter logstream)
         {
-            return Shuffle.LoadDataAndFind("SOND", random, chance, logstream, _dataWin, Shuffle.SimpleShuffle) && 
-                   Shuffle.LoadDataAndFind("AUDO", random, chance, logstream, _dataWin, Shuffle.SimpleShuffle);               
+            return Shuffle.LoadDataAndFind(Data.Sounds, random, chance, logstream, Shuffle.SimpleShuffle) && 
+                   Shuffle.LoadDataAndFind(Data.EmbeddedAudio, random, chance, logstream, Shuffle.SimpleShuffle);               
         }
 
         public bool ShuffleBG_Func(Random random, float chance, StreamWriter logstream)
         {
-            return Shuffle.LoadDataAndFind("BGND", random, chance, logstream, _dataWin, Shuffle.SimpleShuffle);              
+            return Shuffle.LoadDataAndFind(Data.Backgrounds, random, chance, logstream, Shuffle.SimpleShuffle);              
         }
 
         public bool ShuffleFont_Func(Random random, float chance, StreamWriter logstream)
         {
-            return Shuffle.LoadDataAndFind("FONT", random, chance, logstream, _dataWin, Shuffle.SimpleShuffle);
+            return Shuffle.LoadDataAndFind(Data.Fonts, random, chance, logstream, Shuffle.SimpleShuffle);
         }
 
         public bool HitboxFix_Func(Random random_, float chance, StreamWriter logstream_)
         {
-            return Shuffle.LoadDataAndFind("SPRT", random_, chance, logstream_, _dataWin, Shuffle.ComplexShuffle(Shuffle.SimpleAccumulator, HitboxFix_Shuffler, Shuffle.SimpleWriter));
+            return Shuffle.LoadDataAndFind(Data.Sprites, random_, chance, logstream_, Shuffle.ComplexShuffle(HitboxFix_Shuffler));
         }
 
         public bool ShuffleGFX_Func(Random random_, float chance, StreamWriter logstream_)
         {
-            return Shuffle.LoadDataAndFind("SPRT", random_, chance, logstream_, _dataWin, Shuffle.ComplexShuffle(ShuffleGFX_Accumulator, Shuffle.SimpleShuffler, Shuffle.SimpleWriter));
+            return Shuffle.LoadDataAndFind(Data.Sprites, random_, chance, logstream_, Shuffle.ComplexShuffle(ShuffleGFX_Shuffler));
         }
 
         public bool ShuffleText_Func(Random random_, float chance, StreamWriter logstream_)
         {
+            bool success = true;
             if (Directory.Exists("./lang") && SafeMethods.GetFiles("./lang").Count > 0)
             {
-                bool success = true;
-
                 foreach (string path in SafeMethods.GetFiles("./lang"))
                 {
                     success = success && Shuffle.JSONStringShuffle(path, path, random_, chance, logstream_);
                 }
-                return success;
-
             }
-            else
-            {
-                //MessageBox.Show(lblGameName.Text);
-                return Shuffle.LoadDataAndFind("STRG", random_, chance, logstream_, _dataWin, Shuffle.ComplexShuffle(Shuffle.SimpleAccumulator, ShuffleText_Shuffler, Shuffle.SimpleWriter));
-            }
+            return success && Shuffle.LoadDataAndFind(Data.Strings, random_, chance, logstream_, Shuffle.ComplexShuffle(ShuffleText_Shuffler));
         }
 
-        // TODO: clean this
-        public List<ResourcePointer> ShuffleGFX_Accumulator(FileStream stream, Random random, float shufflechance, StreamWriter logstream)
+        public IList<UndertaleObject> ShuffleGFX_Shuffler(IList<UndertaleObject> chunk, Random random, float shufflechance, StreamWriter logstream)
         {
-            byte[] readBuffer = new byte[Shuffle.WordSize];
-            int pointerNum = 0;
-            long pointerArrayBegin = 0;
-            List<ResourcePointer> pointerList = new List<ResourcePointer>();
+            List<int> sprites = new List<int>();
 
-            stream.Read(readBuffer, 0, 4);
-            pointerNum = BitConverter.ToInt32(readBuffer, 0);
-            pointerArrayBegin = stream.Position;
-
-            for (int i = 0; i < pointerNum; i++)
+            for (int i = 0; i < chunk.Count; i++)
             {
-                if (random.NextDouble() < shufflechance)
+                UndertaleSprite pointer = (UndertaleSprite)chunk[i];
+
+                if (!_friskSpriteHandles.Contains(pointer.Name.Content.Trim()) || _friskMode)
+                    sprites.Add(i);
+            }
+
+            chunk.ShuffleOnlySelected(sprites, random);
+            logstream.WriteLine($"Shuffled {sprites.Count} out of {chunk.Count} sprite pointers.");
+
+            return chunk;
+        }
+
+        public IList<UndertaleObject> HitboxFix_Shuffler(IList<UndertaleObject> pointerlist, Random random, float shufflechance, StreamWriter logstream)
+        {
+            TextureWorker worker = new TextureWorker();
+            foreach (UndertaleObject _spriteptr in pointerlist)
+            {
+                UndertaleSprite spriteptr = (UndertaleSprite)_spriteptr;
+                spriteptr.CollisionMasks.Clear();
+                spriteptr.CollisionMasks.Add(spriteptr.NewMaskEntry());
+                Rectangle bmpRect = new Rectangle(0, 0, (int)spriteptr.Width, (int)spriteptr.Height);
+                Bitmap tex = worker.GetTextureFor(spriteptr.Textures[0].Texture, spriteptr.Name.Content, true);
+                Bitmap cloneBitmap = tex.Clone(bmpRect, tex.PixelFormat);
+                int width = (((int)spriteptr.Width + 7) / 8) * 8;
+                BitArray maskingBitArray = new BitArray(width * (int)spriteptr.Width);
+                for (int y = 0; y < (int)spriteptr.Height; y++)
                 {
-                    byte[] _tmp = new byte[4], _tmp2 = new byte[4];
-                    stream.Read(_tmp, 0, 4);
-                    ResourcePointer ptr = new ResourcePointer(_tmp, (int)stream.Position - 4);
-                    long pos = stream.Position;
-                    stream.Position = ptr.Address;
-                    stream.Read(_tmp2, 0, 4);
-                    stream.Position = BitConverter.ToInt32(_tmp2, 0);
-
-                    List<byte> byteString = new List<byte>();
-                    bool stringBegun = false;
-
-                    for (int j = 0; j < 128; j++)
+                    for (int x = 0; x < (int)spriteptr.Width; x++)
                     {
-                        byteString.Add((byte)stream.ReadByte());
-
-                        if (byteString[byteString.Count - 1] == 0 && stringBegun)
-                            break;
-
-                        if (byteString[byteString.Count - 1] != 0)
-                            stringBegun = true;
+                        Color pixelColor = cloneBitmap.GetPixel(x, y);
+                        maskingBitArray[y * width + x] = (pixelColor.A > 0);
                     }
-
-                    string convertedString = new string(byteString.Where(x => x == '_' || (x >= 'a' && x <= 'z') || (x >= 'A' && x <= 'Z') || (x >= '0' && x <= '9')).Select(x => (char)x).ToArray());
-
-                    if (!_friskSpriteHandles.Contains(convertedString.Trim()) || _friskMode)
-                        pointerList.Add(ptr);
-
-                    stream.Position = pos;
                 }
+                BitArray tempBitArray = new BitArray(width * (int)spriteptr.Height);
+                for (int i = 0; i < maskingBitArray.Length; i += 8)
+                {
+                    for (int j = 0; j < 8; j++)
+                    {
+                        tempBitArray[j + i] = maskingBitArray[-(j - 7) + i];
+                    }
+                }
+                int numBytes;
+                numBytes = maskingBitArray.Length / 8;
+                byte[] bytes = new byte[numBytes];
+                tempBitArray.CopyTo(bytes, 0);
+                for (int i = 0; i < bytes.Length; i++)
+                    spriteptr.CollisionMasks[0].Data[i] = bytes[i];
             }
-
-            logstream.WriteLine($"Added {pointerList.Count} out of {pointerNum} sprite pointers to SPRT List.");
-
-            return pointerList;
-        }
-
-        // TODO: implement this
-        public List<ResourcePointer> HitboxFix_Shuffler(FileStream stream, Random random, float shufflechance, StreamWriter logstream, List<ResourcePointer> pointerlist)
-        {
-            foreach (ResourcePointer spriteptr in pointerlist)
-            {
-                // Previous implementation of HitboxFix didn't work at all and was unsafe to boot, better implementation will be added later.
-            }
-            logstream.WriteLine($"Wrote {pointerlist.Count} hitboxes to {_dataWin}.");
+            logstream.WriteLine($"Wrote {pointerlist.Count} collision boxes.");
 
             return pointerlist;
         }
 
-        // TODO: delete this
         // TODO: clean this
-        public List<ResourcePointer> ShuffleText_Shuffler(FileStream stream, Random random, float shufflechance, StreamWriter logstream, List<ResourcePointer> pointerlist)
+        public IList<UndertaleObject> ShuffleText_Shuffler(IList<UndertaleObject> _pointerlist, Random random, float shufflechance, StreamWriter logstream)
         {
             string[] bannedStrings = { "_" };
-            List<ResourcePointer> shuffledPointerList = new List<ResourcePointer>();
-            List<StringPointer> strPointerList = new List<StringPointer>();
 
+            Dictionary<string, List<int>> stringDict = new Dictionary<string, List<int>>();
 
-            for (int i = 0; i < pointerlist.Count; i++)
+            for (int i = 0; i < _pointerlist.Count; i++)
             {
-                stream.Position = pointerlist[i].Address;
-                byte Strlen = (byte)stream.ReadByte();
-                stream.Position += 3;
-                List<byte> ByteString = new List<byte>();
+                var s = (UndertaleString)_pointerlist[i];
+                var convertedString = s.Content;
 
-                for (int j = 0; j < Strlen; j++)
+                if (convertedString.Length >= 3 && !bannedStrings.Any(convertedString.Contains) && !(convertedString.Any(x => x > 127)))
                 {
-                    ByteString.Add((byte)stream.ReadByte());
-                }
+                    char[] FormatChars = { '%', '/', 'C' };
+                    List<char> Ending = new List<char>();
 
-                string convertedString = new string(ByteString.Select(x => (char)x).ToArray());
+                    for (int i2 = 1; i2 < convertedString.Length; i2++)
+                    {
+                        char C = convertedString[convertedString.Length - i2];
 
-                if (Strlen >= 3 && !bannedStrings.Any(convertedString.Contains) && !(convertedString.Any(x => x > 127)))
-                    strPointerList.Add(new StringPointer(pointerlist[i], convertedString));
-            }
+                        if (FormatChars.Contains(C))
+                            Ending.Add(C);
+                        else
+                            break;
+                    }
 
-            logstream.WriteLine($"Added {strPointerList.Count} good string pointers to SprPointerList.");
+                    Ending.Reverse();
+                    string ending = new string(Ending.ToArray());
 
-            Dictionary<string, List<ResourcePointer>> stringDict = new Dictionary<string, List<ResourcePointer>>();
-            int totalStrings = 0;
+                    if (!stringDict.ContainsKey(ending))
+                        stringDict[ending] = new List<int>();
 
-            foreach (StringPointer s in strPointerList)
-            {
-                if (!string.IsNullOrWhiteSpace(s.Ending))
-                {
-                    if (!stringDict.ContainsKey(s.Ending))
-                        stringDict[s.Ending] = new List<ResourcePointer>();
-
-                    stringDict[s.Ending].Add(s.Base);
-                    totalStrings++;
+                    stringDict[ending].Add(i);
                 }
             }
 
@@ -205,40 +192,10 @@ namespace HATE
             {
                 logstream.WriteLine($"Added {stringDict[ending].Count} string pointers of ending {ending} to dialogue string List.");
 
-                stringDict[ending].Shuffle(Shuffle.PointerSwapLoc, random);
-
-                shuffledPointerList = shuffledPointerList.Concat(stringDict[ending]).ToList();
+                _pointerlist.ShuffleOnlySelected(stringDict[ending], random);
             }
 
-            return shuffledPointerList;
+            return _pointerlist;
         }
-
-        public void DebugListChunks(string resource_file, StreamWriter logstream)
-        {
-            byte[] readBuffer = new byte[4];
-
-            using (FileStream stream = new FileStream(resource_file, FileMode.OpenOrCreate))
-            {
-                logstream.WriteLine($"Opened {resource_file}.");
-                stream.Position = 8;
-
-                int dataSegmentCounter = 0;
-
-                while (stream.Position != stream.Length)
-                {
-                    stream.Read(readBuffer, 0, 4);
-                    string headerName = new string(readBuffer.Select(x => (char)x).ToArray());
-                    stream.Read(readBuffer, 0, 4);
-                    int chunk_size = BitConverter.ToInt32(readBuffer, 0);
-                    logstream.WriteLine($"Chunk #{dataSegmentCounter}: {headerName} found, size {chunk_size}.");
-                    stream.Position += chunk_size;
-                    dataSegmentCounter++;
-                }
-
-                logstream.WriteLine($"Closed {resource_file}.");
-            }
-        }
-
-        
     }
 }

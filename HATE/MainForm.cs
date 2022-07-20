@@ -17,9 +17,9 @@ namespace HATE
     {
         private static class Style
         {
-            private static readonly Color _btnRestoreColor = Color.LimeGreen;
+            private static readonly Color _btnRestoreColor = Color.Gray;
             private static readonly Color _btnCorruptColor = Color.Coral;
-            private static readonly string _btnRestoreLabel = " -RESTORE- ";
+            private static readonly string _btnRestoreLabel = "";
             private static readonly string _btnCorruptLabel = " -CORRUPT- ";
             private static readonly Color _optionSet = Color.Yellow;
             private static readonly Color _optionUnset = Color.White;
@@ -42,6 +42,7 @@ namespace HATE
         private float _truePower = 0;
         private readonly string _defaultPowerText = "0 - 255";
         private readonly string _dataWin = "data.win";
+        private string _tempDataFile;
 
         private readonly string[] _friskSpriteHandles = {
             // UNDERTALE
@@ -158,6 +159,9 @@ namespace HATE
                     return;
                 }
             }
+
+            // _dataWin = Path.GetFullPath(_dataWin);
+            _tempDataFile = Path.GetTempFileName();
         }
         private async void MainForm_Load(object sender, EventArgs e)
         {
@@ -225,19 +229,19 @@ namespace HATE
             }
         }
 
-        private DialogResult ShowMessage(string message, MessageBoxButtons buttons, MessageBoxIcon icon)
+        public DialogResult ShowMessage(string message, MessageBoxButtons buttons, MessageBoxIcon icon)
         {
             return MessageBox.Show(message, "HATE-UML", buttons, icon);
         }
-        private DialogResult ShowMessage(string message)
+        public DialogResult ShowMessage(string message, string caption = "HATE-UML")
         {
-            return MessageBox.Show(message, "HATE-UML");
+            return MessageBox.Show(message, caption);
         }
-        private DialogResult ShowWarning(string message, string caption)
+        public DialogResult ShowWarning(string message, string caption = "HATE-UML")
         {
             return MessageBox.Show(message, caption, MessageBoxButtons.OK, MessageBoxIcon.Warning);
         }
-        private DialogResult ShowError(string message, string caption)
+        public DialogResult ShowError(string message, string caption = "HATE-UML")
         {
             return MessageBox.Show(message, caption, MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
@@ -252,7 +256,7 @@ namespace HATE
         public string GetGame()
         {
             if (File.Exists("runner")) { return "runner"; }
-            else if (File.Exists(Data.GeneralInfo.FileName + ".exe")) { return $"{WindowsExecPrefix}{Data.GeneralInfo.FileName}.exe"; }
+            else if (File.Exists(Data.GeneralInfo.FileName + ".exe")) { return $"{Data.GeneralInfo.FileName}.exe"; }
             else
             {
                 var dir = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
@@ -261,7 +265,6 @@ namespace HATE
                     if (Path.GetFileNameWithoutExtension(file) != "HATE" && (file.Contains(".exe") || file.Contains(".app")))
                     {
                         var executable = file.Remove(0, file.LastIndexOf("\\") + 1);
-                        if (executable.EndsWith(".exe")) return $"{WindowsExecPrefix}{executable}";
                         return executable;
                     }
                 }
@@ -277,13 +280,27 @@ namespace HATE
         {
             EnableControls(false);
 
-            ProcessStartInfo processStartInfo = new ProcessStartInfo(GetGame())
+            string game = GetGame();
+            if (game != "")
             {
-                UseShellExecute = false,
-                RedirectStandardOutput = true
-            };
+                bool wine = game.EndsWith(".exe") && WindowsExecPrefix.Length > 0;
+                ProcessStartInfo processStartInfo = new ProcessStartInfo(wine ? WindowsExecPrefix : game)
+                {
+                    UseShellExecute = false,
+                    RedirectStandardOutput = true,
+                    WorkingDirectory = Path.GetDirectoryName(game)
+                };
+                if (wine)
+                    processStartInfo.ArgumentList.Add(game);
+                processStartInfo.ArgumentList.Add("-game");
+                processStartInfo.ArgumentList.Add(_tempDataFile);
+                var process = Process.Start(processStartInfo);
+                if (process is null || process.HasExited)
+                    ShowError("Failed to start the game.");
+            }
+            else
+                ShowError("I don't know how to run this game.\nPlease run the game manually.");
 
-            Process.Start(processStartInfo);
             EnableControls(true);
         }
 
@@ -292,17 +309,17 @@ namespace HATE
             EnableControls(false);
 
             try { _logWriter = new StreamWriter("HATE.log", true); }
-            catch (Exception) { MessageBox.Show("Could not set up the log file."); }
+            catch (Exception) { ShowError("Could not set up the log file."); }
 
-            if (!Setup()) { goto End; };
-            if (_hitboxFix && !HitboxFix_Func(_random, _truePower, _logWriter)) { goto End; }
-            if (_shuffleGFX && !ShuffleGFX_Func(_random, _truePower, _logWriter)) { goto End; }
-            if (_shuffleText && !ShuffleText_Func(_random, _truePower, _logWriter)) { goto End; }
-            if (_shuffleFont && !ShuffleFont_Func(_random, _truePower, _logWriter)) { goto End; }
-            if (_shuffleBG && !ShuffleBG_Func(_random, _truePower, _logWriter)) { goto End; }
-            if (_shuffleAudio && !ShuffleAudio_Func(_random, _truePower, _logWriter)) { goto End; }
+            if (!Setup()) goto End;
+            if (_shuffleGFX && !ShuffleGFX_Func(_random, _truePower, _logWriter)) goto End;
+            if (_hitboxFix && !HitboxFix_Func(_random, _truePower, _logWriter)) goto End;
+            if (_shuffleText && !ShuffleText_Func(_random, _truePower, _logWriter)) goto End;
+            if (_shuffleFont && !ShuffleFont_Func(_random, _truePower, _logWriter)) goto End;
+            if (_shuffleBG && !ShuffleBG_Func(_random, _truePower, _logWriter)) goto End;
+            if (_shuffleAudio && !ShuffleAudio_Func(_random, _truePower, _logWriter)) goto End;
 
-            End:
+        End:
             _logWriter.Close();
             EnableControls(true);
         }
@@ -334,7 +351,7 @@ namespace HATE
             byte power;
             if (!byte.TryParse(txtPower.Text, out power) && _corrupt)
             {
-                MessageBox.Show("Please set Power to a number between 0 and 255 and try again.");
+                ShowError("Please set Power to a number between 0 and 255 and try again.");
                 return false;
             }
             _truePower = (float)power / 255;
@@ -368,15 +385,9 @@ namespace HATE
             _logWriter.WriteLine($"TruePower - {_truePower}");
 
             /** ENVIRONMENTAL CHECKS **/
-            if (File.Exists("UNDERTALE.exe") && !File.Exists("./mus_barrier.ogg"))
-            {
-                MessageBox.Show("ERROR:\nIt seems you've either placed HATE.exe in the wrong location or are using an old version of Undertale. Solutions to both problems are given in the README.txt file included in the download.");
-                return false;
-            }
-
             if (!File.Exists(_dataWin))
             {
-                MessageBox.Show($"You seem to be missing your resource file, {_dataWin}. Make sure you've placed HATE.exe in the proper location.");
+                ShowError($"You seem to be missing your resource file, {_dataWin}. Make sure you've placed HATE.exe in the proper location.");
                 return false;
             }
             else if (!Directory.Exists("Data"))
@@ -419,6 +430,7 @@ namespace HATE
             _corrupt = _shuffleGFX || _shuffleText || _hitboxFix || _shuffleFont || _shuffleAudio || _shuffleBG;
             btnCorrupt.Text = Style.GetCorruptLabel(_corrupt);
             btnCorrupt.ForeColor = Style.GetCorruptColor(_corrupt);
+            btnCorrupt.Enabled = _corrupt;
         }
 
         private void chbShuffleText_CheckedChanged(object sender, EventArgs e)
