@@ -9,6 +9,7 @@ using UndertaleModLib;
 using System.Runtime;
 using System.Threading.Tasks;
 using UndertaleModLib.Models;
+using System.Reflection;
 
 namespace HATE
 {
@@ -254,13 +255,22 @@ namespace HATE
             else if (File.Exists(Data.GeneralInfo.FileName + ".exe")) { return $"{WindowsExecPrefix}{Data.GeneralInfo.FileName}.exe"; }
             else
             {
-                var files = Directory.EnumerateFiles(Directory.GetCurrentDirectory());
-                foreach (string s in files)
-                    if (!s.Remove(0, s.LastIndexOf("\\") + 1).Contains("HATE.exe") && s.Contains(".exe") || s.Contains(".app"))
-                        return s.Remove(0, s.LastIndexOf("\\") + 1);
-
-                return "";
+                var dir = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+                foreach (string file in Directory.EnumerateFiles(dir))
+                {
+                    if (Path.GetFileNameWithoutExtension(file) != "HATE" && (file.Contains(".exe") || file.Contains(".app")))
+                    {
+                        var executable = file.Remove(0, file.LastIndexOf("\\") + 1);
+                        if (executable.EndsWith(".exe")) return $"{WindowsExecPrefix}{executable}";
+                        return executable;
+                    }
+                }
+                if (dir.IndexOf(".app") >= 0)
+                {
+                    return dir.Substring(0, dir.IndexOf(".app") + ".app".Length);
+                }
             }
+            return "";
         }
 
         private void btnLaunch_Clicked(object sender, EventArgs e)
@@ -333,7 +343,7 @@ namespace HATE
             string seed = txtSeed.Text.Trim();
             bool textSeed = false;
 
-            if (seed.ToUpper() == "FRISK")
+            if (seed.ToUpper() == "FRISK" || seed.ToUpper() == "KRIS")
                 _friskMode = true;
 
             /* checking # for: Now it will change the corruption every time you press the button */

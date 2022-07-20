@@ -1,1 +1,1 @@
-﻿dotnet HATE.dll
+﻿dotnet $(dirname "$SCRIPT")/HATE.dll
