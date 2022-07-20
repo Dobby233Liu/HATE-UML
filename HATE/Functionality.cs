@@ -15,28 +15,28 @@ namespace HATE
     {
         public bool ShuffleAudio_Func(Random random, float chance, StreamWriter logstream)
         {
-            return Shuffle.ShuffleChunk(Data.Sounds, random, chance, logstream); 
+            return Shuffle.ShuffleChunk((IList<UndertaleObject>)Data.Sounds, random, chance, logstream); 
                    //&& Shuffle.ShuffleChunk(Data.EmbeddedAudio, random, chance, logstream);               
         }
 
         public bool ShuffleBG_Func(Random random, float chance, StreamWriter logstream)
         {
-            return Shuffle.ShuffleChunk(Data.Backgrounds, random, chance, logstream);              
+            return Shuffle.ShuffleChunk((IList<UndertaleObject>)Data.Backgrounds, random, chance, logstream);              
         }
 
         public bool ShuffleFont_Func(Random random, float chance, StreamWriter logstream)
         {
-            return Shuffle.ShuffleChunk(Data.Fonts, random, chance, logstream);
+            return Shuffle.ShuffleChunk((IList<UndertaleObject>)Data.Fonts, random, chance, logstream);
         }
 
         public bool HitboxFix_Func(Random random, float chance, StreamWriter logstream)
         {
-            return Shuffle.ShuffleChunk(Data.Sprites, random, chance, logstream, Shuffle.ComplexShuffle(HitboxFix_Shuffler));
+            return Shuffle.ShuffleChunk((IList<UndertaleObject>)Data.Sprites, random, chance, logstream, Shuffle.ComplexShuffle(HitboxFix_Shuffler));
         }
 
         public bool ShuffleGFX_Func(Random random, float chance, StreamWriter logstream)
         {
-            return Shuffle.ShuffleChunk(Data.Sprites, random, chance, logstream, Shuffle.ComplexShuffle(ShuffleGFX_Shuffler));
+            return Shuffle.ShuffleChunk((IList<UndertaleObject>)Data.Sprites, random, chance, logstream, Shuffle.ComplexShuffle(ShuffleGFX_Shuffler));
         }
 
         public bool ShuffleText_Func(Random random, float chance, StreamWriter logstream)
@@ -49,7 +49,7 @@ namespace HATE
                     success = success && Shuffle.JSONStringShuffle(path, path, random, chance, logstream);
                 }
             }
-            return success && Shuffle.ShuffleChunk(Data.Strings, random, chance, logstream, Shuffle.ComplexShuffle(ShuffleText_Shuffler));
+            return success && Shuffle.ShuffleChunk((IList<UndertaleObject>)Data.Strings, random, chance, logstream, Shuffle.ComplexShuffle(ShuffleText_Shuffler));
         }
 
         public IList<UndertaleObject> ShuffleGFX_Shuffler(IList<UndertaleObject> chunk, Random random, float shufflechance, StreamWriter logstream)
@@ -75,14 +75,15 @@ namespace HATE
             TextureWorker worker = new TextureWorker();
             foreach (UndertaleObject _spriteptr in pointerlist)
             {
+                // based on ImportGraphics.csx
                 UndertaleSprite spriteptr = (UndertaleSprite)_spriteptr;
                 spriteptr.CollisionMasks.Clear();
                 spriteptr.CollisionMasks.Add(spriteptr.NewMaskEntry());
-                Rectangle bmpRect = new Rectangle(0, 0, (int)spriteptr.Width, (int)spriteptr.Height);
                 Bitmap tex = worker.GetTextureFor(spriteptr.Textures[0].Texture, spriteptr.Name.Content, true);
+                Rectangle bmpRect = new Rectangle(0, 0, tex.Width, tex.Height);
                 Bitmap cloneBitmap = tex.Clone(bmpRect, tex.PixelFormat);
-                int width = (((int)spriteptr.Width + 7) / 8) * 8;
-                BitArray maskingBitArray = new BitArray(width * (int)spriteptr.Width);
+                int width = (((int)cloneBitmap.Width + 7) / 8) * 8;
+                BitArray maskingBitArray = new BitArray(width * (int)cloneBitmap.Height);
                 for (int y = 0; y < (int)spriteptr.Height; y++)
                 {
                     for (int x = 0; x < (int)spriteptr.Width; x++)
@@ -91,7 +92,7 @@ namespace HATE
                         maskingBitArray[y * width + x] = (pixelColor.A > 0);
                     }
                 }
-                BitArray tempBitArray = new BitArray(width * (int)spriteptr.Height);
+                BitArray tempBitArray = new BitArray(width * (int)cloneBitmap.Height);
                 for (int i = 0; i < maskingBitArray.Length; i += 8)
                 {
                     for (int j = 0; j < 8; j++)
