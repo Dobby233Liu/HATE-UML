@@ -10,6 +10,8 @@ using System.Runtime;
 using System.Threading.Tasks;
 using UndertaleModLib.Models;
 using System.Reflection;
+using UndertaleModLib.Util;
+using System.Linq;
 
 namespace HATE
 {
@@ -208,6 +210,11 @@ namespace HATE
                         data = UndertaleIO.Read(stream, warning =>
                         {
                             MsgBoxHelpers.ShowWarning(warning, "Loading warning");
+                        }, message =>
+                        {
+                            Invoke(delegate {
+                                lblGameName.Text = message;
+                            });
                         });
                     }
 
@@ -235,6 +242,86 @@ namespace HATE
 
             // Clear "GC holes" left in the memory in process of data unserializing
             // https://docs.microsoft.com/en-us/dotnet/api/system.runtime.gcsettings.largeobjectheapcompactionmode?view=net-6.0
+            GCSettings.LargeObjectHeapCompactionMode = GCLargeObjectHeapCompactionMode.CompactOnce;
+            GC.Collect();
+        }
+        private async Task SaveFile(string filename)
+        {
+            if (Data == null)
+                return;
+
+            Task t = Task.Run(() => {
+                bool SaveSucceeded = true;
+
+                try
+                {
+                    using (var stream = new FileStream(filename + "temp", FileMode.Create, FileAccess.Write))
+                    {
+                        UndertaleIO.Write(stream, Data, message =>
+                        {
+                            Invoke(delegate {
+                                lblGameName.Text = message;
+                            });
+                        });
+                    }
+
+                    UndertaleEmbeddedTexture.TexData.ClearSharedStream();
+                    if (Data.UseQoiFormat)
+                        QoiConverter.ClearSharedBuffer();
+                }
+                catch (Exception e)
+                {
+                    if (!UndertaleIO.IsDictionaryCleared)
+                    {
+                        try
+                        {
+                            var listChunks = Data.FORM.Chunks.Values.Select(x => x as IUndertaleListChunk);
+                            Parallel.ForEach(listChunks.Where(x => x is not null), (chunk) =>
+                            {
+                                chunk.ClearIndexDict();
+                            });
+
+                            UndertaleIO.IsDictionaryCleared = true;
+                        }
+                        catch { }
+                    }
+
+                    MsgBoxHelpers.ShowError("An error occured while trying to save:\n" + e.Message, "Save error");
+
+                    SaveSucceeded = false;
+                }
+                // Don't make any changes unless the save succeeds.
+                try
+                {
+                    if (SaveSucceeded)
+                    {
+                        // It saved successfully!
+                        // If we're overwriting a previously existing data file, we're going to delete it now.
+                        // Then, we're renaming it back to the proper (non-temp) file name.
+                        if (File.Exists(filename))
+                            File.Delete(filename);
+                        File.Move(filename + "temp", filename);
+                    }
+                    else
+                    {
+                        // It failed, but since we made a temp file for saving, no data was overwritten or destroyed (hopefully)
+                        // We need to delete the temp file though (if it exists).
+                        if (File.Exists(filename + "temp"))
+                            File.Delete(filename + "temp");
+                        // No profile system changes, since the save failed, like a save was never attempted.
+                    }
+                }
+                catch (Exception exc)
+                {
+                    MsgBoxHelpers.ShowError("An error occured while trying to save:\n" + exc.Message, "Save error");
+
+                    SaveSucceeded = false;
+                }
+
+                return Task.CompletedTask;
+            });
+            await t;
+
             GCSettings.LargeObjectHeapCompactionMode = GCLargeObjectHeapCompactionMode.CompactOnce;
             GC.Collect();
         }
@@ -313,6 +400,8 @@ namespace HATE
             try { _logWriter = new StreamWriter("HATE.log", true); }
             catch (Exception) { MsgBoxHelpers.ShowError("Could not set up the log file."); }
 
+            bool successful = false;
+
             if (!await Setup()) goto End;
             if (_shuffleGFX && !ShuffleGFX_Func(_random, _truePower, _logWriter)) goto End;
             if (_hitboxFix && !HitboxFix_Func(_random, _truePower, _logWriter)) goto End;
@@ -320,8 +409,17 @@ namespace HATE
             if (_shuffleFont && !ShuffleFont_Func(_random, _truePower, _logWriter)) goto End;
             if (_shuffleBG && !ShuffleBG_Func(_random, _truePower, _logWriter)) goto End;
             if (_shuffleAudio && !ShuffleAudio_Func(_random, _truePower, _logWriter)) goto End;
+            successful = true;
 
         End:
+            if (successful)
+            {
+                await SaveFile(_dataWin);
+                Invoke(delegate
+                {
+                    lblGameName.Text = Data.GeneralInfo.DisplayName.Content;
+                });
+            }
             _logWriter.Close();
             EnableControls(true);
         }
