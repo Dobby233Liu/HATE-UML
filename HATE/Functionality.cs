@@ -11,48 +11,8 @@ using System.Collections;
 
 namespace HATE
 {
-    public class StringPointer
-    {
-        public UndertaleString Base;
-        public string Ending;
-        public string Str;
-
-        public StringPointer(UndertaleString ptr)
-        {
-            Base = ptr;
-            Str = ptr.Content;
-            char[] FormatChars = { '%', '/', 'C' };
-            List<char> Ending = new List<char>();
-
-            for (int i = 1; i < Str.Length; i++)
-            {
-                char C = Str[Str.Length - i];
-
-                if (FormatChars.Contains(C))
-                    Ending.Add(C);
-                else
-                    break;
-            }
-
-            Ending.Reverse();
-            this.Ending = new string(Ending.ToArray());
-        }
-    }
-
-    public class ResourcePointer
-    {
-        public int Address;
-        public int Location;
-
-        public ResourcePointer(int ptr, int loc) { Address = ptr; Location = loc; }
-        public ResourcePointer(byte[] ptr, int loc) { Address = BitConverter.ToInt32(ptr, 0); Location = loc; }
-    }
-
-
-
     partial class MainForm
     {
-
         public bool ShuffleAudio_Func(Random random, float chance, StreamWriter logstream)
         {
             return Shuffle.LoadDataAndFind(Data.Sounds, random, chance, logstream, Shuffle.SimpleShuffle) && 

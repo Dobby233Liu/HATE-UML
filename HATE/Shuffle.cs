@@ -9,6 +9,19 @@ using System.Collections;
 
 namespace HATE
 {
+    // lmfaoooooo
+    public class BaseResource : UndertaleObject
+    {
+        public void Serialize(UndertaleWriter writer)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Unserialize(UndertaleReader reader)
+        {
+            throw new NotImplementedException();
+        }
+    }
     static class Shuffle
     {
         public const int WordSize = 4;
