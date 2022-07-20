@@ -501,8 +501,10 @@ namespace HATE
                     if (File.Exists("./lang/lang_ja_ch1.json") && !SafeMethods.CopyFile("./lang/lang_ja_ch1.json", "./HATE_backup/lang_ja_ch1.json")) { return false; };
                 }
                 _logWriter.WriteLine($"Finished setting up the Data folder.");
-            }else
+            }
+            else
             {
+                /* restore backup */
                 if (!SafeMethods.DeleteFile(_dataWin)) { return false; }
                 _logWriter.WriteLine($"Deleted {_dataWin}.");
                 if (Directory.Exists("./lang"))
