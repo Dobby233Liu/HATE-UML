@@ -13,13 +13,34 @@ using System.Reflection;
 
 namespace HATE
 {
+    public static class MsgBoxHelpers
+    {
+        public static MainForm mainForm;
+        public static DialogResult ShowMessage(string message, MessageBoxButtons buttons, MessageBoxIcon icon, string caption = "HATE-UML")
+        {
+            return mainForm.Invoke(delegate { return MessageBox.Show(message, caption, buttons, icon); });
+        }
+        public static DialogResult ShowMessage(string message, string caption = "HATE-UML")
+        {
+            return mainForm.Invoke(delegate { return MessageBox.Show(message, caption); });
+        }
+        public static DialogResult ShowWarning(string message, string caption = "HATE-UML")
+        {
+            return mainForm.Invoke(delegate { return MessageBox.Show(message, caption, MessageBoxButtons.OK, MessageBoxIcon.Warning); });
+        }
+        public static DialogResult ShowError(string message, string caption = "HATE-UML")
+        {
+            return mainForm.Invoke(delegate { return MessageBox.Show(message, caption, MessageBoxButtons.OK, MessageBoxIcon.Error); });
+        }
+    }
+
     public partial class MainForm : Form
     {
         private static class Style
         {
-            private static readonly Color _btnRestoreColor = Color.Gray;
+            private static readonly Color _btnRestoreColor = Color.LimeGreen;
             private static readonly Color _btnCorruptColor = Color.Coral;
-            private static readonly string _btnRestoreLabel = "";
+            private static readonly string _btnRestoreLabel = " -RESTORE- ";
             private static readonly string _btnCorruptLabel = " -CORRUPT- ";
             private static readonly Color _optionSet = Color.Yellow;
             private static readonly Color _optionUnset = Color.White;
@@ -42,7 +63,6 @@ namespace HATE
         private float _truePower = 0;
         private readonly string _defaultPowerText = "0 - 255";
         private readonly string _dataWin = "data.win";
-        private string _tempDataFile;
 
         private readonly string[] _friskSpriteHandles = {
             // UNDERTALE
@@ -110,6 +130,8 @@ namespace HATE
         {
             InitializeComponent();
 
+            MsgBoxHelpers.mainForm = this;
+
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             {
                 windowsPrincipal = new WindowsPrincipal(WindowsIdentity.GetCurrent());
@@ -120,7 +142,7 @@ namespace HATE
                     if (Directory.GetCurrentDirectory().Contains(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles)) || Directory.GetCurrentDirectory().Contains(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86)) && !IsElevated)
                     {
                         string message = $"The game is in a system protected folder and we need elevated permissions in order to mess with {_dataWin}.\nDo you allow us to get elevated permissions (if you press no this will just close the program as we can't do anything)";
-                        if (ShowMessage(message, MessageBoxButtons.YesNo, MessageBoxIcon.Information) == DialogResult.Yes)
+                        if (MsgBoxHelpers.ShowMessage(message, MessageBoxButtons.YesNo, MessageBoxIcon.Information) == DialogResult.Yes)
                         {
                             // Restart program and run as admin
                             var exeName = Process.GetCurrentProcess().MainModule.FileName;
@@ -154,14 +176,13 @@ namespace HATE
                     _dataWin = "game.unx";
                 else
                 {
-                    ShowMessage("We couldn't find any game in this folder, check that this is in the right folder.");
+                    MsgBoxHelpers.ShowMessage("We couldn't find any game in this folder, check that this is in the right folder.");
                     Close();
                     return;
                 }
             }
 
-            // _dataWin = Path.GetFullPath(_dataWin);
-            _tempDataFile = Path.GetTempFileName();
+            _dataWin = Path.GetFullPath(_dataWin);
         }
         private async void MainForm_Load(object sender, EventArgs e)
         {
@@ -186,7 +207,7 @@ namespace HATE
                     {
                         data = UndertaleIO.Read(stream, warning =>
                         {
-                            this.ShowWarning(warning, "Loading warning");
+                            MsgBoxHelpers.ShowWarning(warning, "Loading warning");
                         });
                     }
 
@@ -194,14 +215,14 @@ namespace HATE
                 }
                 catch (Exception e)
                 {
-                    this.ShowError("An error occured while trying to load:\n" + e.Message, "Load error");
+                    MsgBoxHelpers.ShowError("An error occured while trying to load:\n" + e.Message, "Load error");
                 }
 
                 if (data != null)
                 {
                     if (data.UnsupportedBytecodeVersion)
                     {
-                        this.ShowWarning("Only bytecode versions 13 to 17 are supported for now, you are trying to load " + data.GeneralInfo.BytecodeVersion + ". A lot of code is disabled and something will likely break.", "Unsupported bytecode version");
+                        MsgBoxHelpers.ShowWarning("Only bytecode versions 13 to 17 are supported for now, you are trying to load " + data.GeneralInfo.BytecodeVersion + ". A lot of code is disabled and something will likely break.", "Unsupported bytecode version");
                     }
 
                     Data = data;
@@ -227,23 +248,6 @@ namespace HATE
                     windowsPrincipal.IsInRole(WindowsBuiltInRole.Administrator)
                     : false;
             }
-        }
-
-        public DialogResult ShowMessage(string message, MessageBoxButtons buttons, MessageBoxIcon icon)
-        {
-            return MessageBox.Show(message, "HATE-UML", buttons, icon);
-        }
-        public DialogResult ShowMessage(string message, string caption = "HATE-UML")
-        {
-            return MessageBox.Show(message, caption);
-        }
-        public DialogResult ShowWarning(string message, string caption = "HATE-UML")
-        {
-            return MessageBox.Show(message, caption, MessageBoxButtons.OK, MessageBoxIcon.Warning);
-        }
-        public DialogResult ShowError(string message, string caption = "HATE-UML")
-        {
-            return MessageBox.Show(message, caption, MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
 
         public string WindowsExecPrefix
@@ -292,26 +296,24 @@ namespace HATE
                 };
                 if (wine)
                     processStartInfo.ArgumentList.Add(game);
-                processStartInfo.ArgumentList.Add("-game");
-                processStartInfo.ArgumentList.Add(_tempDataFile);
                 var process = Process.Start(processStartInfo);
                 if (process is null || process.HasExited)
-                    ShowError("Failed to start the game.");
+                    MsgBoxHelpers.ShowError("Failed to start the game.");
             }
             else
-                ShowError("I don't know how to run this game.\nPlease run the game manually.");
+                MsgBoxHelpers.ShowError("I don't know how to run this game.\nPlease run the game manually.");
 
             EnableControls(true);
         }
 
-        private void button_Corrupt_Clicked(object sender, EventArgs e)
+        private async void button_Corrupt_Clicked(object sender, EventArgs e)
         {
             EnableControls(false);
 
             try { _logWriter = new StreamWriter("HATE.log", true); }
-            catch (Exception) { ShowError("Could not set up the log file."); }
+            catch (Exception) { MsgBoxHelpers.ShowError("Could not set up the log file."); }
 
-            if (!Setup()) goto End;
+            if (!await Setup()) goto End;
             if (_shuffleGFX && !ShuffleGFX_Func(_random, _truePower, _logWriter)) goto End;
             if (_hitboxFix && !HitboxFix_Func(_random, _truePower, _logWriter)) goto End;
             if (_shuffleText && !ShuffleText_Func(_random, _truePower, _logWriter)) goto End;
@@ -340,21 +342,21 @@ namespace HATE
             txtSeed.Enabled = state;
         }
 
-        public bool Setup()
+        public async Task<bool> Setup()
         {
             _logWriter.WriteLine("-------------- Session at: " + DateTime.Now.ToLongDateString() + " " + DateTime.Now.ToLongTimeString() + "\n");
-
-            /** SEED PARSING AND RNG SETUP **/
-            _friskMode = false;
-            _random = new Random();
 
             byte power;
             if (!byte.TryParse(txtPower.Text, out power) && _corrupt)
             {
-                ShowError("Please set Power to a number between 0 and 255 and try again.");
+                MsgBoxHelpers.ShowError("Please set Power to a number between 0 and 255 and try again.");
                 return false;
             }
             _truePower = (float)power / 255;
+
+            /** SEED PARSING AND RNG SETUP **/
+            _friskMode = false;
+            _random = new Random();
 
             int timeSeed = 0;
             string seed = txtSeed.Text.Trim();
@@ -387,20 +389,21 @@ namespace HATE
             /** ENVIRONMENTAL CHECKS **/
             if (!File.Exists(_dataWin))
             {
-                ShowError($"You seem to be missing your resource file, {_dataWin}. Make sure you've placed HATE.exe in the proper location.");
+                MsgBoxHelpers.ShowError($"You seem to be missing your resource file, {_dataWin}. Make sure you've placed HATE.exe in the proper location.");
                 return false;
             }
             else if (!Directory.Exists("Data"))
             {
                 if (!SafeMethods.CreateDirectory("Data")) { return false; }
-                if (!SafeMethods.CopyFile(_dataWin, $"Data/{_dataWin}")) { return false; }
+                if (!SafeMethods.CopyFile(_dataWin, $"HATE_backup/{_dataWin}")) { return false; }
                 if (Directory.Exists("./lang"))
                 {
-                    if (!SafeMethods.CopyFile("./lang/lang_en.json", "./Data/lang_en.json")) { return false; };
-                    if (!SafeMethods.CopyFile("./lang/lang_ja.json", "./Data/lang_ja.json")) { return false; };
+                    if (!SafeMethods.CopyFile("./lang/lang_en.json", "./HATE_backup/lang_en.json")) { return false; };
+                    if (!SafeMethods.CopyFile("./lang/lang_ja.json", "./HATE_backup/lang_ja.json")) { return false; };
                 }
                 _logWriter.WriteLine($"Finished setting up the Data folder.");
             }
+            await LoadFile(_dataWin);
 
             if (!SafeMethods.DeleteFile(_dataWin)) { return false; }
             _logWriter.WriteLine($"Deleted {_dataWin}.");
@@ -412,13 +415,13 @@ namespace HATE
                 _logWriter.WriteLine($"Deleted ./lang/lang_ja.json.");
             }
 
-            if (!SafeMethods.CopyFile($"Data/{_dataWin}", _dataWin)) { return false; }
+            if (!SafeMethods.CopyFile($"HATE_backup/{_dataWin}", _dataWin)) { return false; }
             _logWriter.WriteLine($"Copied {_dataWin}.");
             if (Directory.Exists("./lang"))
             {
-                if (!SafeMethods.CopyFile("./Data/lang_en.json", "./lang/lang_en.json")) { return false; }
+                if (!SafeMethods.CopyFile("./HATE_backup/lang_en.json", "./lang/lang_en.json")) { return false; }
                 _logWriter.WriteLine($"Copied ./lang/lang_en.json.");
-                if (!SafeMethods.CopyFile("./Data/lang_ja.json", "./lang/lang_ja.json")) { return false; }
+                if (!SafeMethods.CopyFile("./HATE_backup/lang_ja.json", "./lang/lang_ja.json")) { return false; }
                 _logWriter.WriteLine($"Copied ./lang/lang_ja.json.");
             }
 

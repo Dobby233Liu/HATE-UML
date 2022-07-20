@@ -15,41 +15,41 @@ namespace HATE
     {
         public bool ShuffleAudio_Func(Random random, float chance, StreamWriter logstream)
         {
-            return Shuffle.LoadDataAndFind(Data.Sounds, random, chance, logstream, Shuffle.SimpleShuffle) && 
-                   Shuffle.LoadDataAndFind(Data.EmbeddedAudio, random, chance, logstream, Shuffle.SimpleShuffle);               
+            return Shuffle.ShuffleChunk(Data.Sounds, random, chance, logstream); 
+                   //&& Shuffle.ShuffleChunk(Data.EmbeddedAudio, random, chance, logstream);               
         }
 
         public bool ShuffleBG_Func(Random random, float chance, StreamWriter logstream)
         {
-            return Shuffle.LoadDataAndFind(Data.Backgrounds, random, chance, logstream, Shuffle.SimpleShuffle);              
+            return Shuffle.ShuffleChunk(Data.Backgrounds, random, chance, logstream);              
         }
 
         public bool ShuffleFont_Func(Random random, float chance, StreamWriter logstream)
         {
-            return Shuffle.LoadDataAndFind(Data.Fonts, random, chance, logstream, Shuffle.SimpleShuffle);
+            return Shuffle.ShuffleChunk(Data.Fonts, random, chance, logstream);
         }
 
-        public bool HitboxFix_Func(Random random_, float chance, StreamWriter logstream_)
+        public bool HitboxFix_Func(Random random, float chance, StreamWriter logstream)
         {
-            return Shuffle.LoadDataAndFind(Data.Sprites, random_, chance, logstream_, Shuffle.ComplexShuffle(HitboxFix_Shuffler));
+            return Shuffle.ShuffleChunk(Data.Sprites, random, chance, logstream, Shuffle.ComplexShuffle(HitboxFix_Shuffler));
         }
 
-        public bool ShuffleGFX_Func(Random random_, float chance, StreamWriter logstream_)
+        public bool ShuffleGFX_Func(Random random, float chance, StreamWriter logstream)
         {
-            return Shuffle.LoadDataAndFind(Data.Sprites, random_, chance, logstream_, Shuffle.ComplexShuffle(ShuffleGFX_Shuffler));
+            return Shuffle.ShuffleChunk(Data.Sprites, random, chance, logstream, Shuffle.ComplexShuffle(ShuffleGFX_Shuffler));
         }
 
-        public bool ShuffleText_Func(Random random_, float chance, StreamWriter logstream_)
+        public bool ShuffleText_Func(Random random, float chance, StreamWriter logstream)
         {
             bool success = true;
             if (Directory.Exists("./lang") && SafeMethods.GetFiles("./lang").Count > 0)
             {
                 foreach (string path in SafeMethods.GetFiles("./lang"))
                 {
-                    success = success && Shuffle.JSONStringShuffle(path, path, random_, chance, logstream_);
+                    success = success && Shuffle.JSONStringShuffle(path, path, random, chance, logstream);
                 }
             }
-            return success && Shuffle.LoadDataAndFind(Data.Strings, random_, chance, logstream_, Shuffle.ComplexShuffle(ShuffleText_Shuffler));
+            return success && Shuffle.ShuffleChunk(Data.Strings, random, chance, logstream, Shuffle.ComplexShuffle(ShuffleText_Shuffler));
         }
 
         public IList<UndertaleObject> ShuffleGFX_Shuffler(IList<UndertaleObject> chunk, Random random, float shufflechance, StreamWriter logstream)

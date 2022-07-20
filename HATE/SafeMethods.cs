@@ -10,11 +10,6 @@ namespace HATE
 {
     static class SafeMethods
     {
-        private static DialogResult ShowError(string message, string caption = "HATE-UML")
-        {
-            return MessageBox.Show(message, caption, MessageBoxButtons.OK, MessageBoxIcon.Error);
-        }
-
         private static bool IsValidPath(string path)
         {
             try { Path.GetFullPath(path); } catch (Exception) { return false; } return true;
@@ -31,11 +26,11 @@ namespace HATE
             catch (Exception ex)
             {
                 if (ex is UnauthorizedAccessException)
-                    ShowError($"UnauthorizedAccessException has occured while attempting to get the list of directories in {dirname}. The directory requires permissions which this application does not have to access. Please remove permission requirement from the directory and try again.");
+                    MsgBoxHelpers.ShowError($"UnauthorizedAccessException has occured while attempting to get the list of directories in {dirname}. The directory requires permissions which this application does not have to access. Please remove permission requirement from the directory and try again.");
                 else if (ex is IOException)
-                    ShowError($"IOException has occured while attempting to get the list of directories in {dirname}. Please ensure that the directory is not in use and try again.");
+                    MsgBoxHelpers.ShowError($"IOException has occured while attempting to get the list of directories in {dirname}. Please ensure that the directory is not in use and try again.");
                 else
-                    ShowError($"{ex.ToString()} has occured while attempting to get the list of directories in {dirname}.");
+                    MsgBoxHelpers.ShowError($"{ex.ToString()} has occured while attempting to get the list of directories in {dirname}.");
                 return Option.None<List<string>>();
             }
             return Option.Some(output);
@@ -52,9 +47,9 @@ namespace HATE
             catch (Exception ex)
             {
                 if (ex is UnauthorizedAccessException)
-                    ShowError($"UnauthorizedAccessException has occured while attempting to create {dirname}. Creation of the specified directory requires permissions which this application does not have. Please remove permission requirement from the parent directory and try again.");
+                    MsgBoxHelpers.ShowError($"UnauthorizedAccessException has occured while attempting to create {dirname}. Creation of the specified directory requires permissions which this application does not have. Please remove permission requirement from the parent directory and try again.");
                 else
-                    ShowError($"{ex} has occured while attempting to create {dirname}.");
+                    MsgBoxHelpers.ShowError($"{ex} has occured while attempting to create {dirname}.");
                 return false;
             }
             return true;
@@ -71,11 +66,11 @@ namespace HATE
             catch (Exception ex)
             {
                 if (ex is UnauthorizedAccessException)
-                    ShowError($"UnauthorizedAccessException has occured while attempting to copy {from} to {to}. Please ensure that the source file doesn't require permissions to access and that destination file is not read-only.");
+                    MsgBoxHelpers.ShowError($"UnauthorizedAccessException has occured while attempting to copy {from} to {to}. Please ensure that the source file doesn't require permissions to access and that destination file is not read-only.");
                 else if (ex is IOException)
-                    ShowError($"IOException has occured while attempting to copy {from} to {to}. Please ensure that the files are not in use and try again.");
+                    MsgBoxHelpers.ShowError($"IOException has occured while attempting to copy {from} to {to}. Please ensure that the files are not in use and try again.");
                 else
-                    ShowError($"Exception {ex} has occured while attempting to copy {from} to {to}.");
+                    MsgBoxHelpers.ShowError($"Exception {ex} has occured while attempting to copy {from} to {to}.");
                 return false;
             }
             return true;
@@ -93,11 +88,11 @@ namespace HATE
             catch (Exception ex)
             {
                 if (ex is UnauthorizedAccessException)
-                    ShowError($"UnauthorizedAccessException has occured while attempting to get the list of files in {dirname}. The directory requires permissions which this application does not have to access. Please remove permission requirement from the directory and try again.");
+                    MsgBoxHelpers.ShowError($"UnauthorizedAccessException has occured while attempting to get the list of files in {dirname}. The directory requires permissions which this application does not have to access. Please remove permission requirement from the directory and try again.");
                 else if (ex is IOException)
-                    ShowError($"IOException has occured while attempting to get the list of files in {dirname}. Please ensure that the directory is not in use and try again.");
+                    MsgBoxHelpers.ShowError($"IOException has occured while attempting to get the list of files in {dirname}. Please ensure that the directory is not in use and try again.");
                 else
-                    ShowError($"{ex} has occured while attempting to get the list of files in {dirname}.");
+                    MsgBoxHelpers.ShowError($"{ex} has occured while attempting to get the list of files in {dirname}.");
                 return new List<string>();
             }
             return output;
@@ -114,11 +109,11 @@ namespace HATE
             catch (Exception ex)
             {
                 if (ex is UnauthorizedAccessException)
-                    ShowError($"UnauthorizedAccessException has occured while attempting to delete {dirname}. The directory requires permissions which this application does not have to access. Please remove permission requirement from the directory and try again.");
+                    MsgBoxHelpers.ShowError($"UnauthorizedAccessException has occured while attempting to delete {dirname}. The directory requires permissions which this application does not have to access. Please remove permission requirement from the directory and try again.");
                 else if (ex is IOException)
-                    ShowError($"IOException has occured while attempting to delete {dirname}. Please ensure that the directory is not in use and doesn't contain a read-only file and try again.");
+                    MsgBoxHelpers.ShowError($"IOException has occured while attempting to delete {dirname}. Please ensure that the directory is not in use and doesn't contain a read-only file and try again.");
                 else
-                    ShowError($"{ex} has occured while attempting to delete {dirname}.");
+                    MsgBoxHelpers.ShowError($"{ex} has occured while attempting to delete {dirname}.");
                 return false;
             }
             return true;
@@ -135,11 +130,11 @@ namespace HATE
             catch (Exception ex)
             {
                 if (ex is UnauthorizedAccessException)
-                    ShowError($"UnauthorizedAccessException has occured while attempting to delete {filename}. Please ensure that the file is neither read-only, requiring permissions to access, actually a directory all along, or a executable currently in use.");
+                    MsgBoxHelpers.ShowError($"UnauthorizedAccessException has occured while attempting to delete {filename}. Please ensure that the file is neither read-only, requiring permissions to access, actually a directory all along, or a executable currently in use.");
                 else if (ex is IOException)
-                    ShowError($"IOException has occured while attempting to delete {filename}. Please ensure that the file is not in use and try again.");
+                    MsgBoxHelpers.ShowError($"IOException has occured while attempting to delete {filename}. Please ensure that the file is not in use and try again.");
                 else
-                    ShowError($"{ex} has occured while attempting to delete {filename}.");
+                    MsgBoxHelpers.ShowError($"{ex} has occured while attempting to delete {filename}.");
                 return false;
             }
             return true;
@@ -156,11 +151,11 @@ namespace HATE
             catch (Exception ex)
             {
                 if (ex is UnauthorizedAccessException)
-                    ShowError($"UnauthorizedAccessException has occured while attempting to move {from} to {to}. Please ensure that the source file doesn't require permissions to access.");
+                    MsgBoxHelpers.ShowError($"UnauthorizedAccessException has occured while attempting to move {from} to {to}. Please ensure that the source file doesn't require permissions to access.");
                 else if (ex is IOException)
-                    ShowError($"IOException has occured while attempting to move {from} to {to}. Please ensure that the destination file doesn't exist and that the source file does.");
+                    MsgBoxHelpers.ShowError($"IOException has occured while attempting to move {from} to {to}. Please ensure that the destination file doesn't exist and that the source file does.");
                 else
-                    ShowError($"{ex} has occured while attempting to move {from} to {to}.");
+                    MsgBoxHelpers.ShowError($"{ex} has occured while attempting to move {from} to {to}.");
                 return false;
             }
             return true;
@@ -178,13 +173,13 @@ namespace HATE
             catch (Exception ex)
             {
                 if (ex is SecurityException)
-                    ShowError($"SecurityException has occured while opening {filename} with a StreamWriter. File requires permissions to access which this program does not have.");
+                    MsgBoxHelpers.ShowError($"SecurityException has occured while opening {filename} with a StreamWriter. File requires permissions to access which this program does not have.");
                 else if (ex is IOException)
-                    ShowError($"IOException has occured while opening {filename} with a StreamWriter. Please ensure that the path is correct and the file is not in use and try again.");
+                    MsgBoxHelpers.ShowError($"IOException has occured while opening {filename} with a StreamWriter. Please ensure that the path is correct and the file is not in use and try again.");
                 else if (ex is UnauthorizedAccessException)
-                    ShowError($"UnauthorizedAccessException has occured while opening {filename} with a StreamWriter. The file requires permissions which this program doesn't have to open. Please ensure that file at the specified address requires no permissions to open and try again.");
+                    MsgBoxHelpers.ShowError($"UnauthorizedAccessException has occured while opening {filename} with a StreamWriter. The file requires permissions which this program doesn't have to open. Please ensure that file at the specified address requires no permissions to open and try again.");
                 else
-                    ShowError($"{ex} has occured when while opening {filename} with a StreamWriter.");
+                    MsgBoxHelpers.ShowError($"{ex} has occured when while opening {filename} with a StreamWriter.");
                 return Option.None<StreamWriter>();
             }
             return Option.Some(TXW); 
@@ -202,13 +197,13 @@ namespace HATE
             catch (Exception ex)
             {
                 if (ex is SecurityException)
-                    ShowError($"SecurityException has occured while opening {filename} with a FileStream. File requires permissions to access which this program does not have.");
+                    MsgBoxHelpers.ShowError($"SecurityException has occured while opening {filename} with a FileStream. File requires permissions to access which this program does not have.");
                 else if (ex is IOException)
-                    ShowError($"IOException has occured while opening {filename} with a FileStream. Please ensure that the path is correct and the file isn't in use and try again.");
+                    MsgBoxHelpers.ShowError($"IOException has occured while opening {filename} with a FileStream. Please ensure that the path is correct and the file isn't in use and try again.");
                 else if (ex is UnauthorizedAccessException)
-                    ShowError($"UnauthorizedAccessException has occured while opening {filename} with a FileStream. The file requires permissions which this program doesn't have to open. Please ensure that file at the specified address requires no permissions to open and try again.");
+                    MsgBoxHelpers.ShowError($"UnauthorizedAccessException has occured while opening {filename} with a FileStream. The file requires permissions which this program doesn't have to open. Please ensure that file at the specified address requires no permissions to open and try again.");
                 else
-                    ShowError($"{ex} has occured when while opening {filename} with a FileStream.");
+                    MsgBoxHelpers.ShowError($"{ex} has occured when while opening {filename} with a FileStream.");
                 return Option.None<FileStream>();
             }
             return Option.Some(TXW);

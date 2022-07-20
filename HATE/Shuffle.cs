@@ -12,9 +12,9 @@ namespace HATE
     static class Shuffle
     {
         public const int WordSize = 4;
-        public const int NumDataSegments = 25;
 
-        public static bool LoadDataAndFind(IList<UndertaleObject> chuck, Random random, float shufflechance, StreamWriter logstream, Func<IList<UndertaleObject>, Random, float, StreamWriter, bool> shufflefunc)
+        public static bool ShuffleChunk(IList<UndertaleObject> chuck, Random random, float shufflechance, StreamWriter logstream,
+            Func<IList<UndertaleObject>, Random, float, StreamWriter, bool> shufflefunc)
         {
             if (random == null)
                 throw new ArgumentNullException(nameof(random));
@@ -32,6 +32,10 @@ namespace HATE
                 throw;
             }
             return false;
+        }
+        public static bool ShuffleChunk(IList<UndertaleObject> chuck, Random random, float shufflechance, StreamWriter logstream)
+        {
+            return ShuffleChunk(chuck, random, shufflechance, logstream, SimpleShuffle);
         }
 
         enum ComplexShuffleStep : byte { Shuffling, SecondLog }
@@ -69,7 +73,7 @@ namespace HATE
 
         public static Func<IList<UndertaleObject>, Random, float, StreamWriter, bool> SimpleShuffle = ComplexShuffle(SimpleShuffler);
 
-        public static readonly Regex json_line_regex = new Regex("\\s*\"(.+)\":\\s*\"(.+)\",", RegexOptions.ECMAScript);
+        public static readonly Regex jsonLineRegex = new Regex("\\s*\"(.+)\":\\s*\"(.+)\",", RegexOptions.ECMAScript);
 
         public class JSONStringEntry
         {
@@ -126,7 +130,7 @@ namespace HATE
                     string cur_line = text_reader.ReadLine();
                     if (cur_line == "}" || cur_line == "{") { continue; }
 
-                    Match m = json_line_regex.Match(cur_line);
+                    Match m = jsonLineRegex.Match(cur_line);
 
 
                     string[] match = {m.Groups[1].ToString(), m.Groups[2].ToString() };
