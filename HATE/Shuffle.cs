@@ -67,7 +67,7 @@ namespace HATE
 
         public static IList<UndertaleObject> SimpleShuffler(IList<UndertaleObject> chuck, Random random, float shuffleChance, StreamWriter logStream)
         {
-            chuck.Shuffle(random);
+            chuck.Shuffle(random, shuffleChance);
             return chuck;
         }
 
@@ -179,7 +179,7 @@ namespace HATE
             {
                 logstream.WriteLine($"Added {stringDict[ending].Count} JSON string entries of ending <{ending}> to dialogue string List.");
 
-                stringDict[ending].Shuffle(JSONSwapLoc, random);
+                stringDict[ending].Shuffle(JSONSwapLoc, random, shufflechance);
 
                 final_list = final_list.Concat(stringDict[ending]).ToList();
             }

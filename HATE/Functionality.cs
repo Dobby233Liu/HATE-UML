@@ -64,7 +64,7 @@ namespace HATE
                     sprites.Add(i);
             }
 
-            chunk.ShuffleOnlySelected(sprites, random);
+            chunk.ShuffleOnlySelected(sprites, random, shufflechance);
             logstream.WriteLine($"Shuffled {sprites.Count} out of {chunk.Count} sprite pointers.");
 
             return chunk;
@@ -153,7 +153,7 @@ namespace HATE
             {
                 logstream.WriteLine($"Added {stringDict[ending].Count} string pointers of ending {ending} to dialogue string List.");
 
-                _pointerlist.ShuffleOnlySelected(stringDict[ending], random);
+                _pointerlist.ShuffleOnlySelected(stringDict[ending], random, shufflechance);
             }
 
             return _pointerlist;
