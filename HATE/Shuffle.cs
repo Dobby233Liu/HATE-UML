@@ -9,19 +9,6 @@ using System.Collections;
 
 namespace HATE
 {
-    // lmfaoooooo
-    public class BaseResource : UndertaleObject
-    {
-        public void Serialize(UndertaleWriter writer)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void Unserialize(UndertaleReader reader)
-        {
-            throw new NotImplementedException();
-        }
-    }
     static class Shuffle
     {
         public const int WordSize = 4;
@@ -47,7 +34,7 @@ namespace HATE
             return false;
         }
 
-        enum ComplexShuffleStep : byte { Shuffling, SecondLog, }
+        enum ComplexShuffleStep : byte { Shuffling, SecondLog }
 
         public static Func<IList<UndertaleObject>, Random, float, StreamWriter, bool> ComplexShuffle(
             Func<IList<UndertaleObject>, Random, float, StreamWriter, IList<UndertaleObject>> shuffler)
@@ -159,7 +146,6 @@ namespace HATE
 
             foreach (JSONStringEntry entry in strings)
             {
-                
                 if (entry.Str.Length >= 3 && entry.Key.Contains('_'))
                 {
                     good_strings.Add(entry);
@@ -208,11 +194,10 @@ namespace HATE
                 writer.Write("}\n");
                 writer.Flush();
             }
+
             logstream.WriteLine($"Closed {target_file}.");
 
-
             return false;
-
         }
-}
+    }
 }
