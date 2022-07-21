@@ -93,7 +93,7 @@ namespace HATE
             "undertale.exe", "flowey.exe", "undertale.EXE", "Undertale.exe",
             "UNDERTALE.exe", "file1", "file2", "file3", "file4", "file5",
             "file6", "file7", "file8", "file9", "Action1", "Action2", "Action3",
-            "000010000", "000001000", "000100000", "000000010", "000000001"
+            "000010000", "000001000", "000100000", "000000010", "000000001",
             "Alter", "Met1", "alter2", "FloweyExplain1", "Mett", "EndMet",
             "MeetLv1", "Pass", "MeetLv2", "MeetLv", "KillYou", "Gameover", ".sav", "graphic_", "GMSpriteFramesTrack",
             "in_Position", "in_Colour", "in_TextureCoord", "_shot.png", ".gif", "special_name_check_",

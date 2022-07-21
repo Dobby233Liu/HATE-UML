@@ -115,6 +115,12 @@ namespace HATE
         {
             EnableControls(false);
             await LoadFile(_dataWin);
+            AfterDataLoad();
+        }
+        private void AfterDataLoad()
+        {
+            if (Data is null)
+                return;
             this.Invoke(delegate
             {
                 EnableControls(true);
@@ -122,6 +128,7 @@ namespace HATE
                 UpdateCorrupt();
             });
         }
+
         private void DisposeGameData()
         {
             if (Data is not null)
@@ -351,15 +358,12 @@ namespace HATE
             successful = true;
 
         End:
+            _logWriter.Close();
             if (successful)
             {
                 await SaveFile(_dataWin);
-                Invoke(delegate
-                {
-                    lblGameName.Text = Data.GeneralInfo.DisplayName.Content;
-                });
+                AfterDataLoad();
             }
-            _logWriter.Close();
             EnableControls(true);
         }
 
