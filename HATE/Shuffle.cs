@@ -59,11 +59,14 @@ namespace HATE
             ")",
             "?",
             "'",
-            " "
+            " ",
+            ";",
+            "-"
         };
         public static string[] BannedStrings = {
             "_",
             "yy", "0000000000000000", /* forcbily exclude vapor data */
+            "DO NOT EDIT IN GAMEMAKER",
             "gml_", "scr_", "SCR_", "room_", "obj_",
             "battle_name", "item_menu", "recover_hp",
             "music/", "bg_", "Compatibility_", "path_",
