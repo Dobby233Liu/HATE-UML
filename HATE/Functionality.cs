@@ -171,7 +171,16 @@ namespace HATE
             if (data.Sequences is not null)
                 foreach (var func in data.Sequences)
                 {
+                    /* TODO: BroadcastMessage */
                     pl_test.Remove(func.Name);
+                    foreach (KeyValuePair<int, UndertaleString> kvp in func.FunctionIDs)
+                    {
+                        pl_test.Remove(kvp.Value);
+                    }
+                    /*foreach (var track in func.Tracks)
+                    {
+
+                    }*/
                 }
             foreach (var func in data.Fonts)
             {
@@ -226,6 +235,13 @@ namespace HATE
                 foreach (var func in data.TextureGroupInfo)
                 {
                     pl_test.Remove(func.Name);
+                }
+            var feds = Data.FORM.FEDS?.List;
+            if (feds is not null)
+                foreach (var func in feds)
+                {
+                    pl_test.Remove(func.Name);
+                    pl_test.Remove(func.Value);
                 }
             pl_test.Remove(data.GeneralInfo.FileName);
             pl_test.Remove(data.GeneralInfo.Name);
