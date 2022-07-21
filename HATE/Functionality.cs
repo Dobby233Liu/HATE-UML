@@ -145,22 +145,24 @@ namespace HATE
             {
                 pl_test.Remove(func.Name);
             }
-            foreach (var func in data.Shaders)
-            {
-                pl_test.Remove(func.Name);
-                pl_test.Remove(func.GLSL_ES_Vertex);
-                pl_test.Remove(func.GLSL_ES_Fragment);
-                pl_test.Remove(func.GLSL_Vertex);
-                pl_test.Remove(func.GLSL_Fragment);
-                pl_test.Remove(func.HLSL9_Vertex);
-                pl_test.Remove(func.HLSL9_Fragment);
-                foreach (UndertaleShader.VertexShaderAttribute attr in func.VertexShaderAttributes)
-                    pl_test.Remove(attr.Name);
-            }
-            foreach (var func in data.Timelines)
-            {
-                pl_test.Remove(func.Name);
-            }
+            if (data.Shaders is not null)
+                foreach (var func in data.Shaders)
+                {
+                    pl_test.Remove(func.Name);
+                    pl_test.Remove(func.GLSL_ES_Vertex);
+                    pl_test.Remove(func.GLSL_ES_Fragment);
+                    pl_test.Remove(func.GLSL_Vertex);
+                    pl_test.Remove(func.GLSL_Fragment);
+                    pl_test.Remove(func.HLSL9_Vertex);
+                    pl_test.Remove(func.HLSL9_Fragment);
+                    foreach (UndertaleShader.VertexShaderAttribute attr in func.VertexShaderAttributes)
+                        pl_test.Remove(attr.Name);
+                }
+            if (data.Timelines is not null)
+                foreach (var func in data.Timelines)
+                {
+                    pl_test.Remove(func.Name);
+                }
             if (data.AnimationCurves is not null)
                 foreach (var func in data.AnimationCurves)
                 {
@@ -201,10 +203,11 @@ namespace HATE
             {
                 pl_test.Remove(func.Name);
             }
-            foreach (var func in data.Backgrounds)
-            {
-                pl_test.Remove(func.Name);
-            }
+            if (data.Backgrounds is not null)
+                foreach (var func in data.Backgrounds)
+                {
+                    pl_test.Remove(func.Name);
+                }
             foreach (var func in data.Paths)
             {
                 pl_test.Remove(func.Name);
@@ -214,10 +217,11 @@ namespace HATE
                 pl_test.Remove(func.Name);
                 pl_test.Remove(func.File);
             }
-            foreach (var func in data.AudioGroups)
-            {
-                pl_test.Remove(func.Name);
-            }
+            if (data.AudioGroups is not null)
+                foreach (var func in data.AudioGroups)
+                {
+                    pl_test.Remove(func.Name);
+                }
             if (data.TextureGroupInfo is not null)
                 foreach (var func in data.TextureGroupInfo)
                 {
