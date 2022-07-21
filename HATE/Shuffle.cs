@@ -54,17 +54,92 @@ namespace HATE
             "\\W",
             "* ",
             "...",
-            "~"
+            "~",
+            "(",
+            ")",
+            "?",
+            "'",
+            " "
+        };
+        public static string[] BannedStrings = {
+            "_",
+            "yy", "0000000000000000", /* forcbily exclude vapor data */
+            "gml_", "scr_", "SCR_", "room_", "obj_",
+            "battle_name", "item_menu", "recover_hp",
+            "music/", "bg_", "Compatibility_", "path_",
+            "attention_hackerz_no_2", "snd_", "__",
+            "castroll_", "credits_", "mettnews_",
+            "shop1_", "shop2_", "shop3_", "shop4_", "shop5_",
+            "mett_opera", "item_name_", "item_use_",
+            "the_end", "mett_ratings_", "mettquiz_", "trophy_install",
+            "hardmode_", "elevator_", "flowey_", "item_drop_", "labtv_",
+            "damage_", "joyconfig_", "settings_", "title_", "soundtest_",
+            "roomname_", "title_press_", "instructions_",
+            "save_menu_", "stat_menu_", "field_", "weekday_", "menu_"
+        };
+        public static string[] FriskSpriteHandles = {
+            // UNDERTALE
+            "spr_maincharal", "spr_maincharau", "spr_maincharar", "spr_maincharad",
+            "spr_maincharau_stark", "spr_maincharar_stark", "spr_maincharal_stark",
+            "spr_maincharad_pranked", "spr_maincharal_pranked",
+            "spr_maincharad_umbrellafall", "spr_maincharau_umbrellafall", "spr_maincharar_umbrellafall", "spr_maincharal_umbrellafall",
+            "spr_maincharad_umbrella", "spr_maincharau_umbrella", "spr_maincharar_umbrella", "spr_maincharal_umbrella",
+            "spr_charad", "spr_charad_fall", "spr_charar", "spr_charar_fall", "spr_charal", "spr_charal_fall", "spr_charau", "spr_charau_fall",
+            "spr_maincharar_shadow", "spr_maincharal_shadow", "spr_maincharau_shadow", "spr_maincharad_shadow",
+            "spr_maincharal_tomato", "spr_maincharal_burnt", "spr_maincharal_water",
+            "spr_maincharar_water", "spr_maincharau_water", "spr_maincharad_water", "spr_mainchara_pourwater",
+            "spr_maincharad_b", "spr_maincharau_b", "spr_maincharar_b", "spr_maincharal_b",
+            "spr_doorA", "spr_doorB", "spr_doorC", "spr_doorD", "spr_doorX",
+            // DELTARUNE
+            "spr_krisr", "spr_krisl", "spr_krisd", "spr_krisu", "spr_kris_fall", "spr_krisr_sit",
+            "spr_krisd_dark", "spr_krisr_dark", "spr_krisu_dark", "spr_krisl_dark",
+            "spr_krisd_slide", "spr_krisd_slide_light",
+            "spr_krisd_heart", "spr_krisd_slide_heart", "spr_krisu_heart", "spr_krisl_heart", "spr_krisr_heart",
+            "spr_kris_fallen_dark", "spr_krisu_run", "spr_kris_fall_d_white", "spr_kris_fall_turnaround",
+            "spr_kris_fall_d_lw", "spr_kris_fall_d_dw", "spr_kris_fall_smear", "spr_kris_dw_landed",
+            "spr_kris_fall_ball", "spr_kris_jump_ball", "spr_kris_dw_land_example_dark", "spr_kris_fall_example_dark",
+            "spr_krisu_fall_lw", "spr_kris_pose", "spr_kris_dance",
+            "spr_kris_sword_jump", "spr_kris_sword_jump_down", "spr_kris_sword_jump_settle", "spr_kris_sword_jump_up",
+            "spr_kris_coaster", "spr_kris_coaster_hurt_front", "spr_kris_coaster_hurt_back",
+            "spr_kris_coaster_front", "spr_kris_coaster_empty", "spr_kris_coaster_back",
+            "spr_kris_hug_left", "spr_kris_peace", "spr_kris_rude_gesture",
+            "spr_kris_sit_wind", "spr_kris_hug", "spr_krisb_pirouette", "spr_krisb_bow",
+            "spr_krisb_victory", "spr_krisb_defeat", "spr_krisb_attackready",
+            "spr_krisb_act", "spr_krisb_actready", "spr_krisb_itemready", "spr_krisb_item",
+            "spr_krisb_attack", "spr_krisb_hurt", "spr_krisb_intro", "spr_krisb_idle", "spr_krisb_defend",
+            "spr_krisb_virokun", "spr_krisb_virokun_doctor", "spr_krisb_virokun_nurse", "spr_krisb_wan",
+            "spr_krisb_wan_tail", "spr_krisb_wiggle",
+            "spr_krisb_ready_throw_torso", "spr_krisb_ready_throw_full", "spr_krisb_throw",
+            "spr_krisd_bright", "spr_krisl_bright", "spr_krisr_bright", "spr_krisu_bright",
+            "spr_kris_fell",
+            "spr_teacup_kris", "spr_teacup_kris_tea", "spr_teacup_kris_tea2", "spr_kris_tea",
+            "spr_kris_hug_ch1",
+            "spr_krisb_pirouette_ch1", "spr_krisb_bow_ch1", "spr_krisb_victory_ch1",
+            "spr_krisb_defeat_ch1", "spr_krisb_attackready_ch1", "spr_krisb_act_ch1",
+            "spr_krisb_actready_ch1", "spr_krisb_itemready_ch1", "spr_krisb_item_ch1",
+            "spr_krisb_attack_ch1", "spr_krisb_attack_old_ch1", "spr_krisb_hurt_ch1",
+            "spr_krisb_intro_ch1", "spr_krisb_idle_ch1", "spr_krisb_defend_ch1",
+            "spr_kris_drop_ch1", "spr_kris_fell_ch1",
+            "spr_krisr_kneel_ch1", "spr_krisd_bright_ch1", "spr_krisl_bright_ch1",
+            "spr_krisr_bright_ch1", "spr_krisu_bright_ch1", "spr_krisd_heart_ch1",
+            "spr_krisd_slide_heart_ch1", "spr_krisu_heart_ch1", "spr_krisl_heart_ch1",
+            "spr_krisr_heart_ch1", "spr_kris_fallen_dark_ch1",
+            "spr_krisd_dark_ch1", "spr_krisr_dark_ch1", "spr_krisu_dark_ch1", "spr_krisl_dark_ch1",
+            "spr_krisd_slide_ch1", "spr_krisd_slide_light_ch1",
+            "spr_krisr_ch1", "spr_krisl_ch1", "spr_krisd_ch1", "spr_krisu_ch1",
+            "spr_krisr_sit_ch1", "spr_kris_fall_ch1",
+            "spr_doorAny", "spr_doorE", "spr_doorF", "spr_doorW",
+            "spr_doorE_ch1", "spr_doorF_ch1", "spr_doorW_ch1"
         };
 
-        public static bool ShuffleChunk(IList<UndertaleObject> chuck, Random random, float shufflechance, StreamWriter logstream,
-            bool friskmode, Func<IList<UndertaleObject>, Random, float, StreamWriter, bool, bool> shufflefunc)
+        public static bool ShuffleChunk(IList<UndertaleObject> chuck, UndertaleData data, Random random, float shufflechance, StreamWriter logstream,
+            bool friskmode, Func<IList<UndertaleObject>, UndertaleData, Random, float, StreamWriter, bool, bool> shufflefunc)
         {
             if (random == null)
                 throw new ArgumentNullException(nameof(random));
             try
             {
-                if (!shufflefunc(chuck, random, shufflechance, logstream, friskmode))
+                if (!shufflefunc(chuck, data, random, shufflechance, logstream, friskmode))
                 {
                     logstream.WriteLine($"Error occured while modifying chuck.");
                     return false;
@@ -77,22 +152,22 @@ namespace HATE
             }
             return false;
         }
-        public static bool ShuffleChunk(IList<UndertaleObject> chuck, Random random, float shufflechance, StreamWriter logstream, bool friskmode)
+        public static bool ShuffleChunk(IList<UndertaleObject> chuck, UndertaleData data, Random random, float shufflechance, StreamWriter logstream, bool friskmode)
         {
-            return ShuffleChunk(chuck, random, shufflechance, logstream, friskmode, SimpleShuffle);
+            return ShuffleChunk(chuck, data, random, shufflechance, logstream, friskmode, SimpleShuffle);
         }
 
         enum ComplexShuffleStep : byte { Shuffling, SecondLog }
 
-        public static Func<IList<UndertaleObject>, Random, float, StreamWriter, bool, bool> ComplexShuffle(
-            Func<IList<UndertaleObject>, Random, float, StreamWriter, bool, bool> shuffler)
+        public static Func<IList<UndertaleObject>, UndertaleData, Random, float, StreamWriter, bool, bool> ComplexShuffle(
+            Func<IList<UndertaleObject>, UndertaleData, Random, float, StreamWriter, bool, bool> shuffler)
         {
-            return (IList<UndertaleObject> chuck, Random random, float chance, StreamWriter logstream, bool friskmode) =>
+            return (IList<UndertaleObject> chuck, UndertaleData data, Random random, float chance, StreamWriter logstream, bool friskmode) =>
             {
                 ComplexShuffleStep step = ComplexShuffleStep.Shuffling;
                 try
                 {
-                    shuffler(chuck, random, chance, logstream, friskmode);
+                    shuffler(chuck, data, random, chance, logstream, friskmode);
                     step = ComplexShuffleStep.SecondLog;
                     logstream.WriteLine($"Shuffled {chuck.Count} pointers.");
                 }
@@ -106,7 +181,7 @@ namespace HATE
             };
         }
 
-        public static bool SimpleShuffler(IList<UndertaleObject> chuck, Random random, float shuffleChance, StreamWriter logStream, bool _friskMode)
+        public static bool SimpleShuffler(IList<UndertaleObject> chuck, UndertaleData data, Random random, float shuffleChance, StreamWriter logStream, bool _friskMode)
         {
             List<int> ints = new List<int>();
             for (int i = 0; i < chuck.Count; i++)
@@ -118,7 +193,7 @@ namespace HATE
             return true;
         }
 
-        public static Func<IList<UndertaleObject>, Random, float, StreamWriter, bool, bool> SimpleShuffle = ComplexShuffle(SimpleShuffler);
+        public static Func<IList<UndertaleObject>, UndertaleData, Random, float, StreamWriter, bool, bool> SimpleShuffle = ComplexShuffle(SimpleShuffler);
 
         public static readonly Regex jsonLineRegex = new Regex("\\s*\"(.+)\":\\s*\"(.+)\",", RegexOptions.ECMAScript);
 
