@@ -12,7 +12,50 @@ namespace HATE
     static class Shuffle
     {
         public const int WordSize = 4;
-        public static char[] FormatChars = { '%', '/', 'C' };
+        public static List<string> DRChoicerControlChars = new List<string>{
+            "\\\\C1",
+            "\\\\C2",
+            "\\\\C3",
+            "\\\\C4",
+            "\\C1",
+            "\\C2",
+            "\\C3",
+            "\\C4",
+            "\\C"
+        };
+        public static List<string> FormatChars = new List<string>{
+            "/%%",
+            "/%%.", // SCR_TEXT_1935 in UNDERTALE
+            "/%%\"", // item_desc_23_0 in UNDERTALE
+            "/^",
+            "/%",
+            "/",
+            "%%",
+            "%",
+            "-",
+        };
+        // hack
+        // my dumb ass going to throw all strings with these substrings into ""
+        public static List<string> ForceShuffleReferenceChars = new List<string>{
+            "#",
+            "&",
+            "^",
+            "||",
+            "\\[1]",
+            "\\[2]",
+            "\\[C]",
+            "\\[G]",
+            "\\[I]",
+            "\\*Z",
+            "\\*X",
+            "\\*C",
+            "\\*D",
+            "\\X",
+            "\\W",
+            "* ",
+            "...",
+            "~"
+        };
 
         public static bool ShuffleChunk(IList<UndertaleObject> chuck, Random random, float shufflechance, StreamWriter logstream,
             bool friskmode, Func<IList<UndertaleObject>, Random, float, StreamWriter, bool, bool> shufflefunc)
@@ -82,27 +125,12 @@ namespace HATE
         public class JSONStringEntry
         {
             public string Key;
-            public string Ending;
             public string Str;
 
             public JSONStringEntry(string key, string str)
             {
                 Key = key;
                 Str = str;
-                List<char> Ending = new List<char>();
-
-                for (int i = 1; i < str.Length; i++)
-                {
-                    char C = str[str.Length - i];
-
-                    if (FormatChars.Contains(C))
-                        Ending.Add(C);
-                    else
-                        break;
-                }
-
-                Ending.Reverse();
-                this.Ending = new string(Ending.ToArray());
             }
         }
 
@@ -164,10 +192,37 @@ namespace HATE
 
             foreach (JSONStringEntry s in good_strings)
             {
-                if (!stringDict.ContainsKey(s.Ending))
-                    stringDict[s.Ending] = new List<JSONStringEntry>();
+                string ch = "";
+                foreach (string chr in DRChoicerControlChars)
+                {
+                    if (s.Str.Contains(chr))
+                    {
+                        ch = chr;
+                        break;
+                    }
+                }
+                if (ch != "")
+                {
+                    if (!stringDict.ContainsKey(ch))
+                        stringDict[ch] = new List<JSONStringEntry>();
+                    stringDict[ch].Add(s);
+                }
+                else
+                {
+                    string ending = "";
+                    foreach (string ed in FormatChars)
+                    {
+                        if (s.Str.EndsWith(ed))
+                        {
+                            ending = ed;
+                            break;
+                        }
+                    }
+                    if (!stringDict.ContainsKey(ending))
+                        stringDict[ending] = new List<JSONStringEntry>();
 
-                stringDict[s.Ending].Add(s);
+                    stringDict[ending].Add(s);
+                }
                 totalStrings++;
             }
 

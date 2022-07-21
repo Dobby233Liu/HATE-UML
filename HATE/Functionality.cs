@@ -180,27 +180,51 @@ namespace HATE
                 var s = (UndertaleString)_pointerlist[i];
                 var convertedString = s.Content;
 
-                if (convertedString.Length >= 3 && !bannedStrings.Any(convertedString.Contains) && !(convertedString.Any(x => x > 127)))
+                if (convertedString.Length >= 3 && !bannedStrings.Any(convertedString.Contains))
                 {
-                    List<char> Ending = new List<char>();
-
-                    for (int i2 = 1; i2 < convertedString.Length; i2++)
+                    string ch = "";
+                    foreach (string chr in Shuffle.DRChoicerControlChars)
                     {
-                        char C = convertedString[convertedString.Length - i2];
-
-                        if (Shuffle.FormatChars.Contains(C))
-                            Ending.Add(C);
-                        else
+                        if (convertedString.Contains(chr))
+                        {
+                            ch = chr;
                             break;
+                        }
                     }
+                    if (ch != "")
+                    {
+                        if (convertedString.Any(x => x > 127))
+                            ch += "_ja";
+                        if (!stringDict.ContainsKey(ch))
+                            stringDict[ch] = new List<int>();
+                        stringDict[ch].Add(i);
+                    }
+                    else
+                    {
+                        string ending = "";
+                        foreach (string ed in Shuffle.FormatChars)
+                        {
+                            if (convertedString.EndsWith(ed))
+                            {
+                                ending = ed;
+                                break;
+                            }
+                        }
+                        if (ending == "")
+                        {
+                            if (Shuffle.ForceShuffleReferenceChars.Any(x => convertedString.Contains(x)))
+                                ending = "_FORCE";
+                            else
+                                continue;
+                        }
+                        if (convertedString.Any(x => x > 127))
+                            ending += "_ja";
 
-                    Ending.Reverse();
-                    string ending = new string(Ending.ToArray());
+                        if (!stringDict.ContainsKey(ending))
+                            stringDict[ending] = new List<int>();
 
-                    if (!stringDict.ContainsKey(ending))
-                        stringDict[ending] = new List<int>();
-
-                    stringDict[ending].Add(i);
+                        stringDict[ending].Add(i);
+                    }
                 }
             }
 
