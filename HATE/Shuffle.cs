@@ -65,7 +65,13 @@ namespace HATE
 
         public static bool SimpleShuffler(IList<UndertaleObject> chuck, Random random, float shuffleChance, StreamWriter logStream, bool _friskMode)
         {
-            chuck.Shuffle(random, shuffleChance);
+            List<int> ints = new List<int>();
+            for (int i = 0; i < chuck.Count; i++)
+            {
+                ints.Add(i);
+            }
+            ints.SelectSome(shuffleChance, random);
+            chuck.ShuffleOnlySelected(ints, random);
             return true;
         }
 
@@ -98,13 +104,6 @@ namespace HATE
                 Ending.Reverse();
                 this.Ending = new string(Ending.ToArray());
             }
-        }
-
-        public static void JSONSwapLoc(JSONStringEntry lref, JSONStringEntry rref)
-        {
-            string tmp = lref.Key;
-            lref.Key = rref.Key;
-            rref.Key = tmp;
         }
 
         public static bool JSONStringShuffle(string resource_file, string target_file, Random random, float shufflechance, StreamWriter logstream)
@@ -176,7 +175,15 @@ namespace HATE
             {
                 logstream.WriteLine($"Added {stringDict[ending].Count} JSON string entries of ending <{ending}> to dialogue string List.");
 
-                stringDict[ending].Shuffle(JSONSwapLoc, random, shufflechance);
+                List<int> ints = new List<int>();
+                for (int i = 0; i < stringDict[ending].Count; i++)
+                    ints.Add(i);
+                ints.SelectSome(shufflechance, random);
+                stringDict[ending].ShuffleOnlySelected(ints, (n, k) => {
+                    string tmp = stringDict[ending][n].Key;
+                    stringDict[ending][n].Key = stringDict[ending][k].Key;
+                    stringDict[ending][k].Key = tmp;
+                }, random);
 
                 final_list = final_list.Concat(stringDict[ending]).ToList();
             }

@@ -119,7 +119,8 @@ namespace HATE
                     sprites.Add(i);
             }
 
-            chunk.ShuffleOnlySelected(sprites, random, shufflechance);
+            sprites.SelectSome(shufflechance, random);
+            chunk.ShuffleOnlySelected(sprites, random);
             logstream.WriteLine($"Shuffled {sprites.Count} out of {chunk.Count} sprite pointers.");
 
             return true;
@@ -205,9 +206,14 @@ namespace HATE
 
             foreach (string ending in stringDict.Keys)
             {
+                stringDict[ending].SelectSome(shufflechance, random);
                 logstream.WriteLine($"Added {stringDict[ending].Count} string pointers of ending {ending} to dialogue string List.");
 
-                _pointerlist.ShuffleOnlySelected(stringDict[ending], random, shufflechance);
+                _pointerlist.ShuffleOnlySelected(stringDict[ending], (n, k) => {
+                    string value = ((UndertaleString)_pointerlist[k]).Content;
+                    ((UndertaleString)_pointerlist[k]).Content = ((UndertaleString)_pointerlist[n]).Content;
+                    ((UndertaleString)_pointerlist[n]).Content = value;
+                }, random);
             }
 
             return true;
