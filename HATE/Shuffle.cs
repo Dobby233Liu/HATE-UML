@@ -12,15 +12,16 @@ namespace HATE
     static class Shuffle
     {
         public const int WordSize = 4;
+        public static char[] FormatChars = { '%', '/', 'C' };
 
         public static bool ShuffleChunk(IList<UndertaleObject> chuck, Random random, float shufflechance, StreamWriter logstream,
-            Func<IList<UndertaleObject>, Random, float, StreamWriter, bool> shufflefunc)
+            bool friskmode, Func<IList<UndertaleObject>, Random, float, StreamWriter, bool, bool> shufflefunc)
         {
             if (random == null)
                 throw new ArgumentNullException(nameof(random));
             try
             {
-                if (!shufflefunc(chuck, random, shufflechance, logstream))
+                if (!shufflefunc(chuck, random, shufflechance, logstream, friskmode))
                 {
                     logstream.WriteLine($"Error occured while modifying chuck.");
                     return false;
@@ -33,25 +34,22 @@ namespace HATE
             }
             return false;
         }
-        public static bool ShuffleChunk(IList<UndertaleObject> chuck, Random random, float shufflechance, StreamWriter logstream)
+        public static bool ShuffleChunk(IList<UndertaleObject> chuck, Random random, float shufflechance, StreamWriter logstream, bool friskmode)
         {
-            return ShuffleChunk(chuck, random, shufflechance, logstream, SimpleShuffle);
+            return ShuffleChunk(chuck, random, shufflechance, logstream, friskmode, SimpleShuffle);
         }
 
         enum ComplexShuffleStep : byte { Shuffling, SecondLog }
 
-        public static Func<IList<UndertaleObject>, Random, float, StreamWriter, bool> ComplexShuffle(
-            Func<IList<UndertaleObject>, Random, float, StreamWriter, IList<UndertaleObject>> shuffler)
+        public static Func<IList<UndertaleObject>, Random, float, StreamWriter, bool, bool> ComplexShuffle(
+            Func<IList<UndertaleObject>, Random, float, StreamWriter, bool, bool> shuffler)
         {
-            return (IList<UndertaleObject> chuck, Random random, float chance, StreamWriter logstream) =>
+            return (IList<UndertaleObject> chuck, Random random, float chance, StreamWriter logstream, bool friskmode) =>
             {
                 ComplexShuffleStep step = ComplexShuffleStep.Shuffling;
                 try
                 {
-                    var newChuck = shuffler(chuck, random, chance, logstream);
-                    chuck.Clear();
-                    foreach (UndertaleObject obj in newChuck)
-                        chuck.Add(obj);
+                    shuffler(chuck, random, chance, logstream, friskmode);
                     step = ComplexShuffleStep.SecondLog;
                     logstream.WriteLine($"Shuffled {chuck.Count} pointers.");
                 }
@@ -65,13 +63,13 @@ namespace HATE
             };
         }
 
-        public static IList<UndertaleObject> SimpleShuffler(IList<UndertaleObject> chuck, Random random, float shuffleChance, StreamWriter logStream)
+        public static bool SimpleShuffler(IList<UndertaleObject> chuck, Random random, float shuffleChance, StreamWriter logStream, bool _friskMode)
         {
             chuck.Shuffle(random, shuffleChance);
-            return chuck;
+            return true;
         }
 
-        public static Func<IList<UndertaleObject>, Random, float, StreamWriter, bool> SimpleShuffle = ComplexShuffle(SimpleShuffler);
+        public static Func<IList<UndertaleObject>, Random, float, StreamWriter, bool, bool> SimpleShuffle = ComplexShuffle(SimpleShuffler);
 
         public static readonly Regex jsonLineRegex = new Regex("\\s*\"(.+)\":\\s*\"(.+)\",", RegexOptions.ECMAScript);
 
@@ -85,7 +83,6 @@ namespace HATE
             {
                 Key = key;
                 Str = str;
-                char[] FormatChars = { '%', '/', 'C' };
                 List<char> Ending = new List<char>();
 
                 for (int i = 1; i < str.Length; i++)

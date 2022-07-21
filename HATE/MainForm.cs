@@ -1,40 +1,20 @@
 ﻿using System;
-using System.Drawing;
-using System.Windows.Forms;
-using System.IO;
 using System.Diagnostics;
-using System.Security.Principal;
-using System.Runtime.InteropServices;
-using UndertaleModLib;
-using System.Runtime;
-using System.Threading.Tasks;
-using UndertaleModLib.Models;
-using System.Reflection;
-using UndertaleModLib.Util;
+using System.Drawing;
+using System.IO;
 using System.Linq;
+using System.Reflection;
+using System.Runtime;
+using System.Runtime.InteropServices;
+using System.Security.Principal;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+using UndertaleModLib;
+using UndertaleModLib.Models;
+using UndertaleModLib.Util;
 
 namespace HATE
 {
-    public static class MsgBoxHelpers
-    {
-        public static MainForm mainForm;
-        public static DialogResult ShowMessage(string message, MessageBoxButtons buttons, MessageBoxIcon icon, string caption = "HATE-UML")
-        {
-            return mainForm.Invoke(delegate { return MessageBox.Show(message, caption, buttons, icon); });
-        }
-        public static DialogResult ShowMessage(string message, string caption = "HATE-UML")
-        {
-            return mainForm.Invoke(delegate { return MessageBox.Show(message, caption); });
-        }
-        public static DialogResult ShowWarning(string message, string caption = "HATE-UML")
-        {
-            return mainForm.Invoke(delegate { return MessageBox.Show(message, caption, MessageBoxButtons.OK, MessageBoxIcon.Warning); });
-        }
-        public static DialogResult ShowError(string message, string caption = "HATE-UML")
-        {
-            return mainForm.Invoke(delegate { return MessageBox.Show(message, caption, MessageBoxButtons.OK, MessageBoxIcon.Error); });
-        }
-    }
 
     public partial class MainForm : Form
     {
@@ -46,14 +26,14 @@ namespace HATE
             private static readonly string _btnCorruptLabel = " -CORRUPT- ";
             private static readonly Color _optionSet = Color.Yellow;
             private static readonly Color _optionUnset = Color.White;
-            
+
             public static Color GetOptionColor(bool b) { return b ? _optionSet : _optionUnset; }
             public static Color GetCorruptColor(bool b) { return b ? _btnCorruptColor : _btnRestoreColor; }
             public static string GetCorruptLabel(bool b) { return b ? _btnCorruptLabel : _btnRestoreLabel; }
         }
 
         private StreamWriter _logWriter;
-        
+
         private bool _shuffleGFX = false;
         private bool _shuffleText = false;
         private bool _hitboxFix = false;
@@ -65,61 +45,6 @@ namespace HATE
         private float _truePower = 0;
         private readonly string _defaultPowerText = "0 - 255";
         private readonly string _dataWin = "data.win";
-
-        private readonly string[] _friskSpriteHandles = {
-            // UNDERTALE
-            "spr_maincharal", "spr_maincharau", "spr_maincharar", "spr_maincharad",
-            "spr_maincharau_stark", "spr_maincharar_stark", "spr_maincharal_stark",
-            "spr_maincharad_pranked", "spr_maincharal_pranked",
-            "spr_maincharad_umbrellafall", "spr_maincharau_umbrellafall", "spr_maincharar_umbrellafall", "spr_maincharal_umbrellafall",
-            "spr_maincharad_umbrella", "spr_maincharau_umbrella", "spr_maincharar_umbrella", "spr_maincharal_umbrella",
-            "spr_charad", "spr_charad_fall", "spr_charar", "spr_charar_fall", "spr_charal", "spr_charal_fall", "spr_charau", "spr_charau_fall",
-            "spr_maincharar_shadow", "spr_maincharal_shadow", "spr_maincharau_shadow", "spr_maincharad_shadow",
-            "spr_maincharal_tomato", "spr_maincharal_burnt", "spr_maincharal_water",
-            "spr_maincharar_water", "spr_maincharau_water", "spr_maincharad_water", "spr_mainchara_pourwater",
-            "spr_maincharad_b", "spr_maincharau_b", "spr_maincharar_b", "spr_maincharal_b",
-            "spr_doorA", "spr_doorB", "spr_doorC", "spr_doorD", "spr_doorX",
-            // DELTARUNE
-            "spr_krisr", "spr_krisl", "spr_krisd", "spr_krisu", "spr_kris_fall", "spr_krisr_sit",
-            "spr_krisd_dark", "spr_krisr_dark", "spr_krisu_dark", "spr_krisl_dark",
-            "spr_krisd_slide", "spr_krisd_slide_light",
-            "spr_krisd_heart", "spr_krisd_slide_heart", "spr_krisu_heart", "spr_krisl_heart", "spr_krisr_heart",
-            "spr_kris_fallen_dark", "spr_krisu_run", "spr_kris_fall_d_white", "spr_kris_fall_turnaround",
-            "spr_kris_fall_d_lw", "spr_kris_fall_d_dw", "spr_kris_fall_smear", "spr_kris_dw_landed",
-            "spr_kris_fall_ball", "spr_kris_jump_ball", "spr_kris_dw_land_example_dark", "spr_kris_fall_example_dark",
-            "spr_krisu_fall_lw", "spr_kris_pose", "spr_kris_dance",
-            "spr_kris_sword_jump", "spr_kris_sword_jump_down", "spr_kris_sword_jump_settle", "spr_kris_sword_jump_up",
-            "spr_kris_coaster", "spr_kris_coaster_hurt_front", "spr_kris_coaster_hurt_back",
-            "spr_kris_coaster_front", "spr_kris_coaster_empty", "spr_kris_coaster_back",
-            "spr_kris_hug_left", "spr_kris_peace", "spr_kris_rude_gesture",
-            "spr_kris_sit_wind", "spr_kris_hug", "spr_krisb_pirouette", "spr_krisb_bow",
-            "spr_krisb_victory", "spr_krisb_defeat", "spr_krisb_attackready",
-            "spr_krisb_act", "spr_krisb_actready", "spr_krisb_itemready", "spr_krisb_item",
-            "spr_krisb_attack", "spr_krisb_hurt", "spr_krisb_intro", "spr_krisb_idle", "spr_krisb_defend",
-            "spr_krisb_virokun", "spr_krisb_virokun_doctor", "spr_krisb_virokun_nurse", "spr_krisb_wan",
-            "spr_krisb_wan_tail", "spr_krisb_wiggle",
-            "spr_krisb_ready_throw_torso", "spr_krisb_ready_throw_full", "spr_krisb_throw",
-            "spr_krisd_bright", "spr_krisl_bright", "spr_krisr_bright", "spr_krisu_bright",
-            "spr_kris_fell",
-            "spr_teacup_kris", "spr_teacup_kris_tea", "spr_teacup_kris_tea2", "spr_kris_tea",
-            "spr_kris_hug_ch1",
-            "spr_krisb_pirouette_ch1", "spr_krisb_bow_ch1", "spr_krisb_victory_ch1",
-            "spr_krisb_defeat_ch1", "spr_krisb_attackready_ch1", "spr_krisb_act_ch1",
-            "spr_krisb_actready_ch1", "spr_krisb_itemready_ch1", "spr_krisb_item_ch1",
-            "spr_krisb_attack_ch1", "spr_krisb_attack_old_ch1", "spr_krisb_hurt_ch1",
-            "spr_krisb_intro_ch1", "spr_krisb_idle_ch1", "spr_krisb_defend_ch1",
-            "spr_kris_drop_ch1", "spr_kris_fell_ch1",
-            "spr_krisr_kneel_ch1", "spr_krisd_bright_ch1", "spr_krisl_bright_ch1",
-            "spr_krisr_bright_ch1", "spr_krisu_bright_ch1", "spr_krisd_heart_ch1",
-            "spr_krisd_slide_heart_ch1", "spr_krisu_heart_ch1", "spr_krisl_heart_ch1",
-            "spr_krisr_heart_ch1", "spr_kris_fallen_dark_ch1",
-            "spr_krisd_dark_ch1", "spr_krisr_dark_ch1", "spr_krisu_dark_ch1", "spr_krisl_dark_ch1",
-            "spr_krisd_slide_ch1", "spr_krisd_slide_light_ch1",
-            "spr_krisr_ch1", "spr_krisl_ch1", "spr_krisd_ch1", "spr_krisu_ch1",
-            "spr_krisr_sit_ch1", "spr_kris_fall_ch1",
-            "spr_doorAny", "spr_doorE", "spr_doorF", "spr_doorW",
-            "spr_doorE_ch1", "spr_doorF_ch1", "spr_doorW_ch1"
-        };
 
         private static readonly DateTime _unixTimeZero = new DateTime(1970, 1, 1);
         private Random _random;
@@ -197,9 +122,21 @@ namespace HATE
                 UpdateCorrupt();
             });
         }
+        private void DisposeGameData()
+        {
+            if (Data is not null)
+            {
+                Data.Dispose();
+                Data = null;
+
+                GCSettings.LargeObjectHeapCompactionMode = GCLargeObjectHeapCompactionMode.CompactOnce;
+                GC.Collect();
+            }
+        }
 
         private async Task LoadFile(string filename)
         {
+            DisposeGameData();
             Task t = Task.Run(() =>
             {
                 UndertaleData data = null;
@@ -212,7 +149,8 @@ namespace HATE
                             MsgBoxHelpers.ShowWarning(warning, "Loading warning");
                         }, message =>
                         {
-                            Invoke(delegate {
+                            Invoke(delegate
+                            {
                                 lblGameName.Text = message;
                             });
                         });
@@ -250,7 +188,8 @@ namespace HATE
             if (Data == null)
                 return;
 
-            Task t = Task.Run(() => {
+            Task t = Task.Run(() =>
+            {
                 bool SaveSucceeded = true;
 
                 try
@@ -259,7 +198,8 @@ namespace HATE
                     {
                         UndertaleIO.Write(stream, Data, message =>
                         {
-                            Invoke(delegate {
+                            Invoke(delegate
+                            {
                                 lblGameName.Text = message;
                             });
                         });
@@ -402,12 +342,12 @@ namespace HATE
             bool successful = false;
 
             if (!await Setup()) goto End;
-            if (_shuffleGFX && !ShuffleGFX_Func(_random, _truePower, _logWriter)) goto End;
-            if (_hitboxFix && !HitboxFix_Func(_random, _truePower, _logWriter)) goto End;
-            if (_shuffleText && !ShuffleText_Func(_random, _truePower, _logWriter)) goto End;
-            if (_shuffleFont && !ShuffleFont_Func(_random, _truePower, _logWriter)) goto End;
-            if (_shuffleBG && !ShuffleBG_Func(_random, _truePower, _logWriter)) goto End;
-            if (_shuffleAudio && !ShuffleAudio_Func(_random, _truePower, _logWriter)) goto End;
+            if (_shuffleGFX && !Functionality.ShuffleGFX_Func(Data, _random, _truePower, _logWriter, _friskMode)) goto End;
+            if (_hitboxFix && !Functionality.HitboxFix_Func(Data, _random, _truePower, _logWriter, _friskMode)) goto End;
+            if (_shuffleText && !Functionality.ShuffleText_Func(Data, _random, _truePower, _logWriter, _friskMode)) goto End;
+            if (_shuffleFont && !Functionality.ShuffleFont_Func(Data, _random, _truePower, _logWriter, _friskMode)) goto End;
+            if (_shuffleBG && !Functionality.ShuffleBG_Func(Data, _random, _truePower, _logWriter, _friskMode)) goto End;
+            if (_shuffleAudio && !Functionality.ShuffleAudio_Func(Data, _random, _truePower, _logWriter, _friskMode)) goto End;
             successful = true;
 
         End:
@@ -537,13 +477,12 @@ namespace HATE
 
             return true;
         }
-        
+
         public void UpdateCorrupt()
         {
             _corrupt = _shuffleGFX || _shuffleText || _hitboxFix || _shuffleFont || _shuffleAudio || _shuffleBG;
             btnCorrupt.Text = Style.GetCorruptLabel(_corrupt);
             btnCorrupt.ForeColor = Style.GetCorruptColor(_corrupt);
-            btnCorrupt.Enabled = _corrupt;
         }
 
         private void chbShuffleText_CheckedChanged(object sender, EventArgs e)
@@ -596,6 +535,26 @@ namespace HATE
         private void txtPower_Leave(object sender, EventArgs e)
         {
             txtPower.Text = string.IsNullOrWhiteSpace(txtPower.Text) ? _defaultPowerText : txtPower.Text;
+        }
+    }
+    public static class MsgBoxHelpers
+    {
+        public static MainForm mainForm = null;
+        public static DialogResult ShowMessage(string message, MessageBoxButtons buttons, MessageBoxIcon icon, string caption = "HATE-UML")
+        {
+            return mainForm.Invoke(delegate { return MessageBox.Show(message, caption, buttons, icon); });
+        }
+        public static DialogResult ShowMessage(string message, string caption = "HATE-UML")
+        {
+            return mainForm.Invoke(delegate { return MessageBox.Show(message, caption); });
+        }
+        public static DialogResult ShowWarning(string message, string caption = "HATE-UML")
+        {
+            return mainForm.Invoke(delegate { return MessageBox.Show(message, caption, MessageBoxButtons.OK, MessageBoxIcon.Warning); });
+        }
+        public static DialogResult ShowError(string message, string caption = "HATE-UML")
+        {
+            return mainForm.Invoke(delegate { return MessageBox.Show(message, caption, MessageBoxButtons.OK, MessageBoxIcon.Error); });
         }
     }
 }
