@@ -122,7 +122,7 @@ namespace HATE
                 if (!(displayName.StartsWith("undertale") || displayName.StartsWith("deltarune")))
                     this.Invoke(delegate
                     {
-                        MsgBoxHelpers.ShowWarning("HATE-UML's support of this game may be limited. Unless this is a mod of a Toby Fox game, DO NOT report any possible problems you experience.", "Not a Toby Fox game");
+                        MsgBoxHelpers.ShowWarning("HATE-UML's support of this game may be limited. Unless this is a mod of a Toby Fox game, DO NOT report any problems you might experience.", "Not a Toby Fox game");
                     }
             }
         }
