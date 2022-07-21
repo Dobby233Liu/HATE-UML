@@ -148,6 +148,14 @@ namespace HATE
             foreach (var func in data.Shaders)
             {
                 pl_test.Remove(func.Name);
+                pl_test.Remove(func.GLSL_ES_Vertex);
+                pl_test.Remove(func.GLSL_ES_Fragment);
+                pl_test.Remove(func.GLSL_Vertex);
+                pl_test.Remove(func.GLSL_Fragment);
+                pl_test.Remove(func.HLSL9_Vertex);
+                pl_test.Remove(func.HLSL9_Fragment);
+                foreach (UndertaleShader.VertexShaderAttribute attr in func.VertexShaderAttributes)
+                    pl_test.Remove(attr.Name);
             }
             foreach (var func in data.Timelines)
             {
@@ -171,6 +179,19 @@ namespace HATE
             foreach (var func in data.Extensions)
             {
                 pl_test.Remove(func.Name);
+                pl_test.Remove(func.FolderName);
+                pl_test.Remove(func.ClassName);
+                foreach (var file in func.Files)
+                {
+                    pl_test.Remove(file.Filename);
+                    pl_test.Remove(file.InitScript);
+                    pl_test.Remove(file.CleanupScript);
+                    foreach (var function in file.Functions)
+                    {
+                        pl_test.Remove(function.Name);
+                        pl_test.Remove(function.ExtName);
+                    }
+                }
             }
             foreach (var func in data.Scripts)
             {
