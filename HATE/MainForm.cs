@@ -116,15 +116,25 @@ namespace HATE
             EnableControls(false);
             await LoadFile(_dataWin);
             AfterDataLoad();
+            if (Data is not null)
+            {
+                var displayName = Data.GeneralInfo.DisplayName.Content.ToLower();
+                if (!(displayName.StartsWith("undertale") || displayName.StartsWith("deltarune")))
+                    this.Invoke(delegate
+                    {
+                        MsgBoxHelpers.ShowWarning("HATE-UML's support of this game may be limited. Unless this is a mod of a Toby Fox game, DO NOT report any possible problems you experience.", "Not a Toby Fox game");
+                    }
+            }
         }
         private void AfterDataLoad()
         {
-            if (Data is null)
-                return;
             this.Invoke(delegate
-            {
-                EnableControls(true);
-                lblGameName.Text = Data.GeneralInfo.DisplayName.Content;
+            {      
+                if (Data is not null)
+                {
+                    EnableControls(true);
+                    lblGameName.Text = Data.GeneralInfo.DisplayName.Content;
+                }
                 UpdateCorrupt();
             });
         }
