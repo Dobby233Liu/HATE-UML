@@ -15,28 +15,28 @@ namespace HATE
     {
         public static bool ShuffleAudio_Func(UndertaleData data, Random random, float chance, StreamWriter logstream, bool _friskMode)
         {
-            return Shuffle.ShuffleChunk((IList<UndertaleObject>)data.Sounds, data, random, chance, logstream, _friskMode);
+            return Shuffle.ShuffleChunk("SOND", data, random, chance, logstream, _friskMode);
             //&& Shuffle.ShuffleChunk(data.EmbeddedAudio, data, random, chance, logstream);               
         }
 
         public static bool ShuffleBG_Func(UndertaleData data, Random random, float chance, StreamWriter logstream, bool _friskMode)
         {
-            return Shuffle.ShuffleChunk((IList<UndertaleObject>)data.Backgrounds, data, random, chance, logstream, _friskMode);              
+            return Shuffle.ShuffleChunk("BGND", data, random, chance, logstream, _friskMode);              
         }
 
         public static bool ShuffleFont_Func(UndertaleData data, Random random, float chance, StreamWriter logstream, bool _friskMode)
         {
-            return Shuffle.ShuffleChunk((IList<UndertaleObject>)data.Fonts, data, random, chance, logstream, _friskMode);
+            return Shuffle.ShuffleChunk("FONT", data, random, chance, logstream, _friskMode);
         }
 
         public static bool HitboxFix_Func(UndertaleData data, Random random, float chance, StreamWriter logstream, bool _friskMode)
         {
-            return Shuffle.ShuffleChunk((IList<UndertaleObject>)data.Sprites, data, random, chance, logstream, _friskMode, Shuffle.ComplexShuffle(HitboxFix_Shuffler));
+            return Shuffle.ShuffleChunk("SPRT", data, random, chance, logstream, _friskMode, Shuffle.ComplexShuffle(HitboxFix_Shuffler));
         }
 
         public static bool ShuffleGFX_Func(UndertaleData data, Random random, float chance, StreamWriter logstream, bool _friskMode)
         {
-            return Shuffle.ShuffleChunk((IList<UndertaleObject>)data.Sprites, data, random, chance, logstream, _friskMode, Shuffle.ComplexShuffle(ShuffleGFX_Shuffler));
+            return Shuffle.ShuffleChunk("SPRT", data, random, chance, logstream, _friskMode, Shuffle.ComplexShuffle(ShuffleGFX_Shuffler));
         }
 
         public static bool ShuffleText_Func(UndertaleData data, Random random, float chance, StreamWriter logstream, bool _friskMode)
@@ -49,16 +49,17 @@ namespace HATE
                     success = success && Shuffle.JSONStringShuffle(path, path, random, chance, logstream);
                 }
             }
-            return success && Shuffle.ShuffleChunk((IList<UndertaleObject>)data.Strings, data, random, chance, logstream, _friskMode, Shuffle.ComplexShuffle(ShuffleText_Shuffler));
+            return success && Shuffle.ShuffleChunk("STRG", data, random, chance, logstream, _friskMode, Shuffle.ComplexShuffle(ShuffleText_Shuffler));
         }
 
-        public static bool ShuffleGFX_Shuffler(IList<UndertaleObject> chunk, UndertaleData data, Random random, float shufflechance, StreamWriter logstream, bool _friskMode)
+        public static bool ShuffleGFX_Shuffler(string _chunk, UndertaleData data, Random random, float shufflechance, StreamWriter logstream, bool _friskMode)
         {
+            IList<UndertaleSprite> chunk = (data.FORM.Chunks[_chunk] as UndertaleChunkSPRT)?.List;
             List<int> sprites = new List<int>();
 
             for (int i = 0; i < chunk.Count; i++)
             {
-                UndertaleSprite pointer = (UndertaleSprite)chunk[i];
+                UndertaleSprite pointer = chunk[i];
 
                 if (!Shuffle.FriskSpriteHandles.Contains(pointer.Name.Content.Trim()) || _friskMode)
                     sprites.Add(i);
@@ -71,10 +72,11 @@ namespace HATE
             return true;
         }
 
-        public static bool HitboxFix_Shuffler(IList<UndertaleObject> pointerlist, UndertaleData data, Random random, float shufflechance, StreamWriter logstream, bool _friskMode)
+        public static bool HitboxFix_Shuffler(string _chunk, UndertaleData data, Random random, float shufflechance, StreamWriter logstream, bool _friskMode)
         {
+            IList<UndertaleSprite> pointerlist = (data.FORM.Chunks[_chunk] as UndertaleChunkSPRT)?.List;
             TextureWorker worker = new TextureWorker();
-            foreach (UndertaleObject _spriteptr in pointerlist)
+            foreach (UndertaleResource _spriteptr in pointerlist)
             {
                 // based on ImportGraphics.csx
                 UndertaleSprite spriteptr = (UndertaleSprite)_spriteptr;
@@ -114,9 +116,10 @@ namespace HATE
         }
 
         // TODO: clean this
-        public static bool ShuffleText_Shuffler(IList<UndertaleObject> _pointerlist, UndertaleData data, Random random, float shufflechance, StreamWriter logstream, bool _friskMode)
+        public static bool ShuffleText_Shuffler(string _chunk, UndertaleData data, Random random, float shufflechance, StreamWriter logstream, bool _friskMode)
         {
-            IList<UndertaleObject> pl_test = new List<UndertaleObject>(_pointerlist);
+            IList<UndertaleString> _pointerlist = (data.FORM.Chunks[_chunk] as UndertaleChunkSTRG)?.List;
+            IList<UndertaleString> pl_test = new List<UndertaleString>(_pointerlist);
             foreach (var func in data.Variables)
             {
                 pl_test.Remove(func.Name);
@@ -236,7 +239,7 @@ namespace HATE
                 {
                     pl_test.Remove(func.Name);
                 }
-            var feds = Data.FORM.FEDS?.List;
+            var feds = (data.FORM.Chunks["FEDS"] as UndertaleChunkFEDS)?.List;
             if (feds is not null)
                 foreach (var func in feds)
                 {
@@ -259,54 +262,57 @@ namespace HATE
             {
                 var i = _pointerlist.IndexOf(pl_test[_i]);
 
-                var s = (UndertaleString)_pointerlist[i];
+                var s = _pointerlist[i];
                 var convertedString = s.Content;
 
-                if (convertedString.Length >= 3 && !Shuffle.BannedStrings.Any(convertedString.Contains))
+                if (convertedString.Length < 3)
+                    continue;
+                if (Shuffle.BannedStrings.Any(convertedString.Contains)
+                    && !Shuffle.ForceShuffleReferenceChars.Any(convertedString.Contains))
+                    continue;
+
+                string ch = "";
+                foreach (string chr in Shuffle.DRChoicerControlChars)
                 {
-                    string ch = "";
-                    foreach (string chr in Shuffle.DRChoicerControlChars)
+                    if (convertedString.Contains(chr))
                     {
-                        if (convertedString.Contains(chr))
+                        ch = chr;
+                        break;
+                    }
+                }
+                if (ch != "")
+                {
+                    if (convertedString.Any(x => x > 127))
+                        ch += "_ja";
+                    if (!stringDict.ContainsKey(ch))
+                        stringDict[ch] = new List<int>();
+                    stringDict[ch].Add(i);
+                }
+                else
+                {
+                    string ending = "";
+                    foreach (string ed in Shuffle.FormatChars)
+                    {
+                        if (convertedString.EndsWith(ed))
                         {
-                            ch = chr;
+                            ending = ed;
                             break;
                         }
                     }
-                    if (ch != "")
+                    if (ending == "")
                     {
-                        if (convertedString.Any(x => x > 127))
-                            ch += "_ja";
-                        if (!stringDict.ContainsKey(ch))
-                            stringDict[ch] = new List<int>();
-                        stringDict[ch].Add(i);
+                        if (Shuffle.ForceShuffleReferenceChars.Any(convertedString.Contains))
+                            ending = "_FORCE";
+                        else
+                            continue;
                     }
-                    else
-                    {
-                        string ending = "";
-                        foreach (string ed in Shuffle.FormatChars)
-                        {
-                            if (convertedString.EndsWith(ed))
-                            {
-                                ending = ed;
-                                break;
-                            }
-                        }
-                        if (ending == "")
-                        {
-                            if (Shuffle.ForceShuffleReferenceChars.Any(convertedString.Contains))
-                                ending = "_FORCE";
-                            else
-                                continue;
-                        }
-                        if (convertedString.Any(x => x > 127))
-                            ending += "_ja";
+                    if (convertedString.Any(x => x > 127))
+                        ending += "_ja";
 
-                        if (!stringDict.ContainsKey(ending))
-                            stringDict[ending] = new List<int>();
+                    if (!stringDict.ContainsKey(ending))
+                        stringDict[ending] = new List<int>();
 
-                        stringDict[ending].Add(i);
-                    }
+                    stringDict[ending].Add(i);
                 }
             }
 
@@ -316,9 +322,9 @@ namespace HATE
                 logstream.WriteLine($"Added {stringDict[ending].Count} string pointers of ending {ending} to dialogue string List.");
 
                 _pointerlist.ShuffleOnlySelected(stringDict[ending], (n, k) => {
-                    string value = ((UndertaleString)_pointerlist[k]).Content;
-                    ((UndertaleString)_pointerlist[k]).Content = ((UndertaleString)_pointerlist[n]).Content;
-                    ((UndertaleString)_pointerlist[n]).Content = value;
+                    string value = (_pointerlist[k]).Content;
+                    _pointerlist[k].Content = _pointerlist[n].Content;
+                    _pointerlist[n].Content = value;
                 }, random);
             }
 

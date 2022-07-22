@@ -66,7 +66,7 @@ namespace HATE
             "Understood."
         };
         public static string[] BannedStrings = {
-            "%%", "@@",
+            "_", "%%", "@@",
             "Z}", "`}", "0000000000000000", "~~~",
             "DO NOT EDIT IN GAMEMAKER",
             "gml_", "scr_", "SCR_", "room_", "obj_", "blt_", "spr_",
@@ -115,7 +115,7 @@ namespace HATE
             "<hash>", "enemytalk", "enemyattack", "noroom=", "_pocketed=", "_noroominventory=",
             "soundplay", "walkdirect",
             "showdialog", "savepadindex", "slottitle",
-            "saveslotsize",
+            "saveslotsize", "mus/", "\\n"
         };
         public static string[] FriskSpriteHandles = {
             // UNDERTALE
@@ -172,8 +172,8 @@ namespace HATE
             "spr_doorE_ch1", "spr_doorF_ch1", "spr_doorW_ch1"
         };
 
-        public static bool ShuffleChunk(IList<UndertaleObject> chuck, UndertaleData data, Random random, float shufflechance, StreamWriter logstream,
-            bool friskmode, Func<IList<UndertaleObject>, UndertaleData, Random, float, StreamWriter, bool, bool> shufflefunc)
+        public static bool ShuffleChunk(string chuck, UndertaleData data, Random random, float shufflechance, StreamWriter logstream,
+            bool friskmode, Func<string, UndertaleData, Random, float, StreamWriter, bool, bool> shufflefunc)
         {
             if (random == null)
                 throw new ArgumentNullException(nameof(random));
@@ -190,26 +190,26 @@ namespace HATE
                 logstream.Write($"Caught exception during modification of the chuck. -> {e}");
                 throw;
             }
-            return false;
+            return true;
         }
-        public static bool ShuffleChunk(IList<UndertaleObject> chuck, UndertaleData data, Random random, float shufflechance, StreamWriter logstream, bool friskmode)
+        public static bool ShuffleChunk(string chuck, UndertaleData data, Random random, float shufflechance, StreamWriter logstream, bool friskmode)
         {
             return ShuffleChunk(chuck, data, random, shufflechance, logstream, friskmode, SimpleShuffle);
         }
 
         enum ComplexShuffleStep : byte { Shuffling, SecondLog }
 
-        public static Func<IList<UndertaleObject>, UndertaleData, Random, float, StreamWriter, bool, bool> ComplexShuffle(
-            Func<IList<UndertaleObject>, UndertaleData, Random, float, StreamWriter, bool, bool> shuffler)
+        public static Func<string, UndertaleData, Random, float, StreamWriter, bool, bool> ComplexShuffle(
+            Func<string, UndertaleData, Random, float, StreamWriter, bool, bool> shuffler)
         {
-            return (IList<UndertaleObject> chuck, UndertaleData data, Random random, float chance, StreamWriter logstream, bool friskmode) =>
+            return (string chunk, UndertaleData data, Random random, float chance, StreamWriter logstream, bool friskmode) =>
             {
                 ComplexShuffleStep step = ComplexShuffleStep.Shuffling;
                 try
                 {
-                    shuffler(chuck, data, random, chance, logstream, friskmode);
+                    shuffler(chunk, data, random, chance, logstream, friskmode);
                     step = ComplexShuffleStep.SecondLog;
-                    logstream.WriteLine($"Shuffled {chuck.Count} pointers.");
+                    logstream.WriteLine($"Shuffled chunk {chunk}.");
                 }
                 catch (Exception ex)
                 {
@@ -221,19 +221,20 @@ namespace HATE
             };
         }
 
-        public static bool SimpleShuffler(IList<UndertaleObject> chuck, UndertaleData data, Random random, float shuffleChance, StreamWriter logStream, bool _friskMode)
+        public static bool SimpleShuffler(string _chunk, UndertaleData data, Random random, float shuffleChance, StreamWriter logStream, bool _friskMode)
         {
+            var chunk = (data.FORM.Chunks[_chunk] as IUndertaleListChunk)?.GetList();
             List<int> ints = new List<int>();
-            for (int i = 0; i < chuck.Count; i++)
+            for (int i = 0; i < chunk.Count; i++)
             {
                 ints.Add(i);
             }
             ints.SelectSome(shuffleChance, random);
-            chuck.ShuffleOnlySelected(ints, random);
+            chunk.ShuffleOnlySelected(ints, random);
             return true;
         }
 
-        public static Func<IList<UndertaleObject>, UndertaleData, Random, float, StreamWriter, bool, bool> SimpleShuffle = ComplexShuffle(SimpleShuffler);
+        public static Func<string, UndertaleData, Random, float, StreamWriter, bool, bool> SimpleShuffle = ComplexShuffle(SimpleShuffler);
 
         public static readonly Regex jsonLineRegex = new Regex("\\s*\"(.+)\":\\s*\"(.+)\",", RegexOptions.ECMAScript);
 
@@ -289,7 +290,8 @@ namespace HATE
 
             foreach (JSONStringEntry entry in strings)
             {
-                if (entry.Str.Length >= 3 && entry.Key.Contains('_'))
+                if (entry.Str.Length >= 3 && entry.Key.Contains('_') &&
+                    (!BannedStrings.Any(entry.Str.Contains) || ForceShuffleReferenceChars.Any(entry.Str.Contains)))
                 {
                     good_strings.Add(entry);
                 }
@@ -349,7 +351,7 @@ namespace HATE
                 for (int i = 0; i < stringDict[ending].Count; i++)
                     ints.Add(i);
                 ints.SelectSome(shufflechance, random);
-                stringDict[ending].ShuffleOnlySelected(ints, (n, k) => {
+                stringDict[ending].ShuffleOnlySelected<JSONStringEntry>(ints, (n, k) => {
                     string tmp = stringDict[ending][n].Key;
                     stringDict[ending][n].Key = stringDict[ending][k].Key;
                     stringDict[ending][k].Key = tmp;

@@ -44,7 +44,7 @@ namespace HATE
         private bool _friskMode = false;
         private float _truePower = 0;
         private readonly string _defaultPowerText = "0 - 255";
-        private readonly string _dataWin = "data.win";
+        private string _dataWin = "data.win";
 
         private static readonly DateTime _unixTimeZero = new DateTime(1970, 1, 1);
         private Random _random;
@@ -92,7 +92,10 @@ namespace HATE
             _random = new Random();
 
             EnableControls(false);
-
+        }
+        private async void MainForm_Load(object sender, EventArgs e)
+        {
+            EnableControls(false);
             if (!File.Exists(_dataWin))
             {
                 if (File.Exists("game.ios"))
@@ -108,12 +111,6 @@ namespace HATE
                     return;
                 }
             }
-
-            _dataWin = Path.GetFullPath(_dataWin);
-        }
-        private async void MainForm_Load(object sender, EventArgs e)
-        {
-            EnableControls(false);
             await LoadFile(_dataWin);
             AfterDataLoad();
             if (Data is not null)
@@ -123,7 +120,7 @@ namespace HATE
                     this.Invoke(delegate
                     {
                         MsgBoxHelpers.ShowWarning("HATE-UML's support of this game may be limited. Unless this is a mod of a Toby Fox game, DO NOT report any problems you might experience.", "Not a Toby Fox game");
-                    }
+                    });
             }
         }
         private void AfterDataLoad()
@@ -356,24 +353,29 @@ namespace HATE
             try { _logWriter = new StreamWriter("HATE.log", true); }
             catch (Exception) { MsgBoxHelpers.ShowError("Could not set up the log file."); }
 
-            bool successful = false;
+            Task<bool> t = Task.Run(async () =>
+            {
+                if (!await Setup()) return false;
+                if (_shuffleGFX && !Functionality.ShuffleGFX_Func(Data, _random, _truePower, _logWriter, _friskMode)) return false;
+                if (_hitboxFix && !Functionality.HitboxFix_Func(Data, _random, _truePower, _logWriter, _friskMode)) return false;
+                if (_shuffleText && !Functionality.ShuffleText_Func(Data, _random, _truePower, _logWriter, _friskMode)) return false;
+                if (_shuffleFont && !Functionality.ShuffleFont_Func(Data, _random, _truePower, _logWriter, _friskMode)) return false;
+                if (_shuffleBG && !Functionality.ShuffleBG_Func(Data, _random, _truePower, _logWriter, _friskMode)) return false;
+                if (_shuffleAudio && !Functionality.ShuffleAudio_Func(Data, _random, _truePower, _logWriter, _friskMode)) return false;
+                return true;
+            });
 
-            if (!await Setup()) goto End;
-            if (_shuffleGFX && !Functionality.ShuffleGFX_Func(Data, _random, _truePower, _logWriter, _friskMode)) goto End;
-            if (_hitboxFix && !Functionality.HitboxFix_Func(Data, _random, _truePower, _logWriter, _friskMode)) goto End;
-            if (_shuffleText && !Functionality.ShuffleText_Func(Data, _random, _truePower, _logWriter, _friskMode)) goto End;
-            if (_shuffleFont && !Functionality.ShuffleFont_Func(Data, _random, _truePower, _logWriter, _friskMode)) goto End;
-            if (_shuffleBG && !Functionality.ShuffleBG_Func(Data, _random, _truePower, _logWriter, _friskMode)) goto End;
-            if (_shuffleAudio && !Functionality.ShuffleAudio_Func(Data, _random, _truePower, _logWriter, _friskMode)) goto End;
-            successful = true;
-
-        End:
-            _logWriter.Close();
-            if (successful)
+            if (await t)
             {
                 await SaveFile(_dataWin);
                 AfterDataLoad();
             }
+            else
+            {
+                _logWriter.WriteLine("An error ocurred.");
+                MsgBoxHelpers.ShowError("HATE.log may have described this error in detail.", "An error ocurred");
+            }
+            _logWriter.Close();
             EnableControls(true);
         }
 
@@ -407,35 +409,33 @@ namespace HATE
 
             /** SEED PARSING AND RNG SETUP **/
             _friskMode = false;
-            _random = new Random();
 
             int timeSeed = 0;
-            string seed = txtSeed.Text.Trim();
-            bool textSeed = false;
+            string seed = Invoke<string>(delegate { return txtSeed.Text.Trim(); });
 
             if (seed.ToUpper() == "FRISK" || seed.ToUpper() == "KRIS")
                 _friskMode = true;
 
             /* checking # for: Now it will change the corruption every time you press the button */
-            else if (seed == "" || txtSeed.Text[0] == '#')
+            else if (seed == "" || seed[0] == '#')
             {
                 timeSeed = (int)DateTime.Now.Subtract(_unixTimeZero).TotalSeconds;
 
-                txtSeed.Text = $"#{timeSeed}";
+                Invoke(delegate { txtSeed.Text = $"#{timeSeed}"; });
+
+                _logWriter.WriteLine($"Numeric seed - {timeSeed}");
             }
             else if (!int.TryParse(seed, out timeSeed))
             {
-                _logWriter.WriteLine($"Text seed - {txtSeed.Text.GetHashCode()}");
-                _random = new Random(txtSeed.Text.GetHashCode());
-                textSeed = true;
+                timeSeed = seed.GetHashCode();
+
+                _logWriter.WriteLine($"Text seed - {timeSeed}");
             }
 
-            if (!textSeed)
-            {
-                _logWriter.WriteLine($"Numeric seed - {timeSeed}");
-            }
             _logWriter.WriteLine($"Power - {power}");
             _logWriter.WriteLine($"TruePower - {_truePower}");
+
+            _random = new Random(timeSeed);
 
             /** ENVIRONMENTAL CHECKS **/
             if (!File.Exists(_dataWin))
@@ -443,16 +443,16 @@ namespace HATE
                 MsgBoxHelpers.ShowError($"You seem to be missing your resource file, {_dataWin}. Make sure you've placed HATE.exe in the proper location.");
                 return false;
             }
-            else if (!Directory.Exists("HATE_backup"))
+            else if (!Directory.Exists("HATE_backup") || !File.Exists($"HATE_backup/{_dataWin}"))
             {
                 if (!SafeMethods.CreateDirectory("HATE_backup")) { return false; }
                 if (!SafeMethods.CopyFile(_dataWin, $"HATE_backup/{_dataWin}")) { return false; }
-                if (Directory.Exists("./lang"))
+                if (Directory.Exists("lang"))
                 {
-                    if (File.Exists("./lang/lang_en.json") && !SafeMethods.CopyFile("./lang/lang_en.json", "./HATE_backup/lang_en.json")) { return false; };
-                    if (File.Exists("./lang/lang_ja.json") && !SafeMethods.CopyFile("./lang/lang_ja.json", "./HATE_backup/lang_ja.json")) { return false; };
-                    if (File.Exists("./lang/lang_en_ch1.json") && !SafeMethods.CopyFile("./lang/lang_en_ch1.json", "./HATE_backup/lang_en_ch1.json")) { return false; };
-                    if (File.Exists("./lang/lang_ja_ch1.json") && !SafeMethods.CopyFile("./lang/lang_ja_ch1.json", "./HATE_backup/lang_ja_ch1.json")) { return false; };
+                    if (File.Exists("lang/lang_en.json") && !SafeMethods.CopyFile("lang/lang_en.json", "./HATE_backup/lang_en.json")) { return false; };
+                    if (File.Exists("lang/lang_ja.json") && !SafeMethods.CopyFile("lang/lang_ja.json", "./HATE_backup/lang_ja.json")) { return false; };
+                    if (File.Exists("lang/lang_en_ch1.json") && !SafeMethods.CopyFile("lang/lang_en_ch1.json", "./HATE_backup/lang_en_ch1.json")) { return false; };
+                    if (File.Exists("lang/lang_ja_ch1.json") && !SafeMethods.CopyFile("lang/lang_ja_ch1.json", "./HATE_backup/lang_ja_ch1.json")) { return false; };
                 }
                 _logWriter.WriteLine($"Finished setting up the Data folder.");
             }
@@ -461,35 +461,43 @@ namespace HATE
                 /* restore backup */
                 if (!SafeMethods.DeleteFile(_dataWin)) { return false; }
                 _logWriter.WriteLine($"Deleted {_dataWin}.");
-                if (Directory.Exists("./lang"))
+                if (Directory.Exists("lang"))
                 {
-                    if (File.Exists("./lang/lang_en.json") && !SafeMethods.DeleteFile("./lang/lang_en.json")) { return false; }
-                    _logWriter.WriteLine($"Deleted ./lang/lang_en.json.");
-                    if (File.Exists("./lang/lang_ja.json") && !SafeMethods.DeleteFile("./lang/lang_ja.json")) { return false; }
-                    _logWriter.WriteLine($"Deleted ./lang/lang_ja.json.");
-                    if (File.Exists("./lang/lang_en_ch1.json") && !SafeMethods.DeleteFile("./lang/lang_en_ch1.json")) { return false; }
-                    _logWriter.WriteLine($"Deleted ./lang/lang_en_ch1.json.");
-                    if (File.Exists("./lang/lang_ja_ch1.json") && !SafeMethods.DeleteFile("./lang/lang_ja_ch1.json")) { return false; }
-                    _logWriter.WriteLine($"Deleted ./lang/lang_ja_ch1.json.");
+                    if (File.Exists("lang/lang_en.json") && !SafeMethods.DeleteFile("lang/lang_en.json")) { return false; }
+                    _logWriter.WriteLine($"Deleted lang/lang_en.json.");
+                    if (File.Exists("lang/lang_ja.json") && !SafeMethods.DeleteFile("lang/lang_ja.json")) { return false; }
+                    _logWriter.WriteLine($"Deleted lang/lang_ja.json.");
+                    if (File.Exists("lang/lang_en_ch1.json") && !SafeMethods.DeleteFile("lang/lang_en_ch1.json")) { return false; }
+                    _logWriter.WriteLine($"Deleted lang/lang_en_ch1.json.");
+                    if (File.Exists("lang/lang_ja_ch1.json") && !SafeMethods.DeleteFile("lang/lang_ja_ch1.json")) { return false; }
+                    _logWriter.WriteLine($"Deleted lang/lang_ja_ch1.json.");
                 }
 
                 if (!SafeMethods.CopyFile($"HATE_backup/{_dataWin}", _dataWin)) { return false; }
                 _logWriter.WriteLine($"Copied {_dataWin}.");
-                if (Directory.Exists("./lang"))
+                if (Directory.Exists("lang"))
                 {
-                    if (File.Exists("./HATE_backup/lang_en_ch1.json") && !SafeMethods.CopyFile("./HATE_backup/lang_en.json", "./lang/lang_en.json")) { return false; }
-                    _logWriter.WriteLine($"Copied ./lang/lang_en.json.");
-                    if (File.Exists("./HATE_backup/lang_en_ch1.json") && !SafeMethods.CopyFile("./HATE_backup/lang_ja.json", "./lang/lang_ja.json")) { return false; }
-                    _logWriter.WriteLine($"Copied ./lang/lang_ja.json.");
-                    if (File.Exists("./HATE_backup/lang_en_ch1.json") && !SafeMethods.CopyFile("./HATE_backup/lang_en_ch1.json", "./lang/lang_en_ch1.json")) { return false; }
-                    _logWriter.WriteLine($"Copied ./lang/lang_en_ch1.json.");
-                    if (File.Exists("./HATE_backup/lang_ja_ch1.json") && !SafeMethods.CopyFile("./HATE_backup/lang_ja_ch1.json", "./lang/lang_ja_ch1.json")) { return false; }
-                    _logWriter.WriteLine($"Copied ./lang/lang_ja_ch1.json.");
+                    if (File.Exists("./HATE_backup/lang_en_ch1.json") && !SafeMethods.CopyFile("./HATE_backup/lang_en.json", "lang/lang_en.json")) { return false; }
+                    _logWriter.WriteLine($"Copied lang/lang_en.json.");
+                    if (File.Exists("./HATE_backup/lang_en_ch1.json") && !SafeMethods.CopyFile("./HATE_backup/lang_ja.json", "lang/lang_ja.json")) { return false; }
+                    _logWriter.WriteLine($"Copied lang/lang_ja.json.");
+                    if (File.Exists("./HATE_backup/lang_en_ch1.json") && !SafeMethods.CopyFile("./HATE_backup/lang_en_ch1.json", "lang/lang_en_ch1.json")) { return false; }
+                    _logWriter.WriteLine($"Copied lang/lang_en_ch1.json.");
+                    if (File.Exists("./HATE_backup/lang_ja_ch1.json") && !SafeMethods.CopyFile("./HATE_backup/lang_ja_ch1.json", "lang/lang_ja_ch1.json")) { return false; }
+                    _logWriter.WriteLine($"Copied lang/lang_ja_ch1.json.");
                 }
             }
-            await LoadFile(_dataWin);
 
-            return true;
+            await LoadFile(_dataWin);
+            this.Invoke(delegate
+            {
+                if (Data is not null)
+                {
+                    lblGameName.Text = Data.GeneralInfo.DisplayName.Content;
+                }
+            });
+
+            return Data is not null;
         }
 
         public void UpdateCorrupt()
