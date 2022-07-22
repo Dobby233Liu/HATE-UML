@@ -37,7 +37,8 @@ namespace HATE
             for (int _i = 0; _i < strgClone.Count; _i++)
             {
                 string i = strgClone[_i].Content;
-                if (i.EndsWith(".ogg") || i.EndsWith(".wav") || i.EndsWith(".mp3"))
+                if ((i.EndsWith(".ogg") || i.EndsWith(".wav") || i.EndsWith(".mp3"))
+                    && !i.StartsWith("music/") /* UNDERTALE */)
                     stringList.Add(_i);
             }
 
