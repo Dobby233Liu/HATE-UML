@@ -173,164 +173,8 @@ namespace HATE
         public static bool ShuffleText_Shuffler(string _chunk, UndertaleData data, Random random, float shufflechance, StreamWriter logstream, bool _friskMode)
         {
             IList<UndertaleString> _pointerlist = (data.FORM.Chunks[_chunk] as UndertaleChunkSTRG)?.List;
-            IList<UndertaleString> pl_test = new List<UndertaleString>(_pointerlist);
-            foreach (var func in data.Variables)
-            {
-                pl_test.Remove(func.Name);
-            }
-            foreach (var func in data.Functions)
-            {
-                pl_test.Remove(func.Name);
-            }
-            foreach (var func in data.Code)
-            {
-                pl_test.Remove(func.Name);
-            }
-            foreach (var func in data.Rooms)
-            {
-                pl_test.Remove(func.Name);
-                pl_test.Remove(func.Caption);
-                if (data.IsGameMaker2())
-                {
-                    foreach (var layer in func.Layers)
-                    {
-                        pl_test.Remove(layer.LayerName);
-                    }
-                }
-            }
-            foreach (var func in data.GameObjects)
-            {
-                pl_test.Remove(func.Name);
-            }
-            if (data.Shaders is not null)
-                foreach (var func in data.Shaders)
-                {
-                    pl_test.Remove(func.Name);
-                    pl_test.Remove(func.GLSL_ES_Vertex);
-                    pl_test.Remove(func.GLSL_ES_Fragment);
-                    pl_test.Remove(func.GLSL_Vertex);
-                    pl_test.Remove(func.GLSL_Fragment);
-                    pl_test.Remove(func.HLSL9_Vertex);
-                    pl_test.Remove(func.HLSL9_Fragment);
-                    foreach (UndertaleShader.VertexShaderAttribute attr in func.VertexShaderAttributes)
-                        pl_test.Remove(attr.Name);
-                }
-            if (data.Timelines is not null)
-                foreach (var func in data.Timelines)
-                {
-                    pl_test.Remove(func.Name);
-                }
-            if (data.AnimationCurves is not null)
-                foreach (var func in data.AnimationCurves)
-                {
-                    pl_test.Remove(func.Name);
-                }
-            if (data.Sequences is not null)
-                foreach (var func in data.Sequences)
-                {
-                    pl_test.Remove(func.Name);
 
-                    foreach (KeyValuePair<int, UndertaleString> kvp in func.FunctionIDs)
-                        pl_test.Remove(kvp.Value);
-                    foreach (UndertaleSequence.Keyframe<UndertaleSequence.Moment> moment in func.Moments)
-                        foreach (KeyValuePair<int, UndertaleSequence.Moment> kvp in moment.Channels)
-                            pl_test.Remove(kvp.Value.Event);
-                    foreach (UndertaleSequence.Keyframe<UndertaleSequence.BroadcastMessage> bm in func.BroadcastMessages)
-                        foreach (KeyValuePair<int, UndertaleSequence.BroadcastMessage> kvp in bm.Channels)
-                            foreach (UndertaleString msg in kvp.Value.Messages)
-                                pl_test.Remove(msg);
-
-                    foreach (var track in func.Tracks)
-                    {
-                        void loop(UndertaleSequence.Track track)
-                        {
-                            pl_test.Remove(track.Name);
-                            pl_test.Remove(track.ModelName);
-                            pl_test.Remove(track.GMAnimCurveString);
-                            if (track.ModelName.Content == "GMStringTrack")
-                                foreach (var i in (track.Keyframes as UndertaleSequence.StringKeyframes).List)
-                                    foreach (KeyValuePair<int, UndertaleSequence.StringData> kvp in i.Channels)
-                                        pl_test.Remove(kvp.Value.Value);
-                            if (track.Tracks != null)
-                                foreach (var subtrack in track.Tracks)
-                                    loop(subtrack);
-                        }
-                        loop(track);
-                    }
-                }
-            foreach (var func in data.Fonts)
-            {
-                pl_test.Remove(func.Name);
-                pl_test.Remove(func.DisplayName);
-            }
-            foreach (var func in data.Extensions)
-            {
-                pl_test.Remove(func.Name);
-                pl_test.Remove(func.FolderName);
-                pl_test.Remove(func.ClassName);
-                foreach (var file in func.Files)
-                {
-                    pl_test.Remove(file.Filename);
-                    pl_test.Remove(file.InitScript);
-                    pl_test.Remove(file.CleanupScript);
-                    foreach (var function in file.Functions)
-                    {
-                        pl_test.Remove(function.Name);
-                        pl_test.Remove(function.ExtName);
-                    }
-                }
-            }
-            foreach (var func in data.Scripts)
-            {
-                pl_test.Remove(func.Name);
-            }
-            foreach (var func in data.Sprites)
-            {
-                pl_test.Remove(func.Name);
-            }
-            if (data.Backgrounds is not null)
-                foreach (var func in data.Backgrounds)
-                {
-                    pl_test.Remove(func.Name);
-                }
-            foreach (var func in data.Paths)
-            {
-                pl_test.Remove(func.Name);
-            }
-            foreach (var func in data.Sounds)
-            {
-                pl_test.Remove(func.Name);
-                pl_test.Remove(func.File);
-            }
-            if (data.AudioGroups is not null)
-                foreach (var func in data.AudioGroups)
-                {
-                    pl_test.Remove(func.Name);
-                }
-            if (data.TextureGroupInfo is not null)
-                foreach (var func in data.TextureGroupInfo)
-                {
-                    pl_test.Remove(func.Name);
-                }
-            if (data.FORM.Chunks.ContainsKey("FEDS"))
-            {
-                var feds = (data.FORM.Chunks["FEDS"] as UndertaleChunkFEDS)?.List;
-                if (feds is not null)
-                    foreach (var func in feds)
-                    {
-                        pl_test.Remove(func.Name);
-                        pl_test.Remove(func.Value);
-                    }
-            }
-            pl_test.Remove(data.GeneralInfo.FileName);
-            pl_test.Remove(data.GeneralInfo.Name);
-            pl_test.Remove(data.GeneralInfo.DisplayName);
-            pl_test.Remove(data.GeneralInfo.Config);
-            foreach (var func in data.Options.Constants)
-            {
-                pl_test.Remove(func.Name);
-                pl_test.Remove(func.Value);
-            }
+            IList<UndertaleString> pl_test = CleanseStringList(_pointerlist, data);
 
             Dictionary<string, List<int>> stringDict = new Dictionary<string, List<int>>();
 
@@ -400,6 +244,223 @@ namespace HATE
             }
 
             return true;
+        }
+
+        private static IList<UndertaleString> CleanseStringList(IList<UndertaleString> pointerlist, UndertaleData data)
+        {
+            var pl_test = new List<UndertaleString>(pointerlist);
+            pl_test.Remove(data.GeneralInfo.FileName);
+            pl_test.Remove(data.GeneralInfo.Name);
+            pl_test.Remove(data.GeneralInfo.DisplayName);
+            pl_test.Remove(data.GeneralInfo.Config);
+            foreach (var func in data.Options.Constants)
+            {
+                pl_test.Remove(func.Name);
+                pl_test.Remove(func.Value);
+            }
+            foreach (var func in data.Language.EntryIDs)
+            {
+                pl_test.Remove(func);
+            }
+            foreach (var func in data.Language.Languages)
+            {
+                pl_test.Remove(func.Name);
+                pl_test.Remove(func.Region);
+                foreach (var j in func.Entries)
+                {
+                    pl_test.Remove(j);
+                }
+            }
+            foreach (var func in data.Variables)
+            {
+                pl_test.Remove(func.Name);
+            }
+            foreach (var func in data.Functions)
+            {
+                pl_test.Remove(func.Name);
+            }
+            foreach (var func in data.CodeLocals)
+            {
+                pl_test.Remove(func.Name);
+                foreach (var i in func.Locals)
+                    pl_test.Remove(i.Name);
+            }
+            foreach (var func in data.Code)
+            {
+                pl_test.Remove(func.Name);
+            }
+            foreach (var func in data.Rooms)
+            {
+                pl_test.Remove(func.Name);
+                pl_test.Remove(func.Caption);
+                if (data.IsGameMaker2())
+                {
+                    foreach (var layer in func.Layers)
+                    {
+                        pl_test.Remove(layer.LayerName);
+                        if (layer.EffectType != null)
+                            pl_test.Remove(layer.EffectType);
+                        if (layer.EffectData != null)
+                        {
+                            pl_test.Remove(layer.EffectData.EffectType);
+                            foreach (var prop in layer.EffectData.Properties)
+                            {
+                                pl_test.Remove(prop.Name);
+                                pl_test.Remove(prop.Value);
+                            }
+                        }
+                        if (layer.AssetsData != null)
+                        {
+                            foreach (var asset in layer.AssetsData.Sprites)
+                                pl_test.Remove(asset.Name);
+                            foreach (var asset in layer.AssetsData.Sequences)
+                                pl_test.Remove(asset.Name);
+                        }
+                    }
+                }
+            }
+            foreach (var func in data.GameObjects)
+            {
+                pl_test.Remove(func.Name);
+                foreach (var i in func.Events)
+                    foreach (var ii in i)
+                        foreach (var j in ii.Actions)
+                            pl_test.Remove(j.ActionName);
+            }
+            if (data.Shaders is not null)
+                foreach (var func in data.Shaders)
+                {
+                    pl_test.Remove(func.Name);
+                    pl_test.Remove(func.GLSL_ES_Vertex);
+                    pl_test.Remove(func.GLSL_ES_Fragment);
+                    pl_test.Remove(func.GLSL_Vertex);
+                    pl_test.Remove(func.GLSL_Fragment);
+                    pl_test.Remove(func.HLSL9_Vertex);
+                    pl_test.Remove(func.HLSL9_Fragment);
+                    foreach (UndertaleShader.VertexShaderAttribute attr in func.VertexShaderAttributes)
+                        pl_test.Remove(attr.Name);
+                }
+            if (data.Timelines is not null)
+                foreach (var func in data.Timelines)
+                {
+                    pl_test.Remove(func.Name);
+                }
+            if (data.AnimationCurves is not null)
+                foreach (var func in data.AnimationCurves)
+                {
+                    pl_test.Remove(func.Name);
+                    foreach (var ch in func.Channels)
+                        pl_test.Remove(ch.Name);
+                }
+            if (data.Sequences is not null)
+                foreach (var func in data.Sequences)
+                {
+                    pl_test.Remove(func.Name);
+
+                    foreach (KeyValuePair<int, UndertaleString> kvp in func.FunctionIDs)
+                        pl_test.Remove(kvp.Value);
+                    foreach (UndertaleSequence.Keyframe<UndertaleSequence.Moment> moment in func.Moments)
+                        foreach (KeyValuePair<int, UndertaleSequence.Moment> kvp in moment.Channels)
+                            pl_test.Remove(kvp.Value.Event);
+                    foreach (UndertaleSequence.Keyframe<UndertaleSequence.BroadcastMessage> bm in func.BroadcastMessages)
+                        foreach (KeyValuePair<int, UndertaleSequence.BroadcastMessage> kvp in bm.Channels)
+                            foreach (UndertaleString msg in kvp.Value.Messages)
+                                pl_test.Remove(msg);
+
+                    foreach (var track in func.Tracks)
+                    {
+                        void loop(UndertaleSequence.Track track)
+                        {
+                            pl_test.Remove(track.Name);
+                            pl_test.Remove(track.ModelName);
+                            pl_test.Remove(track.GMAnimCurveString);
+                            if (track.ModelName.Content == "GMStringTrack")
+                                foreach (var i in (track.Keyframes as UndertaleSequence.StringKeyframes).List)
+                                    foreach (KeyValuePair<int, UndertaleSequence.StringData> kvp in i.Channels)
+                                        pl_test.Remove(kvp.Value.Value);
+                            if (track.Tracks != null)
+                                foreach (var subtrack in track.Tracks)
+                                    loop(subtrack);
+                        }
+                        loop(track);
+                    }
+                }
+            foreach (var func in data.Fonts)
+            {
+                pl_test.Remove(func.Name);
+                pl_test.Remove(func.DisplayName);
+            }
+            foreach (var func in data.Extensions)
+            {
+                pl_test.Remove(func.Name);
+                pl_test.Remove(func.FolderName);
+                pl_test.Remove(func.ClassName);
+                foreach (var file in func.Files)
+                {
+                    pl_test.Remove(file.Filename);
+                    pl_test.Remove(file.InitScript);
+                    pl_test.Remove(file.CleanupScript);
+                    foreach (var function in file.Functions)
+                    {
+                        pl_test.Remove(function.Name);
+                        pl_test.Remove(function.ExtName);
+                    }
+                }
+                foreach (var function in func.Options)
+                {
+                    pl_test.Remove(function.Name);
+                    pl_test.Remove(function.Value);
+                }
+            }
+            foreach (var func in data.Scripts)
+            {
+                pl_test.Remove(func.Name);
+            }
+            foreach (var func in data.Sprites)
+            {
+                pl_test.Remove(func.Name);
+            }
+            if (data.Backgrounds is not null)
+                foreach (var func in data.Backgrounds)
+                {
+                    pl_test.Remove(func.Name);
+                }
+            foreach (var func in data.Paths)
+            {
+                pl_test.Remove(func.Name);
+            }
+            foreach (var func in data.Sounds)
+            {
+                pl_test.Remove(func.Name);
+                pl_test.Remove(func.Type);
+                pl_test.Remove(func.File);
+            }
+            if (data.AudioGroups is not null)
+                foreach (var func in data.AudioGroups)
+                {
+                    pl_test.Remove(func.Name);
+                }
+            if (data.TextureGroupInfo is not null)
+                foreach (var func in data.TextureGroupInfo)
+                {
+                    pl_test.Remove(func.Name);
+                }
+            if (data.EmbeddedImages is not null)
+                foreach (var func in data.EmbeddedImages)
+                {
+                    pl_test.Remove(func.Name);
+                }
+            if (data.FORM.Chunks.ContainsKey("FEDS"))
+            {
+                var feds = (data.FORM.Chunks["FEDS"] as UndertaleChunkFEDS)?.List;
+                if (feds is not null)
+                    foreach (var func in feds)
+                    {
+                        pl_test.Remove(func.Name);
+                        pl_test.Remove(func.Value);
+                    }
+            }
+            return pl_test;
         }
     }
 }
