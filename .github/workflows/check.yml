@@ -3,6 +3,7 @@ name: Build
 on:
   push:
   pull_request:
+  workflow_dispatch:
 
 jobs:
 
@@ -16,6 +17,7 @@ jobs:
         - configuration: Release
           cache-version: 1
 
+    name: Build (${{ matrix.configuration }})
     runs-on: windows-latest
 
     env:
@@ -37,8 +39,7 @@ jobs:
     - name: Setup MSBuild
       uses: microsoft/setup-msbuild@v1.0.2
 
-    - name: Cache Build Artifacts
-      id: cache-primes
+    - name: Cache build objects
       uses: actions/cache@v3
       with:
         path: |
@@ -49,7 +50,7 @@ jobs:
         key: ${{ runner.os }}-${{ matrix.configuration }}-objs-v${{ matrix.cache-version }}
 
     - name: Restore
-      run: msbuild $env:Solution_Name /t:Restore /p:Configuration=$env:Configuration
+      run: msbuild $env:Solution_Name /p:Configuration=$env:Configuration /t:Restore
 
     - name: Build
-      run: msbuild $env:Solution_Name /p:Configuration=$env:Configuration /property:NoWarn=1591
+      run: msbuild $env:Solution_Name /p:Configuration=$env:Configuration /p:NoWarn=1591 /p:NoWarn=1574
