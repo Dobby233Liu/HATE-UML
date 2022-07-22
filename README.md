@@ -23,27 +23,34 @@ Also, shout out to RedSpah. Dude definitely heavily suffered during the developm
 
 ## Installation
 
-NOTE: This tool is not released yet; these steps are subject to change.
+NOTE: This tool is not released yet, and these steps are subject to change.
 
-Download the tool from [Releases](https://github.com/Dobby233Liu/HATE-UML/releases).
+First of all, download the tool from the [Releases](https://github.com/Dobby233Liu/HATE-UML/releases) page.
 
-Windows:
+### Windows
+
+You may need to install the [.NET 6.0 Desktop Runtime](https://dotnet.microsoft.com/en-us/download/dotnet/6.0/runtime) (one of the downloads below `Run desktop apps`, depending on your computer). I decided to not bundle framework-related code with the release, because it makes the download's size *absurdly huge*.
+
 1. Move everything in the ZIP file you downloaded to the directory with the game files - the place you can find `data.win` in.
 2. Tada! Open `HATE.exe` and start messing with stuff.
 
-NOTE: macOS and Linux versions are untested. TODO: dotnet CLI.
+### macOS
 
-macOS:
-0. Install .NET 6.0 Runtime; see [Install .NET on macOS](https://docs.microsoft.com/en-us/dotnet/core/install/macos) on Microsoft website. Also install `libgdiplus` (instructions is in the same document).
-1. Move everything in the ZIP file you downloaded to `<game>.app\Contents\Resources`.
-2. Create a "Data" folder in the Resources folder.
-3. Copy game.ios into the Data folder.
-4. Tada! Execute `HATE.sh` and start messing with stuff.
+NOTE: macOS and Linux versions are untested; you have been warned.
 
-Linux: (Note - make sure you're not root.)
-0. Install .NET 6.0 Runtime; see [Install .NET on Linux](https://docs.microsoft.com/en-us/dotnet/core/install/linux) on Microsoft website. Also install `libgdiplus`.
-1. Move everything in the ZIP file you downloaded to the directory with the game files - the place you can find an `assets` folder in, or the place you can find a `data.win` in if you want to corrupt a Windows game (in that case, also install Wine).
-2. Tada! Execute `HATE.sh` and start messing with stuff.
+1. If you haven't yet, install the .NET 6 Runtime; see the [Install .NET on macOS](https://docs.microsoft.com/en-us/dotnet/core/install/macos) document on Microsoft Docs.
+   Make sure to install `libgdiplus`.
+2. Move everything in the ZIP file you downloaded to `<game>.app\Contents\Resources`.
+3. Create a "Data" folder in the Resources folder.
+4. Copy game.ios into the Data folder.
+5. Tada! Execute `HATE.sh` and start messing with stuff.
+
+### Linux
+
+1. Install the .NET 6 Runtime; see the [Install .NET on Linux](https://docs.microsoft.com/en-us/dotnet/core/install/linux) document on Microsoft Docs.
+   Make sure to install `libgdiplus`.
+2. Move everything in the ZIP file you downloaded to the directory with the game files - the place you can find an `assets` folder in, or the place you can find a `data.win` in if you want to corrupt a Windows game (in that case, also install Wine).
+3. Tada! Execute `HATE.sh` and start messing with stuff.
 
 ## Uninstallation
 
@@ -51,10 +58,6 @@ Linux: (Note - make sure you're not root.)
 2. Delete everything that came with the tool.
 
 ## FAQ
-
-* **Q:** Windows - HATE doesn't start / tells me that a .NET thing is not installed.
-
-    **A:** You may need to install the [.NET 6.0 Desktop Runtime](https://dotnet.microsoft.com/en-us/download/dotnet/6.0/runtime) (one of the downloads below `Run desktop apps`, depending on your computer). I decided to not bundle framework-related code with the release, because it makes the download's size *absurdly huge*.
 
 * **Q:** Linux/macOS - `HATE.sh` doesn't run.
 
@@ -66,7 +69,7 @@ Linux: (Note - make sure you're not root.)
 
 ## Building
 
-In order to compile the tool yourself, the .NET Core 6 SDK is required. The source tree also contains a `UndertaleModLib` submodule for the version of the ModLib it uses; you will need to download the submodule before building.
+In order to compile the tool yourself, the .NET Core 6 SDK is required. The source tree also contains a `UndertaleModTool` submodule which the tool uses to include the ModLib in the project; you will need to download the submodule before building.
 
 ### Compiling Via IDE
 
