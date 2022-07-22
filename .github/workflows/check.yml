@@ -47,11 +47,10 @@ jobs:
           HATE/obj/${{ matrix.configuration }}
           UndertaleModTool/UndertaleModLib/bin/${{ matrix.configuration }}
           UndertaleModTool/UndertaleModLib/obj/${{ matrix.configuration }}
-          C:\Program Files (x86)\Microsoft SDKs\NuGetPackages
         key: ${{ runner.os }}-${{ matrix.configuration }}-objs-v${{ matrix.cache-version }}
 
     - name: Restore
       run: msbuild $env:Solution_Name /p:Configuration=$env:Configuration /t:Restore
 
     - name: Build
-      run: msbuild $env:Solution_Name /p:Configuration=$env:Configuration /p:NoWarn="1591,1574"
+      run: msbuild $env:Solution_Name /p:Configuration=$env:Configuration /p:NoWarn="1591;1574"
