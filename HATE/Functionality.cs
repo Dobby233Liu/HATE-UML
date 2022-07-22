@@ -378,11 +378,7 @@ namespace HATE
                 stringDict[ending].SelectSome(shufflechance, random);
                 logstream.WriteLine($"Added {stringDict[ending].Count} string pointers of ending {ending} to dialogue string List.");
 
-                _pointerlist.ShuffleOnlySelected(stringDict[ending], (n, k) => {
-                    string value = (_pointerlist[k]).Content;
-                    _pointerlist[k].Content = _pointerlist[n].Content;
-                    _pointerlist[n].Content = value;
-                }, random);
+                _pointerlist.ShuffleOnlySelected(stringDict[ending], Shuffle.GetSubfunction(_pointerlist), random);
             }
 
             return true;

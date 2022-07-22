@@ -6,6 +6,7 @@ using System.Text.RegularExpressions;
 using System.Windows.Forms;
 using UndertaleModLib;
 using System.Collections;
+using UndertaleModLib.Models;
 
 namespace HATE
 {
@@ -230,8 +231,32 @@ namespace HATE
                 ints.Add(i);
             }
             ints.SelectSome(shuffleChance, random);
-            chunk.ShuffleOnlySelected(ints, random);
+            chunk.ShuffleOnlySelected(ints, GetSubfunction(chunk), random);
             return true;
+        }
+        public static Action<int, int> GetSubfunction<T>(IList<T> list)
+        {
+            return (n, k) =>
+            {
+                if (list[n] is UndertaleString)
+                {
+                    string _value = (list[k] as UndertaleString).Content;
+                    (list[k] as UndertaleString).Content = (list[n] as UndertaleString).Content;
+                    (list[n] as UndertaleString).Content = _value;
+                }
+                var value = list[k];
+                list[k] = list[n];
+                list[n] = value;
+            };
+        }
+        public static Action<int, int> GetSubfunction(IList list)
+        {
+            return (n, k) =>
+            {
+                var value = list[k];
+                list[k] = list[n];
+                list[n] = value;
+            };
         }
 
         public static Func<string, UndertaleData, Random, float, StreamWriter, bool, bool> SimpleShuffle = ComplexShuffle(SimpleShuffler);
