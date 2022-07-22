@@ -23,7 +23,9 @@ Also, shout out to RedSpah. Dude definitely heavily suffered during the developm
 
 ## Installation
 
-NOTE: This tool is not released yet, and these steps are subject to change.
+**NOTE:** This tool is not released yet, and these steps are subject to change.
+
+**NOTE:** macOS and Linux versions are **untested**; you have been warned.
 
 First of all, download the tool from the [Releases](https://github.com/Dobby233Liu/HATE-UML/releases) page.
 
@@ -36,25 +38,23 @@ You may need to install the [.NET 6.0 Desktop Runtime](https://dotnet.microsoft.
 
 ### macOS
 
-NOTE: macOS and Linux versions are untested; you have been warned.
+Install the .NET 6 Runtime if you don't have it; see the [Install .NET on macOS](https://docs.microsoft.com/en-us/dotnet/core/install/macos) document on Microsoft Docs.
+Make sure to install `libgdiplus` too.
 
-1. If you haven't yet, install the .NET 6 Runtime; see the [Install .NET on macOS](https://docs.microsoft.com/en-us/dotnet/core/install/macos) document on Microsoft Docs.
-   Make sure to install `libgdiplus`.
-2. Move everything in the ZIP file you downloaded to `<game>.app\Contents\Resources`.
-3. Create a "Data" folder in the Resources folder.
-4. Copy game.ios into the Data folder.
-5. Tada! Execute `HATE.sh` and start messing with stuff.
+1. Move everything in the release ZIP file to `<game>.app\Contents\Resources`.
+2. Tada! Execute `HATE.sh` and start messing with stuff.
 
 ### Linux
 
-1. Install the .NET 6 Runtime; see the [Install .NET on Linux](https://docs.microsoft.com/en-us/dotnet/core/install/linux) document on Microsoft Docs.
-   Make sure to install `libgdiplus`.
-2. Move everything in the ZIP file you downloaded to the directory with the game files - the place you can find an `assets` folder in, or the place you can find a `data.win` in if you want to corrupt a Windows game (in that case, also install Wine).
-3. Tada! Execute `HATE.sh` and start messing with stuff.
+Install the .NET 6 Runtime if you don't have it; see the [Install .NET on Linux](https://docs.microsoft.com/en-us/dotnet/core/install/linux) document on Microsoft Docs.
+Make sure to install `libgdiplus` too.
+
+1. Move everything in the release ZIP file to the directory with the game files - the place you can find an `assets` folder in, or the place you can find a `data.win` in if you want to corrupt a Windows game (in that case, also install Wine).
+2. Tada! Execute `HATE.sh` and start messing with stuff.
 
 ## Uninstallation
 
-1. Run HATE with all settings disabled and with Power set to 0.
+1. Run HATE with all settings disabled and with Power set to 0. This will restore your original data files.
 2. Delete everything that came with the tool.
 
 ## FAQ
@@ -73,7 +73,7 @@ In order to compile the tool yourself, the .NET Core 6 SDK is required. The sour
 
 ### Compiling Via IDE
 
-* Open the UndertaleModTool.sln in the IDE of your choice (Visual Studio, JetBrains Rider, Visual Studio Code etc.)
+* Open HATE.sln in the IDE of your choice (Visual Studio, JetBrains Rider, Visual Studio Code etc.)
 * Select the `HATE` project.
 * Compile.
 
@@ -86,7 +86,8 @@ In order to compile the tool yourself, the .NET Core 6 SDK is required. The sour
 
 ## Source Code
 
-Source code can be found on GitHub: https://github.com/Dobby233Liu/HATE-UML
+Source code can be found on GitHub:
+https://github.com/Dobby233Liu/HATE-UML
 
 ## License
 
