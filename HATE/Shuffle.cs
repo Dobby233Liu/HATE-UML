@@ -315,8 +315,7 @@ namespace HATE
 
             foreach (JSONStringEntry entry in strings)
             {
-                if (entry.Str.Length >= 3 && entry.Key.Contains('_') &&
-                    (!BannedStrings.Any(entry.Str.Contains) || ForceShuffleReferenceChars.Any(entry.Str.Contains)))
+                if (entry.Str.Length >= 3 && entry.Key.Contains('_') && !IsStringBanned(entry.Str))
                 {
                     good_strings.Add(entry);
                 }
@@ -403,6 +402,17 @@ namespace HATE
             logstream.WriteLine($"Closed {target_file}.");
 
             return false;
+        }
+
+        public static bool IsStringBanned(string str)
+        {
+            return (BannedStrings.Any(str.Contains)
+                && !(
+                ForceShuffleReferenceChars.Any(str.Contains)
+                || DRChoicerControlChars.Any(str.Contains)
+                || FormatChars.Any(str.Contains)
+                )
+            );
         }
     }
 }

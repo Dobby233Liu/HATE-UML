@@ -324,8 +324,7 @@ namespace HATE
 
                 if (convertedString.Length < 3)
                     continue;
-                if (Shuffle.BannedStrings.Any(convertedString.Contains)
-                    && !Shuffle.ForceShuffleReferenceChars.Any(convertedString.Contains))
+                if (Shuffle.IsStringBanned(convertedString))
                     continue;
 
                 string ch = "";
