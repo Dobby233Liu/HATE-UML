@@ -228,16 +228,35 @@ namespace HATE
             if (data.Sequences is not null)
                 foreach (var func in data.Sequences)
                 {
-                    /* TODO: BroadcastMessage */
                     pl_test.Remove(func.Name);
-                    foreach (KeyValuePair<int, UndertaleString> kvp in func.FunctionIDs)
-                    {
-                        pl_test.Remove(kvp.Value);
-                    }
-                    /*foreach (var track in func.Tracks)
-                    {
 
-                    }*/
+                    foreach (KeyValuePair<int, UndertaleString> kvp in func.FunctionIDs)
+                        pl_test.Remove(kvp.Value);
+                    foreach (UndertaleSequence.Keyframe<UndertaleSequence.Moment> moment in func.Moments)
+                        foreach (KeyValuePair<int, UndertaleSequence.Moment> kvp in moment.Channels)
+                            pl_test.Remove(kvp.Value.Event);
+                    foreach (UndertaleSequence.Keyframe<UndertaleSequence.BroadcastMessage> bm in func.BroadcastMessages)
+                        foreach (KeyValuePair<int, UndertaleSequence.BroadcastMessage> kvp in bm.Channels)
+                            foreach (UndertaleString msg in kvp.Value.Messages)
+                                pl_test.Remove(msg);
+
+                    foreach (var track in func.Tracks)
+                    {
+                        void loop(UndertaleSequence.Track track)
+                        {
+                            pl_test.Remove(track.Name);
+                            pl_test.Remove(track.ModelName);
+                            pl_test.Remove(track.GMAnimCurveString);
+                            if (track.ModelName.Content == "GMStringTrack")
+                                foreach (var i in (track.Keyframes as UndertaleSequence.StringKeyframes).List)
+                                    foreach (KeyValuePair<int, UndertaleSequence.StringData> kvp in i.Channels)
+                                        pl_test.Remove(kvp.Value.Value);
+                            if (track.Tracks != null)
+                                foreach (var subtrack in track.Tracks)
+                                    loop(subtrack);
+                        }
+                        loop(track);
+                    }
                 }
             foreach (var func in data.Fonts)
             {
