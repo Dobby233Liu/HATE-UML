@@ -90,5 +90,5 @@ Source code can be found on GitHub: https://github.com/Dobby233Liu/HATE-UML
 
 ## License
 
-This program is licensed under the [GNU General Public License v3.0](COPYING).
-The original program this is based on is licensed under the [MIT License](LICENSE.MIT).
+This program is licensed under the [GNU General Public License v3.0](COPYING.txt).
+The original program this is based on is licensed under the [MIT License](LICENSE.MIT.txt).
