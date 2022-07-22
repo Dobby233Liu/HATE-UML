@@ -31,10 +31,10 @@ First of all, download the tool from the [Releases](https://github.com/Dobby233L
 
 ### Windows
 
-You may need to install the [.NET 6.0 Desktop Runtime](https://dotnet.microsoft.com/en-us/download/dotnet/6.0/runtime) (one of the downloads below `Run desktop apps`, depending on your computer). I decided to not bundle framework-related code with the release, because it makes the download's size *absurdly huge*.
+You may need to install the [.NET 6 Desktop Runtime](https://dotnet.microsoft.com/en-us/download/dotnet/6.0/runtime) (one of the downloads below `Run desktop apps`, depending on your computer). I decided to not bundle framework-related code with the release, because it makes the download's size *absurdly huge*.
 
-1. Move everything in the ZIP file you downloaded to the directory with the game files - the place you can find `data.win` in.
-2. Tada! Open `HATE.exe` and start messing with stuff.
+1. Move everything in the release ZIP file to you game directory (the place you can find `data.win` and `UNDERTALE.exe` or `DELTARUNE.exe` in).
+2. Tada, you're set! Open `HATE.exe` and start messing with stuff.
 
 ### macOS
 
@@ -42,7 +42,7 @@ Install the .NET 6 Runtime if you don't have it; see the [Install .NET on macOS]
 Make sure to install `libgdiplus` too.
 
 1. Move everything in the release ZIP file to `<game>.app\Contents\Resources`.
-2. Tada! Execute `HATE.sh` and start messing with stuff.
+2. Tada, you're set! Execute `HATE.sh` and start messing with stuff.
 
 ### Linux
 
@@ -50,7 +50,7 @@ Install the .NET 6 Runtime if you don't have it; see the [Install .NET on Linux]
 Make sure to install `libgdiplus` too.
 
 1. Move everything in the release ZIP file to the directory with the game files - the place you can find an `assets` folder in, or the place you can find a `data.win` in if you want to corrupt a Windows game (in that case, also install Wine).
-2. Tada! Execute `HATE.sh` and start messing with stuff.
+2. Tada, you're set! Execute `HATE.sh` and start messing with stuff.
 
 ## Uninstallation
 
