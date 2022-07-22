@@ -36,10 +36,11 @@ namespace HATE
 
             for (int _i = 0; _i < strgClone.Count; _i++)
             {
-                string i = strgClone[_i].Content;
-                if ((i.EndsWith(".ogg") || i.EndsWith(".wav") || i.EndsWith(".mp3"))
-                    && !i.StartsWith("music/") /* UNDERTALE */)
-                    stringList.Add(_i);
+                var i = _pointerlist.IndexOf(strgClone[_i]);
+                string s = strgClone[_i].Content;
+                if ((s.EndsWith(".ogg") || s.EndsWith(".wav") || s.EndsWith(".mp3"))
+                    && !s.StartsWith("music/") /* UNDERTALE */)
+                    stringList.Add(i);
             }
 
             stringList.SelectSome(shufflechance, random);
@@ -215,9 +216,7 @@ namespace HATE
                 var s = _pointerlist[i];
                 var convertedString = s.Content;
 
-                if (convertedString.Length < 3)
-                    continue;
-                if (Shuffle.IsStringBanned(convertedString))
+                if (convertedString.Length < 3 || Shuffle.IsStringBanned(convertedString))
                     continue;
 
                 string ch = "";
