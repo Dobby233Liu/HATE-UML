@@ -53,4 +53,4 @@ jobs:
       run: msbuild $env:Solution_Name /p:Configuration=$env:Configuration /t:Restore
 
     - name: Build
-      run: msbuild $env:Solution_Name /p:Configuration=$env:Configuration /p:NoWarn="1591;1574"
+      run: msbuild $env:Solution_Name /p:Configuration=$env:Configuration
