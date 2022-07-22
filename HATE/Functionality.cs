@@ -8,6 +8,7 @@ using UndertaleModLib.Models;
 using System.Drawing;
 using UndertaleModLib.Util;
 using System.Collections;
+using System.Reflection;
 
 namespace HATE
 {
@@ -21,7 +22,8 @@ namespace HATE
 
         public static bool ShuffleBG_Func(UndertaleData data, Random random, float chance, StreamWriter logstream, bool _friskMode)
         {
-            return Shuffle.ShuffleChunk("BGND", data, random, chance, logstream, _friskMode);              
+            return Shuffle.ShuffleChunk("BGND", data, random, chance, logstream, _friskMode) &&
+                (!data.IsGameMaker2() || Shuffle.ShuffleChunk("SPRT", data, random, chance, logstream, _friskMode, Shuffle.ComplexShuffle(ShuffleBG2_Shuffler)));              
         }
 
         public static bool ShuffleFont_Func(UndertaleData data, Random random, float chance, StreamWriter logstream, bool _friskMode)
@@ -52,6 +54,25 @@ namespace HATE
             return success && Shuffle.ShuffleChunk("STRG", data, random, chance, logstream, _friskMode, Shuffle.ComplexShuffle(ShuffleText_Shuffler));
         }
 
+        private static bool ShuffleBG2_Shuffler(string _chunk, UndertaleData data, Random random, float shufflechance, StreamWriter logstream, bool _friskMode)
+        {
+            IList<UndertaleSprite> chunk = (data.FORM.Chunks[_chunk] as UndertaleChunkSPRT)?.List;
+            List<int> sprites = new List<int>();
+
+            for (int i = 0; i < chunk.Count; i++)
+            {
+                UndertaleSprite pointer = chunk[i];
+
+                if (pointer.Name.Content.Trim().StartsWith("bg_"))
+                    sprites.Add(i);
+            }
+
+            sprites.SelectSome(shufflechance, random);
+            chunk.ShuffleOnlySelected(sprites, random);
+            logstream.WriteLine($"Shuffled {sprites.Count} assumed backgrounds out of {chunk.Count} sprites.");
+
+            return true;
+        }
         public static bool ShuffleGFX_Shuffler(string _chunk, UndertaleData data, Random random, float shufflechance, StreamWriter logstream, bool _friskMode)
         {
             IList<UndertaleSprite> chunk = (data.FORM.Chunks[_chunk] as UndertaleChunkSPRT)?.List;
@@ -61,7 +82,8 @@ namespace HATE
             {
                 UndertaleSprite pointer = chunk[i];
 
-                if (!Shuffle.FriskSpriteHandles.Contains(pointer.Name.Content.Trim()) || _friskMode)
+                if (!pointer.Name.Content.Trim().StartsWith("bg_") &&
+                    (!Shuffle.FriskSpriteHandles.Contains(pointer.Name.Content.Trim()) || _friskMode))
                     sprites.Add(i);
             }
 
@@ -76,26 +98,57 @@ namespace HATE
         {
             IList<UndertaleSprite> pointerlist = (data.FORM.Chunks[_chunk] as UndertaleChunkSPRT)?.List;
             TextureWorker worker = new TextureWorker();
-            foreach (UndertaleResource _spriteptr in pointerlist)
+            foreach (UndertaleSprite sprite in pointerlist)
             {
                 // based on ImportGraphics.csx
-                UndertaleSprite spriteptr = (UndertaleSprite)_spriteptr;
-                spriteptr.CollisionMasks.Clear();
-                spriteptr.CollisionMasks.Add(spriteptr.NewMaskEntry());
-                Bitmap tex = worker.GetTextureFor(spriteptr.Textures[0].Texture, spriteptr.Name.Content, true);
-                Rectangle bmpRect = new Rectangle(0, 0, tex.Width, tex.Height);
-                Bitmap cloneBitmap = tex.Clone(bmpRect, tex.PixelFormat);
-                int width = (((int)cloneBitmap.Width + 7) / 8) * 8;
-                BitArray maskingBitArray = new BitArray(width * (int)cloneBitmap.Height);
-                for (int y = 0; y < (int)spriteptr.Height; y++)
+                sprite.CollisionMasks.Clear();
+                var texPageItem = sprite.Textures[0].Texture;
+                // for Undertale BNP
+                if (texPageItem == null)
                 {
-                    for (int x = 0; x < (int)spriteptr.Width; x++)
-                    {
-                        Color pixelColor = cloneBitmap.GetPixel(x, y);
-                        maskingBitArray[y * width + x] = (pixelColor.A > 0);
-                    }
+                    logstream.WriteLine($"Texture 0 of sprite {sprite.Name.Content} is null.");
+                    continue;
                 }
-                BitArray tempBitArray = new BitArray(width * (int)cloneBitmap.Height);
+                // spr_hotlandmissle
+                if (texPageItem.BoundingWidth != sprite.Width || texPageItem.BoundingHeight != sprite.Height)
+                {
+                    texPageItem.BoundingWidth = (ushort)sprite.Width;
+                    texPageItem.BoundingHeight = (ushort)sprite.Height;
+                }
+                if (texPageItem.BoundingWidth < texPageItem.TargetWidth || texPageItem.BoundingHeight < texPageItem.TargetHeight)
+                {
+                    texPageItem.BoundingWidth = texPageItem.TargetWidth;
+                    texPageItem.BoundingHeight = texPageItem.TargetHeight;
+                    sprite.Width = texPageItem.BoundingWidth;
+                    sprite.Height = texPageItem.BoundingHeight;
+                }
+                Bitmap tex;
+                try
+                {
+                    tex = worker.GetTextureFor(texPageItem, sprite.Name.Content, true);
+                }
+                catch (InvalidDataException ex)
+                {
+                    logstream.WriteLine($"Caught InvalidDataException while modifying the hitbox of {sprite.Name.Content}. {ex.Message}");
+                    continue;
+                }
+                int width = (((int)sprite.Width + 7) / 8) * 8;
+                BitArray maskingBitArray = new BitArray(width * (int)sprite.Height);
+                try
+                {
+                    for (int y = 0; y < sprite.Height; y++)
+                    {
+                        for (int x = 0; x < sprite.Width; x++)
+                        {
+                            Color pixelColor = tex.GetPixel(x, y);
+                            maskingBitArray[y * width + x] = (pixelColor.A > 0);
+                        }
+                    }
+                } catch (ArgumentOutOfRangeException ex)
+                {
+                    throw new ArgumentOutOfRangeException($"{ex.Message.TrimEnd()} ({sprite.Name.Content})");
+                }
+                BitArray tempBitArray = new BitArray(maskingBitArray.Length);
                 for (int i = 0; i < maskingBitArray.Length; i += 8)
                 {
                     for (int j = 0; j < 8; j++)
@@ -103,12 +156,13 @@ namespace HATE
                         tempBitArray[j + i] = maskingBitArray[-(j - 7) + i];
                     }
                 }
+                UndertaleSprite.MaskEntry newEntry = new UndertaleSprite.MaskEntry();
                 int numBytes;
                 numBytes = maskingBitArray.Length / 8;
                 byte[] bytes = new byte[numBytes];
                 tempBitArray.CopyTo(bytes, 0);
-                for (int i = 0; i < bytes.Length; i++)
-                    spriteptr.CollisionMasks[0].Data[i] = bytes[i];
+                newEntry.Data = bytes;
+                sprite.CollisionMasks.Add(newEntry);
             }
             logstream.WriteLine($"Wrote {pointerlist.Count} collision boxes.");
 
@@ -239,13 +293,16 @@ namespace HATE
                 {
                     pl_test.Remove(func.Name);
                 }
-            var feds = (data.FORM.Chunks["FEDS"] as UndertaleChunkFEDS)?.List;
-            if (feds is not null)
-                foreach (var func in feds)
-                {
-                    pl_test.Remove(func.Name);
-                    pl_test.Remove(func.Value);
-                }
+            if (data.FORM.Chunks.ContainsKey("FEDS"))
+            {
+                var feds = (data.FORM.Chunks["FEDS"] as UndertaleChunkFEDS)?.List;
+                if (feds is not null)
+                    foreach (var func in feds)
+                    {
+                        pl_test.Remove(func.Name);
+                        pl_test.Remove(func.Value);
+                    }
+            }
             pl_test.Remove(data.GeneralInfo.FileName);
             pl_test.Remove(data.GeneralInfo.Name);
             pl_test.Remove(data.GeneralInfo.DisplayName);

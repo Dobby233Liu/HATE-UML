@@ -112,7 +112,7 @@ namespace HATE
             "temp_save_failed", "filech",
             "enter_button_assign",
             "mainbig", "comicsans", "tinynoelle", "dotumche", "noelle_cropped", "leftmid", "rightmid", "bottommid",
-            "<hash>", "enemytalk", "enemyattack", "noroom=", "_pocketed=", "_noroominventory=",
+            "enemytalk", "enemyattack",
             "soundplay", "walkdirect",
             "showdialog", "savepadindex", "slottitle",
             "saveslotsize", "mus/", "\\n"

@@ -52,7 +52,7 @@
             this.btnCorrupt.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnCorrupt.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
             this.btnCorrupt.ForeColor = System.Drawing.Color.Coral;
-            this.btnCorrupt.Location = new System.Drawing.Point(22, 503);
+            this.btnCorrupt.Location = new System.Drawing.Point(21, 447);
             this.btnCorrupt.Margin = new System.Windows.Forms.Padding(4);
             this.btnCorrupt.Name = "btnCorrupt";
             this.btnCorrupt.Size = new System.Drawing.Size(172, 33);
@@ -71,7 +71,7 @@
             this.chbShuffleText.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.chbShuffleText.Font = new System.Drawing.Font("Comic Sans MS", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
             this.chbShuffleText.ForeColor = System.Drawing.Color.White;
-            this.chbShuffleText.Location = new System.Drawing.Point(14, 326);
+            this.chbShuffleText.Location = new System.Drawing.Point(14, 310);
             this.chbShuffleText.Margin = new System.Windows.Forms.Padding(4);
             this.chbShuffleText.Name = "chbShuffleText";
             this.chbShuffleText.Size = new System.Drawing.Size(150, 31);
@@ -90,7 +90,7 @@
             this.chbShuffleGFX.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.chbShuffleGFX.Font = new System.Drawing.Font("Comic Sans MS", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
             this.chbShuffleGFX.ForeColor = System.Drawing.Color.White;
-            this.chbShuffleGFX.Location = new System.Drawing.Point(14, 277);
+            this.chbShuffleGFX.Location = new System.Drawing.Point(14, 164);
             this.chbShuffleGFX.Margin = new System.Windows.Forms.Padding(4);
             this.chbShuffleGFX.Name = "chbShuffleGFX";
             this.chbShuffleGFX.Size = new System.Drawing.Size(172, 31);
@@ -109,7 +109,7 @@
             this.chbHitboxFix.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.chbHitboxFix.Font = new System.Drawing.Font("Comic Sans MS", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
             this.chbHitboxFix.ForeColor = System.Drawing.Color.White;
-            this.chbHitboxFix.Location = new System.Drawing.Point(13, 229);
+            this.chbHitboxFix.Location = new System.Drawing.Point(13, 213);
             this.chbHitboxFix.Margin = new System.Windows.Forms.Padding(4);
             this.chbHitboxFix.Name = "chbHitboxFix";
             this.chbHitboxFix.Size = new System.Drawing.Size(125, 31);
@@ -128,7 +128,7 @@
             this.chbShuffleFont.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.chbShuffleFont.Font = new System.Drawing.Font("Comic Sans MS", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
             this.chbShuffleFont.ForeColor = System.Drawing.Color.White;
-            this.chbShuffleFont.Location = new System.Drawing.Point(13, 180);
+            this.chbShuffleFont.Location = new System.Drawing.Point(13, 260);
             this.chbShuffleFont.Margin = new System.Windows.Forms.Padding(4);
             this.chbShuffleFont.Name = "chbShuffleFont";
             this.chbShuffleFont.Size = new System.Drawing.Size(156, 31);
@@ -147,12 +147,12 @@
             this.chbShuffleBG.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.chbShuffleBG.Font = new System.Drawing.Font("Comic Sans MS", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
             this.chbShuffleBG.ForeColor = System.Drawing.Color.White;
-            this.chbShuffleBG.Location = new System.Drawing.Point(13, 132);
+            this.chbShuffleBG.Location = new System.Drawing.Point(13, 116);
             this.chbShuffleBG.Margin = new System.Windows.Forms.Padding(4);
             this.chbShuffleBG.Name = "chbShuffleBG";
-            this.chbShuffleBG.Size = new System.Drawing.Size(145, 31);
+            this.chbShuffleBG.Size = new System.Drawing.Size(180, 31);
             this.chbShuffleBG.TabIndex = 5;
-            this.chbShuffleBG.Text = "Shuffle GFX";
+            this.chbShuffleBG.Text = "Shuffle GFX/BG";
             this.chbShuffleBG.UseVisualStyleBackColor = false;
             this.chbShuffleBG.CheckedChanged += new System.EventHandler(this.chbShuffleBG_CheckedChanged);
             // 
@@ -166,7 +166,7 @@
             this.chbShuffleAudio.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.chbShuffleAudio.Font = new System.Drawing.Font("Comic Sans MS", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
             this.chbShuffleAudio.ForeColor = System.Drawing.Color.White;
-            this.chbShuffleAudio.Location = new System.Drawing.Point(13, 84);
+            this.chbShuffleAudio.Location = new System.Drawing.Point(13, 68);
             this.chbShuffleAudio.Margin = new System.Windows.Forms.Padding(4);
             this.chbShuffleAudio.Name = "chbShuffleAudio";
             this.chbShuffleAudio.Size = new System.Drawing.Size(156, 31);
@@ -180,7 +180,7 @@
             this.txtSeed.BackColor = System.Drawing.Color.White;
             this.txtSeed.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
             this.txtSeed.ForeColor = System.Drawing.Color.Black;
-            this.txtSeed.Location = new System.Drawing.Point(77, 433);
+            this.txtSeed.Location = new System.Drawing.Point(81, 377);
             this.txtSeed.Margin = new System.Windows.Forms.Padding(4);
             this.txtSeed.Name = "txtSeed";
             this.txtSeed.Size = new System.Drawing.Size(116, 20);
@@ -191,7 +191,7 @@
             this.txtPower.BackColor = System.Drawing.Color.White;
             this.txtPower.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
             this.txtPower.ForeColor = System.Drawing.Color.Black;
-            this.txtPower.Location = new System.Drawing.Point(77, 467);
+            this.txtPower.Location = new System.Drawing.Point(81, 411);
             this.txtPower.Margin = new System.Windows.Forms.Padding(4);
             this.txtPower.Name = "txtPower";
             this.txtPower.Size = new System.Drawing.Size(116, 20);
@@ -205,7 +205,7 @@
             this.label1.AutoSize = true;
             this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
             this.label1.ForeColor = System.Drawing.Color.White;
-            this.label1.Location = new System.Drawing.Point(8, 433);
+            this.label1.Location = new System.Drawing.Point(12, 377);
             this.label1.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(50, 17);
@@ -217,7 +217,7 @@
             this.label2.AutoSize = true;
             this.label2.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
             this.label2.ForeColor = System.Drawing.Color.White;
-            this.label2.Location = new System.Drawing.Point(8, 467);
+            this.label2.Location = new System.Drawing.Point(12, 411);
             this.label2.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(57, 17);
@@ -230,7 +230,7 @@
             this.btnLaunch.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnLaunch.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
             this.btnLaunch.ForeColor = System.Drawing.Color.Fuchsia;
-            this.btnLaunch.Location = new System.Drawing.Point(22, 544);
+            this.btnLaunch.Location = new System.Drawing.Point(21, 488);
             this.btnLaunch.Margin = new System.Windows.Forms.Padding(4);
             this.btnLaunch.Name = "btnLaunch";
             this.btnLaunch.Size = new System.Drawing.Size(172, 33);
@@ -253,13 +253,16 @@
             // 
             // lblGameName
             // 
-            this.lblGameName.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.lblGameName.Enabled = false;
+            this.lblGameName.BackColor = System.Drawing.Color.Black;
+            this.lblGameName.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.lblGameName.ForeColor = System.Drawing.Color.White;
             this.lblGameName.HideSelection = false;
-            this.lblGameName.Location = new System.Drawing.Point(1, 29);
+            this.lblGameName.Location = new System.Drawing.Point(6, 29);
             this.lblGameName.Name = "lblGameName";
             this.lblGameName.ReadOnly = true;
-            this.lblGameName.Size = new System.Drawing.Size(213, 23);
+            this.lblGameName.ScrollBars = System.Windows.Forms.ScrollBars.Horizontal;
+            this.lblGameName.ShortcutsEnabled = false;
+            this.lblGameName.Size = new System.Drawing.Size(203, 16);
             this.lblGameName.TabIndex = 16;
             this.lblGameName.Text = "Loading game...";
             // 
@@ -269,7 +272,7 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.Black;
             this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
-            this.ClientSize = new System.Drawing.Size(215, 587);
+            this.ClientSize = new System.Drawing.Size(215, 532);
             this.Controls.Add(this.lblGameName);
             this.Controls.Add(this.label3);
             this.Controls.Add(this.btnLaunch);
@@ -286,7 +289,7 @@
             this.Controls.Add(this.btnCorrupt);
             this.ForeColor = System.Drawing.Color.Black;
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
-            this.Icon = ((System.Drawing.Icon)(resources.GetObject("Icon")));
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Margin = new System.Windows.Forms.Padding(4);
             this.MaximizeBox = false;
             this.MinimizeBox = false;

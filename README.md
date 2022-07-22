@@ -6,7 +6,7 @@ TL;DR this is a modification of the good old HATE that you may have came across,
 
 I heard you want to destroy the fabric of time-space continuum and bring living hell to the second dark world you have access to? Or do you want to make the underground a boiling mess (maybe again, for some reason)? If so, ~~follow the installation guide below and try it today~~ Just give me time to finish this.
 
-**HEALTHY \[REDACTED] WARNING:** Using the Corrupt GFX option may cause flashing lights in-game. Please also back your saves up if you want to try this tool, as there is a chance that this tool will break them.
+**HEALTHY \[REDACTED] WARNING:** Using the Shuffle GFX option may cause flashing lights in-game. Please also back your saves up if you want to try this tool, as there is a chance that this tool will break them.
 
 ## The original              corruptor
 

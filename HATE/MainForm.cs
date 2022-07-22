@@ -106,12 +106,12 @@ namespace HATE
                     _dataWin = "game.unx";
                 else
                 {
-                    MsgBoxHelpers.ShowMessage("We couldn't find any game in this folder, check that this is in the right folder.");
+                    MsgBoxHelpers.ShowMessage("We couldn't find any game data in this folder, check that this is in the right folder.");
                     Close();
                     return;
                 }
             }
-            await LoadFile(_dataWin);
+            await LoadFile(_dataWin, true);
             AfterDataLoad();
             if (Data is not null)
             {
@@ -148,7 +148,7 @@ namespace HATE
             }
         }
 
-        private async Task LoadFile(string filename)
+        private async Task LoadFile(string filename, bool firstLoad)
         {
             DisposeGameData();
             Task t = Task.Run(() =>
@@ -160,13 +160,18 @@ namespace HATE
                     {
                         data = UndertaleIO.Read(stream, warning =>
                         {
-                            MsgBoxHelpers.ShowWarning(warning, "Loading warning");
+                            if (firstLoad)
+                                MsgBoxHelpers.ShowWarning(warning, "Loading warning");
+                            if (_logWriter != null)
+                                _logWriter.WriteLine(warning);
                         }, message =>
                         {
                             Invoke(delegate
                             {
                                 lblGameName.Text = message;
                             });
+                            if (_logWriter != null)
+                                _logWriter.WriteLine(message);
                         });
                     }
 
@@ -175,11 +180,13 @@ namespace HATE
                 catch (Exception e)
                 {
                     MsgBoxHelpers.ShowError("An error occured while trying to load:\n" + e.Message, "Load error");
+                    if (_logWriter != null)
+                        _logWriter.WriteLine("An error occured while trying to load:\n" + e.Message);
                 }
 
                 if (data != null)
                 {
-                    if (data.UnsupportedBytecodeVersion)
+                    if (data.UnsupportedBytecodeVersion && firstLoad)
                     {
                         MsgBoxHelpers.ShowWarning("Only bytecode versions 13 to 17 are supported for now, you are trying to load " + data.GeneralInfo.BytecodeVersion + ". A lot of code is disabled and something will likely break.", "Unsupported bytecode version");
                     }
@@ -216,6 +223,8 @@ namespace HATE
                             {
                                 lblGameName.Text = message;
                             });
+                            if (_logWriter != null)
+                                _logWriter.WriteLine(message);
                         });
                     }
 
@@ -241,6 +250,8 @@ namespace HATE
                     }
 
                     MsgBoxHelpers.ShowError("An error occured while trying to save:\n" + e.Message, "Save error");
+                    if (_logWriter != null)
+                        _logWriter.WriteLine("An error occured while trying to save:\n" + e.Message);
 
                     SaveSucceeded = false;
                 }
@@ -341,7 +352,7 @@ namespace HATE
                     MsgBoxHelpers.ShowError("Failed to start the game.");
             }
             else
-                MsgBoxHelpers.ShowError("I don't know how to run this game.\nPlease run the game manually.");
+                MsgBoxHelpers.ShowError("I don't know how to run this game (can't find a executable).\nPlease run the game manually.");
 
             EnableControls(true);
         }
@@ -376,6 +387,7 @@ namespace HATE
                 MsgBoxHelpers.ShowError("HATE.log may have described this error in detail.", "An error ocurred");
             }
             _logWriter.Close();
+            _logWriter = null;
             EnableControls(true);
         }
 
@@ -488,7 +500,7 @@ namespace HATE
                 }
             }
 
-            await LoadFile(_dataWin);
+            await LoadFile(_dataWin, false);
             this.Invoke(delegate
             {
                 if (Data is not null)
