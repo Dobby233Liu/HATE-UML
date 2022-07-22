@@ -52,17 +52,17 @@ Linux: (Note - make sure you're not root.)
 
 ## FAQ
 
-* **Q:** Windows - HATE doesn't start and/or displays an error message instantly.
+* **Q:** Windows - HATE doesn't start / tells me that a .NET thing is not installed.
 
     **A:** You may need to install the [.NET 6.0 Desktop Runtime](https://dotnet.microsoft.com/en-us/download/dotnet/6.0/runtime) (one of the downloads below `Run desktop apps`, depending on your computer). I decided to not bundle framework-related code with the release, because it makes the download's size *absurdly huge*.
 
-* **Q:** Linux/macOS - `.sh` file doesn't run.
+* **Q:** Linux/macOS - `HATE.sh` doesn't run.
 
     **A:** You may need to run `chmod +x HATE.sh` in a terminal.
 
-* **Q:** Linux/macOS - HATE doesn't start and/or displays an error message instantly.
+* **Q:** HATE doesn't start and/or displays an error message instantly.
 
-    **A:** This may be a issue on my side. Please submit an [issue](https://github.com/Dobby233Liu/HATE-UML/issues) on GitHub so I can look into it.
+    **A:** Check whether you have correctly performed the installation steps. If you're sure you did, then this may be a issue on my side. Please submit an [issue](https://github.com/Dobby233Liu/HATE-UML/issues) on GitHub so I can look into it.
 
 ## Building
 
