@@ -10,7 +10,11 @@ jobs:
 
     strategy:
       matrix:
-        configuration: [Debug, Release]
+        include:
+        - configuration: Debug
+          cache-version: 1
+        - configuration: Release
+          cache-version: 1
 
     runs-on: windows-latest
 
@@ -33,8 +37,19 @@ jobs:
     - name: Setup MSBuild
       uses: microsoft/setup-msbuild@v1.0.2
 
+    - name: Cache Build Artifacts
+      id: cache-primes
+      uses: actions/cache@v3
+      with:
+        path: |
+          HATE/bin/${{ matrix.configuration }}
+          HATE/obj/${{ matrix.configuration }}
+          UndertaleModTool/UndertaleModLib/bin/${{ matrix.configuration }}
+          UndertaleModTool/UndertaleModLib/obj/${{ matrix.configuration }}
+        key: ${{ runner.os }}-${{ matrix.configuration }}-objs-v${{ matrix.cache-version }}
+
     - name: Restore
       run: msbuild $env:Solution_Name /t:Restore /p:Configuration=$env:Configuration
 
     - name: Build
-      run: msbuild $env:Solution_Name /p:Configuration=$env:Configuration
+      run: msbuild $env:Solution_Name /p:Configuration=$env:Configuration /property:NoWarn=1591
