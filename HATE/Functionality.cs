@@ -16,8 +16,37 @@ namespace HATE
     {
         public static bool ShuffleAudio_Func(UndertaleData data, Random random, float chance, StreamWriter logstream, bool _friskMode)
         {
-            return Shuffle.ShuffleChunk("SOND", data, random, chance, logstream, _friskMode);
+            return Shuffle.ShuffleChunk("SOND", data, random, chance, logstream, _friskMode)
+                    && Shuffle.ShuffleChunk("STRG", data, random, chance, logstream, _friskMode, ShuffleAudio2_Shuffler);
             //&& Shuffle.ShuffleChunk(data.EmbeddedAudio, data, random, chance, logstream);               
+        }
+
+        private static bool ShuffleAudio2_Shuffler(string _chunk, UndertaleData data, Random random, float shufflechance, StreamWriter logstream, bool _friskMode)
+        {
+            IList<UndertaleString> _pointerlist = (data.FORM.Chunks[_chunk] as UndertaleChunkSTRG)?.List;
+            IList<UndertaleString> strgClone = new List<UndertaleString>(_pointerlist);
+            foreach (var func in data.Sounds)
+            {
+                strgClone.Remove(func.Name);
+                strgClone.Remove(func.Type);
+                strgClone.Remove(func.File);
+            }
+
+            IList<int> stringList = new List<int>();
+
+            for (int _i = 0; _i < strgClone.Count; _i++)
+            {
+                string i = strgClone[_i].Content;
+                if (i.EndsWith(".ogg") || i.EndsWith(".wav") || i.EndsWith(".mp3"))
+                    stringList.Add(_i);
+            }
+
+            stringList.SelectSome(shufflechance, random);
+            logstream.WriteLine($"Added {stringList.Count} string pointers to music file references list.");
+
+            _pointerlist.ShuffleOnlySelected(stringList, Shuffle.GetSubfunction(_pointerlist), random);
+
+            return true;
         }
 
         public static bool ShuffleBG_Func(UndertaleData data, Random random, float chance, StreamWriter logstream, bool _friskMode)
