@@ -65,8 +65,8 @@ Make sure to install `libgdiplus` too.
 
 * **Q:** HATE doesn't start and/or displays an error message instantly.
 
-    **A:** Check whether you have correctly performed the installation steps. If there are error boxes that say anything meaningful, please read their contents.
-           If you're sure you did everything correctly, then this may be an issue on my side. Please submit an [issue](https://github.com/Dobby233Liu/HATE-UML/issues) on GitHub so I can look into it.
+    **A:** Check whether you have correctly performed the installation steps. If you see error message boxes that say meaningful things (unhandled exception crashes are definitely not meaningful in case you wonder), please read their contents.
+           If you're sure you did everything correctly, then this is probably an issue on my side. Please submit an [issue](https://github.com/Dobby233Liu/HATE-UML/issues) on GitHub so I can look into it.
 
 ## Building
 
