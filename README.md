@@ -6,7 +6,7 @@ TL;DR this is a modification of the good old HATE that you may have came across,
 
 I heard you want to destroy the fabric of time-space continuum and bring living hell to the second dark world you have access to? Or do you want to make the underground a boiling mess (maybe again, for some reason)? If so, ~~follow the installation guide below and try it today~~ Just give me time to finish this.
 
-**HEALTHY \[REDACTED] WARNING:** Using the Shuffle GFX option may cause flashing lights in-game. Please also back your saves up if you want to try this tool, as there is a chance that this tool will break them.
+**HEALTHY \[REDACTED]'S WARNING:** Using the Shuffle GFX option may cause flashing lights in-game. Please also back your saves up if you want to try this tool, as there is a chance that this tool will break them.
 
 ## The original              corruptor
 
@@ -81,7 +81,8 @@ In order to compile the tool yourself, the .NET Core 6 SDK is required. The sour
 
 * Open a terminal and navigate to the project root.
 * Execute `dotnet publish HATE`.
-  * You can also provide arguments for compiling, such as `--no-self-contained` or `-c release`. For a full list of arguments, consult [this document](https://docs.microsoft.com/dotnet/core/tools/dotnet-publish).
+  * You can also provide arguments for compiling, such as `--no-self-contained` or `-c release`.
+    For a full list of arguments, consult [this document](https://docs.microsoft.com/dotnet/core/tools/dotnet-publish).
 
 ## Source Code
 
@@ -90,4 +91,4 @@ Source code can be found on GitHub: https://github.com/Dobby233Liu/HATE-UML
 ## License
 
 This program is licensed under the [GNU General Public License v3.0](COPYING).
-The original program this is based on is licensed under the [MIT License](LICENSE).
+The original program this is based on is licensed under the [MIT License](LICENSE.MIT).
