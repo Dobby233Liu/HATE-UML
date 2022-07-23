@@ -1,56 +1,28 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Eto.Forms/2.7.0">
+
+  <!--
+    Set the BuildPlatform property to the Eto platform you wish to build for.
+    The default is the platform you are building on.
+    Valid values: Wpf, Windows, Mac64, XamMac2, Gtk, Direct2D
+  -->
 
   <PropertyGroup>
-    <OutputType>WinExe</OutputType>
-    <TargetFramework>net6.0-windows7.0</TargetFramework>
-    <UseWindowsForms>true</UseWindowsForms>
-    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
-
+    <TargetFramework>net6.0</TargetFramework>
     <RootNamespace>HATE</RootNamespace>
-    <AssemblyName>HATE</AssemblyName>
-    <ApplicationIcon>icon.ico</ApplicationIcon>
+    <AssemblyName>HATE-UML</AssemblyName>
+    <PackageId>HATE-UML</PackageId>
+    <Authors />
+    <Description>HATE-UML: The UNDERTALE corruptor, but using UndertaleModLib.</Description>
+    <Company />
+    <Product>HATE-UML</Product>
   </PropertyGroup>
 
   <ItemGroup>
-    <Content Include="icon.ico" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <EmbeddedResource Update="Properties\Resources.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-    <Compile Update="Properties\Resources.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Resources.resx</DependentUpon>
-      <DesignTime>True</DesignTime>
-    </Compile>
-    <None Update="Properties\Settings.settings">
-      <Generator>SettingsSingleFileGenerator</Generator>
-      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
-    </None>
-    <Compile Update="Properties\Settings.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Settings.settings</DependentUpon>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-    </Compile>
-  </ItemGroup>
-
-  <ItemGroup>
-      <RuntimeHostConfigurationOption Include="System.Drawing.EnableUnixSupport" Value="true" />
+    <ProjectReference Include="..\UndertaleModTool\UndertaleModLib\UndertaleModLib.csproj" />
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
     <PackageReference Include="Optional" Version="4.0.0" />
   </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\UndertaleModTool\UndertaleModLib\UndertaleModLib.csproj"/>
-  </ItemGroup>
-
-  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="if exist $(SolutionDir)README.md copy $(SolutionDir)README.md $(TargetDir) /y&#xD;&#xA;if exist $(SolutionDir)COPYING.txt copy $(SolutionDir)COPYING.txt $(TargetDir) /y&#xD;&#xA;if exist $(SolutionDir)LICENSE.MIT.txt copy $(SolutionDir)LICENSE.MIT.txt $(TargetDir) /y" />
-  </Target>
-
 </Project>
