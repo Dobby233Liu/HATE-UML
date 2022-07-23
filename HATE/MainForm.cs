@@ -357,6 +357,8 @@ namespace HATE
             EnableControls(true);
         }
 
+        enum CorruptErrorType : int { Success, Failure, Exception }
+
         private async void button_Corrupt_Clicked(object sender, EventArgs e)
         {
             EnableControls(false);
@@ -364,24 +366,38 @@ namespace HATE
             try { _logWriter = new StreamWriter("HATE.log", true); }
             catch (Exception) { MsgBoxHelpers.ShowError("Could not set up the log file."); }
 
-            Task<bool> t = Task.Run(async () =>
+            Task<CorruptErrorType> t = Task.Run(async () =>
             {
-                if (!await Setup()) return false;
-                if (_shuffleGFX && !Functionality.ShuffleGFX_Func(Data, _random, _truePower, _logWriter, _friskMode)) return false;
-                if (_hitboxFix && !Functionality.HitboxFix_Func(Data, _random, _truePower, _logWriter, _friskMode)) return false;
-                if (_shuffleText && !Functionality.ShuffleText_Func(Data, _random, _truePower, _logWriter, _friskMode)) return false;
-                if (_shuffleFont && !Functionality.ShuffleFont_Func(Data, _random, _truePower, _logWriter, _friskMode)) return false;
-                if (_shuffleBG && !Functionality.ShuffleBG_Func(Data, _random, _truePower, _logWriter, _friskMode)) return false;
-                if (_shuffleAudio && !Functionality.ShuffleAudio_Func(Data, _random, _truePower, _logWriter, _friskMode)) return false;
-                return true;
+                try
+                {
+                    if (!await Setup()) return CorruptErrorType.Failure;
+                    if (_shuffleGFX && !Functionality.ShuffleGFX_Func(Data, _random, _truePower, _logWriter, _friskMode))
+                        return CorruptErrorType.Failure;
+                    if (_hitboxFix && !Functionality.HitboxFix_Func(Data, _random, _truePower, _logWriter, _friskMode))
+                        return CorruptErrorType.Failure;
+                    if (_shuffleText && !Functionality.ShuffleText_Func(Data, _random, _truePower, _logWriter, _friskMode))
+                        return CorruptErrorType.Failure;
+                    if (_shuffleFont && !Functionality.ShuffleFont_Func(Data, _random, _truePower, _logWriter, _friskMode))
+                        return CorruptErrorType.Failure;
+                    if (_shuffleBG && !Functionality.ShuffleBG_Func(Data, _random, _truePower, _logWriter, _friskMode))
+                        return CorruptErrorType.Failure;
+                    if (_shuffleAudio && !Functionality.ShuffleAudio_Func(Data, _random, _truePower, _logWriter, _friskMode))
+                        return CorruptErrorType.Failure;
+                } catch (Exception ex)
+                {
+                    MsgBoxHelpers.ShowError(ex.ToString());
+                    return CorruptErrorType.Exception;
+                }
+                return CorruptErrorType.Success;
             });
 
-            if (await t)
+            CorruptErrorType result = await t;
+            if (result == CorruptErrorType.Success)
             {
                 await SaveFile(_dataWin);
                 AfterDataLoad();
             }
-            else
+            else if (result == CorruptErrorType.Failure)
             {
                 _logWriter.WriteLine("An error ocurred.");
                 MsgBoxHelpers.ShowError("HATE.log may have described this error in detail.", "An error ocurred");

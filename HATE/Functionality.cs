@@ -16,14 +16,14 @@ namespace HATE
     {
         public static bool ShuffleAudio_Func(UndertaleData data, Random random, float chance, StreamWriter logstream, bool _friskMode)
         {
-            return Shuffle.ShuffleChunk("SOND", data, random, chance, logstream, _friskMode)
-                    && Shuffle.ShuffleChunk("STRG", data, random, chance, logstream, _friskMode, ShuffleAudio2_Shuffler);
+            return Shuffle.ShuffleChunk(data.FORM.Chunks.GetValueOrDefault("SOND"), data, random, chance, logstream, _friskMode)
+                    && Shuffle.ShuffleChunk(data.FORM.Chunks.GetValueOrDefault("STRG"), data, random, chance, logstream, _friskMode, Shuffle.ComplexShuffle(ShuffleAudio2_Shuffler));
             //&& Shuffle.ShuffleChunk(data.EmbeddedAudio, data, random, chance, logstream);               
         }
 
-        private static bool ShuffleAudio2_Shuffler(string _chunk, UndertaleData data, Random random, float shufflechance, StreamWriter logstream, bool _friskMode)
+        private static bool ShuffleAudio2_Shuffler(UndertaleChunk _chunk, UndertaleData data, Random random, float shufflechance, StreamWriter logstream, bool _friskMode)
         {
-            IList<UndertaleString> _pointerlist = (data.FORM.Chunks[_chunk] as UndertaleChunkSTRG)?.List;
+            IList<UndertaleString> _pointerlist = (_chunk as UndertaleChunkSTRG)?.List;
             IList<UndertaleString> strgClone = new List<UndertaleString>(_pointerlist);
             foreach (var func in data.Sounds)
             {
@@ -53,23 +53,23 @@ namespace HATE
 
         public static bool ShuffleBG_Func(UndertaleData data, Random random, float chance, StreamWriter logstream, bool _friskMode)
         {
-            return Shuffle.ShuffleChunk("BGND", data, random, chance, logstream, _friskMode) &&
-                (!data.IsGameMaker2() || Shuffle.ShuffleChunk("SPRT", data, random, chance, logstream, _friskMode, Shuffle.ComplexShuffle(ShuffleBG2_Shuffler)));              
+            return Shuffle.ShuffleChunk(data.FORM.Chunks.GetValueOrDefault("BGND"), data, random, chance, logstream, _friskMode) &&
+                (!data.IsGameMaker2() || Shuffle.ShuffleChunk(data.FORM.Chunks.GetValueOrDefault("SPRT"), data, random, chance, logstream, _friskMode, Shuffle.ComplexShuffle(ShuffleBG2_Shuffler)));              
         }
 
         public static bool ShuffleFont_Func(UndertaleData data, Random random, float chance, StreamWriter logstream, bool _friskMode)
         {
-            return Shuffle.ShuffleChunk("FONT", data, random, chance, logstream, _friskMode);
+            return Shuffle.ShuffleChunk(data.FORM.Chunks.GetValueOrDefault("FONT"), data, random, chance, logstream, _friskMode);
         }
 
         public static bool HitboxFix_Func(UndertaleData data, Random random, float chance, StreamWriter logstream, bool _friskMode)
         {
-            return Shuffle.ShuffleChunk("SPRT", data, random, chance, logstream, _friskMode, Shuffle.ComplexShuffle(HitboxFix_Shuffler));
+            return Shuffle.ShuffleChunk(data.FORM.Chunks.GetValueOrDefault("SPRT"), data, random, chance, logstream, _friskMode, Shuffle.ComplexShuffle(HitboxFix_Shuffler));
         }
 
         public static bool ShuffleGFX_Func(UndertaleData data, Random random, float chance, StreamWriter logstream, bool _friskMode)
         {
-            return Shuffle.ShuffleChunk("SPRT", data, random, chance, logstream, _friskMode, Shuffle.ComplexShuffle(ShuffleGFX_Shuffler));
+            return Shuffle.ShuffleChunk(data.FORM.Chunks.GetValueOrDefault("SPRT"), data, random, chance, logstream, _friskMode, Shuffle.ComplexShuffle(ShuffleGFX_Shuffler));
         }
 
         public static bool ShuffleText_Func(UndertaleData data, Random random, float chance, StreamWriter logstream, bool _friskMode)
@@ -82,12 +82,12 @@ namespace HATE
                     success = success && Shuffle.JSONStringShuffle(path, path, random, chance, logstream);
                 }
             }
-            return success && Shuffle.ShuffleChunk("STRG", data, random, chance, logstream, _friskMode, Shuffle.ComplexShuffle(ShuffleText_Shuffler));
+            return success && Shuffle.ShuffleChunk(data.FORM.Chunks.GetValueOrDefault("STRG"), data, random, chance, logstream, _friskMode, Shuffle.ComplexShuffle(ShuffleText_Shuffler));
         }
 
-        private static bool ShuffleBG2_Shuffler(string _chunk, UndertaleData data, Random random, float shufflechance, StreamWriter logstream, bool _friskMode)
+        private static bool ShuffleBG2_Shuffler(UndertaleChunk _chunk, UndertaleData data, Random random, float shufflechance, StreamWriter logstream, bool _friskMode)
         {
-            IList<UndertaleSprite> chunk = (data.FORM.Chunks[_chunk] as UndertaleChunkSPRT)?.List;
+            IList<UndertaleSprite> chunk = (_chunk as UndertaleChunkSPRT)?.List;
             List<int> sprites = new List<int>();
 
             for (int i = 0; i < chunk.Count; i++)
@@ -104,9 +104,9 @@ namespace HATE
 
             return true;
         }
-        public static bool ShuffleGFX_Shuffler(string _chunk, UndertaleData data, Random random, float shufflechance, StreamWriter logstream, bool _friskMode)
+        public static bool ShuffleGFX_Shuffler(UndertaleChunk _chunk, UndertaleData data, Random random, float shufflechance, StreamWriter logstream, bool _friskMode)
         {
-            IList<UndertaleSprite> chunk = (data.FORM.Chunks[_chunk] as UndertaleChunkSPRT)?.List;
+            IList<UndertaleSprite> chunk = (_chunk as UndertaleChunkSPRT)?.List;
             List<int> sprites = new List<int>();
 
             for (int i = 0; i < chunk.Count; i++)
@@ -125,9 +125,9 @@ namespace HATE
             return true;
         }
 
-        public static bool HitboxFix_Shuffler(string _chunk, UndertaleData data, Random random, float shufflechance, StreamWriter logstream, bool _friskMode)
+        public static bool HitboxFix_Shuffler(UndertaleChunk _chunk, UndertaleData data, Random random, float shufflechance, StreamWriter logstream, bool _friskMode)
         {
-            IList<UndertaleSprite> pointerlist = (data.FORM.Chunks[_chunk] as UndertaleChunkSPRT)?.List;
+            IList<UndertaleSprite> pointerlist = (_chunk as UndertaleChunkSPRT)?.List;
             TextureWorker worker = new TextureWorker();
             foreach (UndertaleSprite sprite in pointerlist)
             {
@@ -200,10 +200,9 @@ namespace HATE
             return true;
         }
 
-        // TODO: clean this
-        public static bool ShuffleText_Shuffler(string _chunk, UndertaleData data, Random random, float shufflechance, StreamWriter logstream, bool _friskMode)
+        public static bool ShuffleText_Shuffler(UndertaleChunk _chunk, UndertaleData data, Random random, float shufflechance, StreamWriter logstream, bool _friskMode)
         {
-            IList<UndertaleString> _pointerlist = (data.FORM.Chunks[_chunk] as UndertaleChunkSTRG)?.List;
+            IList<UndertaleString> _pointerlist = (_chunk as UndertaleChunkSTRG)?.List;
 
             IList<UndertaleString> pl_test = CleanseStringList(_pointerlist, data);
 
@@ -340,10 +339,12 @@ namespace HATE
                         }
                         if (layer.AssetsData != null)
                         {
-                            foreach (var asset in layer.AssetsData.Sprites)
+                            if (layer.AssetsData.Sprites != null)
+                                foreach (var asset in layer.AssetsData.Sprites)
                                 pl_test.Remove(asset.Name);
-                            foreach (var asset in layer.AssetsData.Sequences)
-                                pl_test.Remove(asset.Name);
+                            if (layer.AssetsData.Sequences != null)
+                                foreach (var asset in layer.AssetsData.Sequences)
+                                    pl_test.Remove(asset.Name);
                         }
                     }
                 }
@@ -479,16 +480,13 @@ namespace HATE
                 {
                     pl_test.Remove(func.Name);
                 }
-            if (data.FORM.Chunks.ContainsKey("FEDS"))
-            {
-                var feds = (data.FORM.Chunks["FEDS"] as UndertaleChunkFEDS)?.List;
-                if (feds is not null)
-                    foreach (var func in feds)
-                    {
-                        pl_test.Remove(func.Name);
-                        pl_test.Remove(func.Value);
-                    }
-            }
+            var feds = (data.FORM.Chunks.GetValueOrDefault("FEDS") as UndertaleChunkFEDS)?.List;
+            if (feds is not null)
+                foreach (var func in feds)
+                {
+                    pl_test.Remove(func.Name);
+                    pl_test.Remove(func.Value);
+                }
             return pl_test;
         }
     }

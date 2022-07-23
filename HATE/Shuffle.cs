@@ -173,37 +173,39 @@ namespace HATE
             "spr_doorE_ch1", "spr_doorF_ch1", "spr_doorW_ch1"
         };
 
-        public static bool ShuffleChunk(string chuck, UndertaleData data, Random random, float shufflechance, StreamWriter logstream,
-            bool friskmode, Func<string, UndertaleData, Random, float, StreamWriter, bool, bool> shufflefunc)
+        public static bool ShuffleChunk(UndertaleChunk chunk, UndertaleData data, Random random, float shufflechance, StreamWriter logstream,
+            bool friskmode, Func<UndertaleChunk, UndertaleData, Random, float, StreamWriter, bool, bool> shufflefunc)
         {
             if (random == null)
                 throw new ArgumentNullException(nameof(random));
             try
             {
-                if (!shufflefunc(chuck, data, random, shufflechance, logstream, friskmode))
+                if (!shufflefunc(chunk, data, random, shufflechance, logstream, friskmode))
                 {
-                    logstream.WriteLine($"Error occured while modifying chuck.");
+                    if (MsgBoxHelpers.mainForm != null)
+                        MsgBoxHelpers.ShowError($"Error occured while modifying chuck {chunk.Name}.");
+                    logstream.WriteLine($"Error occured while modifying chuck {chunk.Name}.");
                     return false;
                 }
             }
             catch (Exception e)
             {
-                logstream.Write($"Caught exception during modification of the chuck. -> {e}");
+                logstream.Write($"Caught exception during modification of chuck {chunk.Name}. -> {e}");
                 throw;
             }
             return true;
         }
-        public static bool ShuffleChunk(string chuck, UndertaleData data, Random random, float shufflechance, StreamWriter logstream, bool friskmode)
+        public static bool ShuffleChunk(UndertaleChunk chunk, UndertaleData data, Random random, float shufflechance, StreamWriter logstream, bool friskmode)
         {
-            return ShuffleChunk(chuck, data, random, shufflechance, logstream, friskmode, SimpleShuffle);
+            return ShuffleChunk(chunk, data, random, shufflechance, logstream, friskmode, SimpleShuffle);
         }
 
         enum ComplexShuffleStep : byte { Shuffling, SecondLog }
 
-        public static Func<string, UndertaleData, Random, float, StreamWriter, bool, bool> ComplexShuffle(
-            Func<string, UndertaleData, Random, float, StreamWriter, bool, bool> shuffler)
+        public static Func<UndertaleChunk, UndertaleData, Random, float, StreamWriter, bool, bool> ComplexShuffle(
+            Func<UndertaleChunk, UndertaleData, Random, float, StreamWriter, bool, bool> shuffler)
         {
-            return (string chunk, UndertaleData data, Random random, float chance, StreamWriter logstream, bool friskmode) =>
+            return (UndertaleChunk chunk, UndertaleData data, Random random, float chance, StreamWriter logstream, bool friskmode) =>
             {
                 ComplexShuffleStep step = ComplexShuffleStep.Shuffling;
                 try
@@ -222,9 +224,9 @@ namespace HATE
             };
         }
 
-        public static bool SimpleShuffler(string _chunk, UndertaleData data, Random random, float shuffleChance, StreamWriter logStream, bool _friskMode)
+        public static bool SimpleShuffler(UndertaleChunk _chunk, UndertaleData data, Random random, float shuffleChance, StreamWriter logStream, bool _friskMode)
         {
-            var chunk = (data.FORM.Chunks[_chunk] as IUndertaleListChunk)?.GetList();
+            var chunk = (_chunk as IUndertaleListChunk)?.GetList();
             List<int> ints = new List<int>();
             for (int i = 0; i < chunk.Count; i++)
             {
@@ -259,7 +261,7 @@ namespace HATE
             };
         }
 
-        public static Func<string, UndertaleData, Random, float, StreamWriter, bool, bool> SimpleShuffle = ComplexShuffle(SimpleShuffler);
+        public static Func<UndertaleChunk, UndertaleData, Random, float, StreamWriter, bool, bool> SimpleShuffle = ComplexShuffle(SimpleShuffler);
 
         public static readonly Regex jsonLineRegex = new Regex("\\s*\"(.+)\":\\s*\"(.+)\",", RegexOptions.ECMAScript);
 
