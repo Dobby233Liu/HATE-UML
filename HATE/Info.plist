@@ -5,7 +5,7 @@
     <key>CFBundleName</key>
     <string>HATE</string>
     <key>CFBundleIdentifier</key>
-    <string>com.example.HATE</string>
+    <string>io.github.HATE</string>
     <key>CFBundleShortVersionString</key>
     <string>1.0</string>
     <key>LSMinimumSystemVersion</key>
