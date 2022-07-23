@@ -264,7 +264,35 @@ namespace HATE
             return true;
         }
 
+        private static bool ShuffleAudio2_Shuffler(UndertaleChunk _chunk, UndertaleData data, Random random, float shufflechance, StreamWriter logstream, bool _friskMode)
+        {
+            IList<UndertaleString> _pointerlist = (_chunk as UndertaleChunkSTRG)?.List;
+            IList<UndertaleString> strgClone = new List<UndertaleString>(_pointerlist);
+            foreach (var func in data.Sounds)
+            {
+                strgClone.Remove(func.Name);
+                strgClone.Remove(func.Type);
+                strgClone.Remove(func.File);
+            }
 
+            IList<int> stringList = new List<int>();
+
+            for (int _i = 0; _i < strgClone.Count; _i++)
+            {
+                var i = _pointerlist.IndexOf(strgClone[_i]);
+                string s = strgClone[_i].Content;
+                if ((s.EndsWith(".ogg") || s.EndsWith(".wav") || s.EndsWith(".mp3"))
+                    && !s.StartsWith("music/") /* UNDERTALE */)
+                    stringList.Add(i);
+            }
+
+            stringList.SelectSome(shufflechance, random);
+            logstream.WriteLine($"Added {stringList.Count} string pointers to music file references list.");
+
+            _pointerlist.ShuffleOnlySelected(stringList, Shuffle.GetSubfunction(_pointerlist), random);
+
+            return true;
+        }
 
         public static bool ShuffleBG2_Shuffler(UndertaleChunk _chunk, UndertaleData data, Random random, float shufflechance, StreamWriter logstream, bool _friskMode)
         {
