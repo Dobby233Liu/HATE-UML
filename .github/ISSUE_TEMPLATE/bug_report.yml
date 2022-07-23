@@ -1,0 +1,70 @@
+name: Bug report
+description: File a bug report
+labels: bug
+
+body:
+  - type: checkboxes
+    id: alreadyexists
+    attributes:
+      label: Have you checked that no similar bug report(s) exist?
+      description: Please try to search for this bug in the issues before creating this bug report.
+      options:
+        - label: I have searched and didn't find any similar bug report.
+          required: true
+  - type: textarea
+    id: issue
+    attributes:
+      label: Describe the bug
+      description: A clear and concise description of what the bug is. If applicable, add screenshots to help in explaining.
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce the behaviour
+      description: How can we reproduce this bug? For example, doing what actions in what software causes the bug to occur?
+      placeholder: |
+        1. Go to '...'
+        2. Click on '....'
+        3. Scroll down to '....'
+        4. See error
+    validations:
+      required: true
+  - type: textarea
+    id: excepted
+    attributes:
+      label: Expected behavior
+      description: A clear and concise description of what did you expect to happen. If applicable, add screenshots to help in explaining.
+    validations:
+      required: false
+  - type: input
+    id: os
+    attributes:
+      label: What operating system(s) this bug have occurred on?
+      description: Put in the release name of the OS (optionally with a extra version number and/or an architecture name) this problem have occurred on.
+      placeholder: "Ex. Windows 10 21H2 etc."
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: What version of the tool have this bug?
+      description: Put in the version number of the build you experienced this bug on.
+      placeholder: "Ex. 1.0.0"
+    validations:
+      required: true
+  - type: textarea
+    id: log
+    attributes:
+      label: Output log
+      description: Paste the content of HATE.log here when applicable. If you want to link to a upload of the file, please put the link into the "Additional information" box instead.
+      render: text
+    validations:
+      required: false
+  - type: textarea
+    id: context
+    attributes:
+      label: Additional information
+      description: Add more information about the problem here.
+    validations:
+      required: false
