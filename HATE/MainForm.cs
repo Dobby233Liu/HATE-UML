@@ -52,6 +52,7 @@ namespace HATE
         private WindowsPrincipal windowsPrincipal;
 
         private UndertaleData Data;
+        private bool _controlState;
 
         public MainForm()
         {
@@ -409,6 +410,7 @@ namespace HATE
 
         public void EnableControls(bool state)
         {
+            _controlState = state;
             btnCorrupt.Enabled = state;
             btnLaunch.Enabled = state;
             chbShuffleText.Enabled = state;
@@ -477,10 +479,10 @@ namespace HATE
                 if (!SafeMethods.CopyFile(_dataWin, $"HATE_backup/{_dataWin}")) { return false; }
                 if (Directory.Exists("lang"))
                 {
-                    if (File.Exists("lang/lang_en.json") && !SafeMethods.CopyFile("lang/lang_en.json", "./HATE_backup/lang_en.json")) { return false; };
-                    if (File.Exists("lang/lang_ja.json") && !SafeMethods.CopyFile("lang/lang_ja.json", "./HATE_backup/lang_ja.json")) { return false; };
-                    if (File.Exists("lang/lang_en_ch1.json") && !SafeMethods.CopyFile("lang/lang_en_ch1.json", "./HATE_backup/lang_en_ch1.json")) { return false; };
-                    if (File.Exists("lang/lang_ja_ch1.json") && !SafeMethods.CopyFile("lang/lang_ja_ch1.json", "./HATE_backup/lang_ja_ch1.json")) { return false; };
+                    foreach (string file in Directory.EnumerateFiles("lang", "*.json"))
+                    {
+                        if (!SafeMethods.CopyFile(file, $"HATE_backup/{Path.GetFileName(file)}")) { return false; }
+                    }
                 }
                 _logWriter.WriteLine($"Finished setting up the Data folder.");
             }
@@ -491,28 +493,22 @@ namespace HATE
                 _logWriter.WriteLine($"Deleted {_dataWin}.");
                 if (Directory.Exists("lang"))
                 {
-                    if (File.Exists("lang/lang_en.json") && !SafeMethods.DeleteFile("lang/lang_en.json")) { return false; }
-                    _logWriter.WriteLine($"Deleted lang/lang_en.json.");
-                    if (File.Exists("lang/lang_ja.json") && !SafeMethods.DeleteFile("lang/lang_ja.json")) { return false; }
-                    _logWriter.WriteLine($"Deleted lang/lang_ja.json.");
-                    if (File.Exists("lang/lang_en_ch1.json") && !SafeMethods.DeleteFile("lang/lang_en_ch1.json")) { return false; }
-                    _logWriter.WriteLine($"Deleted lang/lang_en_ch1.json.");
-                    if (File.Exists("lang/lang_ja_ch1.json") && !SafeMethods.DeleteFile("lang/lang_ja_ch1.json")) { return false; }
-                    _logWriter.WriteLine($"Deleted lang/lang_ja_ch1.json.");
+                    foreach (string file in Directory.EnumerateFiles("lang", "*.json"))
+                    {
+                        if (!SafeMethods.DeleteFile(file)) { return false; }
+                        _logWriter.WriteLine($"Deleted {file}.");
+                    }
                 }
 
                 if (!SafeMethods.CopyFile($"HATE_backup/{_dataWin}", _dataWin)) { return false; }
                 _logWriter.WriteLine($"Copied {_dataWin}.");
                 if (Directory.Exists("lang"))
                 {
-                    if (File.Exists("./HATE_backup/lang_en_ch1.json") && !SafeMethods.CopyFile("./HATE_backup/lang_en.json", "lang/lang_en.json")) { return false; }
-                    _logWriter.WriteLine($"Copied lang/lang_en.json.");
-                    if (File.Exists("./HATE_backup/lang_en_ch1.json") && !SafeMethods.CopyFile("./HATE_backup/lang_ja.json", "lang/lang_ja.json")) { return false; }
-                    _logWriter.WriteLine($"Copied lang/lang_ja.json.");
-                    if (File.Exists("./HATE_backup/lang_en_ch1.json") && !SafeMethods.CopyFile("./HATE_backup/lang_en_ch1.json", "lang/lang_en_ch1.json")) { return false; }
-                    _logWriter.WriteLine($"Copied lang/lang_en_ch1.json.");
-                    if (File.Exists("./HATE_backup/lang_ja_ch1.json") && !SafeMethods.CopyFile("./HATE_backup/lang_ja_ch1.json", "lang/lang_ja_ch1.json")) { return false; }
-                    _logWriter.WriteLine($"Copied lang/lang_ja_ch1.json.");
+                    foreach (string file in Directory.EnumerateFiles("HATE_backup", "*.json"))
+                    {
+                        if (!SafeMethods.CopyFile($"HATE_backup/{Path.GetFileName(file)}", file)) { return false; }
+                        _logWriter.WriteLine($"Copied {file}.");
+                    }
                 }
             }
 
@@ -585,6 +581,11 @@ namespace HATE
         private void txtPower_Leave(object sender, EventArgs e)
         {
             txtPower.Text = string.IsNullOrWhiteSpace(txtPower.Text) ? _defaultPowerText : txtPower.Text;
+        }
+        private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            if (!_controlState)
+                e.Cancel = true;
         }
     }
     public static class MsgBoxHelpers
