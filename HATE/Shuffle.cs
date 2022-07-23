@@ -759,7 +759,8 @@ namespace HATE
             nv.SpineTextures = SpineTextures_value;
             var YYSWF_value = kv.YYSWF;
             kv.YYSWF = nv.YYSWF;
-            nv.YYSWF = YYSWF_value; var V3NineSlice_value = kv.V3NineSlice;
+            nv.YYSWF = YYSWF_value;
+            var V3NineSlice_value = kv.V3NineSlice;
             kv.V3NineSlice = nv.V3NineSlice;
             nv.V3NineSlice = V3NineSlice_value;
             List<UndertaleSprite.TextureEntry> Textures_value
