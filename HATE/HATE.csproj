@@ -18,11 +18,16 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\UndertaleModTool\UndertaleModLib\UndertaleModLib.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
     <PackageReference Include="Optional" Version="4.0.0" />
   </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\UndertaleModTool\UndertaleModLib\UndertaleModLib.csproj"/>
+  </ItemGroup>
+
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec Command="if exist $(SolutionDir)README.md copy $(SolutionDir)README.md $(TargetDir) /y&#xD;&#xA;if exist $(SolutionDir)COPYING.txt copy $(SolutionDir)COPYING.txt $(TargetDir) /y&#xD;&#xA;if exist $(SolutionDir)LICENSE.MIT.txt copy $(SolutionDir)LICENSE.MIT.txt $(TargetDir) /y" />
+  </Target>
+  
 </Project>
