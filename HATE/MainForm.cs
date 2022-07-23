@@ -316,7 +316,7 @@ namespace HATE
             else
             {
                 var dir = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-                foreach (string file in Directory.EnumerateFiles(dir))
+                foreach (string file in SafeMethods.GetFiles(dir))
                 {
                     if (Path.GetFileNameWithoutExtension(file) != "HATE" && file.EndsWith(".exe"))
                     {
@@ -398,11 +398,11 @@ namespace HATE
                 await SaveFile(_dataWin);
                 AfterDataLoad();
             }
-            else if (result == CorruptErrorType.Failure)
+            /*else if (result == CorruptErrorType.Failure)
             {
                 _logWriter.WriteLine("An error ocurred.");
                 MsgBoxHelpers.ShowError("HATE.log may have described this error in detail.", "An error ocurred");
-            }
+            }*/
             _logWriter.Close();
             _logWriter = null;
             EnableControls(true);
@@ -419,8 +419,6 @@ namespace HATE
             chbShuffleFont.Enabled = state;
             chbShuffleBG.Enabled = state;
             chbShuffleAudio.Enabled = state;
-            label1.Enabled = state;
-            label2.Enabled = state;
             txtPower.Enabled = state;
             txtSeed.Enabled = state;
         }
@@ -441,13 +439,14 @@ namespace HATE
             _friskMode = false;
 
             int timeSeed = 0;
-            string seed = Invoke<string>(delegate { return txtSeed.Text.Trim(); });
+            string seed = Invoke(delegate { return txtSeed.Text; }).Trim();
+            _logWriter.WriteLine($"Seed - {seed}");
 
             if (seed.ToUpper() == "FRISK" || seed.ToUpper() == "KRIS")
                 _friskMode = true;
 
             /* checking # for: Now it will change the corruption every time you press the button */
-            else if (seed == "" || seed[0] == '#')
+            if (seed == "" || seed.StartsWith('#'))
             {
                 timeSeed = (int)DateTime.Now.Subtract(_unixTimeZero).TotalSeconds;
 
@@ -479,7 +478,7 @@ namespace HATE
                 if (!SafeMethods.CopyFile(_dataWin, $"HATE_backup/{_dataWin}")) { return false; }
                 if (Directory.Exists("lang"))
                 {
-                    foreach (string file in Directory.EnumerateFiles("lang", "*.json"))
+                    foreach (string file in SafeMethods.GetFiles("lang", true, "*.json"))
                     {
                         if (!SafeMethods.CopyFile(file, $"HATE_backup/{Path.GetFileName(file)}")) { return false; }
                     }
@@ -493,7 +492,7 @@ namespace HATE
                 _logWriter.WriteLine($"Deleted {_dataWin}.");
                 if (Directory.Exists("lang"))
                 {
-                    foreach (string file in Directory.EnumerateFiles("lang", "*.json"))
+                    foreach (string file in SafeMethods.GetFiles("lang", true, "*.json"))
                     {
                         if (!SafeMethods.DeleteFile(file)) { return false; }
                         _logWriter.WriteLine($"Deleted {file}.");
@@ -504,9 +503,9 @@ namespace HATE
                 _logWriter.WriteLine($"Copied {_dataWin}.");
                 if (Directory.Exists("lang"))
                 {
-                    foreach (string file in Directory.EnumerateFiles("HATE_backup", "*.json"))
+                    foreach (string file in SafeMethods.GetFiles("HATE_backup", true, "*.json"))
                     {
-                        if (!SafeMethods.CopyFile($"HATE_backup/{Path.GetFileName(file)}", file)) { return false; }
+                        if (!SafeMethods.CopyFile(file, $"lang/{Path.GetFileName(file)}")) { return false; }
                         _logWriter.WriteLine($"Copied {file}.");
                     }
                 }
