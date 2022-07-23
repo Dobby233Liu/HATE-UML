@@ -173,23 +173,3 @@ public partial class MainForm : Form
 		Text = "Loading game...",
 	};
 }
-	
-public static class MsgBoxHelpers
-{
-	public static DialogResult ShowMessage(string message, MessageBoxButtons buttons, MessageBoxType icon, string caption = "HATE-UML")
-	{
-		return Application.Instance.Invoke(delegate { return MessageBox.Show(message, caption, buttons, icon); });
-	}
-	public static DialogResult ShowMessage(string message, string caption = "HATE-UML")
-	{
-		return Application.Instance.Invoke(delegate { return MessageBox.Show(message, caption); });
-	}
-	public static DialogResult ShowWarning(string message, string caption = "HATE-UML")
-	{
-		return Application.Instance.Invoke(delegate { return MessageBox.Show(message, caption, MessageBoxButtons.OK, MessageBoxType.Warning); });
-	}
-	public static DialogResult ShowError(string message, string caption = "HATE-UML")
-	{
-		return Application.Instance.Invoke(delegate { return MessageBox.Show(message, caption, MessageBoxButtons.OK, MessageBoxType.Error); });
-	}
-}

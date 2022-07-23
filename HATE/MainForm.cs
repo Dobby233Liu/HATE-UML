@@ -280,21 +280,21 @@ namespace HATE
 
         public bool IsElevated
         {
-        get
-        {
-            return RuntimeInformation.IsOSPlatform(OSPlatform.Windows)
-                ?
-                windowsPrincipal.IsInRole(WindowsBuiltInRole.Administrator)
-                : false;
-        }
+            get
+            {
+                return RuntimeInformation.IsOSPlatform(OSPlatform.Windows)
+                    ?
+                    windowsPrincipal.IsInRole(WindowsBuiltInRole.Administrator)
+                    : false;
+            }
         }
 
         public string WindowsExecPrefix
         {
-        get => RuntimeInformation.IsOSPlatform(OSPlatform.Linux)
-               || RuntimeInformation.IsOSPlatform(OSPlatform.OSX)
-               || RuntimeInformation.IsOSPlatform(OSPlatform.FreeBSD) /* unix platforms */
-            ? "wine " : "";
+            get => RuntimeInformation.IsOSPlatform(OSPlatform.Linux)
+                   || RuntimeInformation.IsOSPlatform(OSPlatform.OSX)
+                   || RuntimeInformation.IsOSPlatform(OSPlatform.FreeBSD) /* unix platforms */
+                ? "wine " : "";
         }
         public string GetGame()
         {
@@ -572,6 +572,25 @@ namespace HATE
         {
             if (!_controlState)
                 e.Cancel = true;
+        }
+    }
+    public static class MsgBoxHelpers
+    {
+        public static DialogResult ShowMessage(string message, MessageBoxButtons buttons, MessageBoxType icon, string caption = "HATE-UML")
+        {
+            return Application.Instance.Invoke(delegate { return MessageBox.Show(message, caption, buttons, icon); });
+        }
+        public static DialogResult ShowMessage(string message, string caption = "HATE-UML")
+        {
+            return Application.Instance.Invoke(delegate { return MessageBox.Show(message, caption); });
+        }
+        public static DialogResult ShowWarning(string message, string caption = "HATE-UML")
+        {
+            return Application.Instance.Invoke(delegate { return MessageBox.Show(message, caption, MessageBoxButtons.OK, MessageBoxType.Warning); });
+        }
+        public static DialogResult ShowError(string message, string caption = "HATE-UML")
+        {
+            return Application.Instance.Invoke(delegate { return MessageBox.Show(message, caption, MessageBoxButtons.OK, MessageBoxType.Error); });
         }
     }
 }
