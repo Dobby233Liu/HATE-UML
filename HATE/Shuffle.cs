@@ -795,15 +795,50 @@ namespace HATE
             kv.SepMasks = nv.SepMasks;
             nv.SepMasks = SepMasks_value;
         }
+        private static void SwapUndertaleBackground(UndertaleBackground kv, UndertaleBackground nv)
+        {
+            var Name_value = kv.Name;
+            kv.Name = nv.Name;
+            nv.Name = Name_value;
+            var Transparent_value = kv.Transparent;
+            kv.Transparent = nv.Transparent;
+            nv.Transparent = Transparent_value;
+            var Smooth_value = kv.Smooth;
+            kv.Smooth = nv.Smooth;
+            nv.Smooth = Smooth_value;
+            var Texture_value = kv.Texture;
+            kv.Texture = nv.Texture;
+            nv.Texture = Texture_value;
+            var GMS2TileWidth_value = kv.GMS2TileWidth;
+            kv.GMS2TileWidth = nv.GMS2TileWidth;
+            nv.GMS2TileWidth = GMS2TileWidth_value;
+            var GMS2TileHeight_value = kv.GMS2TileHeight;
+            kv.GMS2TileHeight = nv.GMS2TileHeight;
+            nv.GMS2TileHeight = GMS2TileHeight_value;
+            var GMS2OutputBorderX_value = kv.GMS2OutputBorderX;
+            kv.GMS2OutputBorderX = nv.GMS2OutputBorderX;
+            nv.GMS2OutputBorderX = GMS2OutputBorderX_value;
+            var GMS2OutputBorderY_value = kv.GMS2OutputBorderY;
+            kv.GMS2OutputBorderY = nv.GMS2OutputBorderY;
+            nv.GMS2OutputBorderY = GMS2OutputBorderY_value;
+            var GMS2TileColumns_value = kv.GMS2TileColumns;
+            kv.GMS2TileColumns = nv.GMS2TileColumns;
+            nv.GMS2TileColumns = GMS2TileColumns_value;
+            var GMS2FrameLength_value = kv.GMS2FrameLength;
+            kv.GMS2FrameLength = nv.GMS2FrameLength;
+            nv.GMS2FrameLength = GMS2FrameLength_value;
+        }
         public static Action<int, int> GetSubfunction<T>(IList<T> list)
         {
             return (n, k) =>
             {
                 if (list[n] is UndertaleString)
                 {
-                    var _value = (list[k] as UndertaleString).Content;
-                    (list[k] as UndertaleString).Content = (list[n] as UndertaleString).Content;
-                    (list[n] as UndertaleString).Content = _value;
+                    var kv = list[k] as UndertaleString;
+                    var nv = list[n] as UndertaleString;
+                    var _value = kv.Content;
+                    kv.Content = nv.Content;
+                    kv.Content = _value;
                     return;
                 }
                 if (list[n] is UndertaleSprite)
@@ -813,11 +848,19 @@ namespace HATE
                     SwapUndertaleSprite(kv, nv);
                     return;
                 }
+                if (list[n] is UndertaleBackground)
+                {
+                    var kv = list[k] as UndertaleBackground;
+                    var nv = list[n] as UndertaleBackground;
+                    SwapUndertaleBackground(kv, nv);
+                    return;
+                }
                 var value = list[k];
                 list[k] = list[n];
                 list[n] = value;
             };
         }
+
         public static Action<int, int> GetSubfunction(IList list)
         {
             return (n, k) =>
