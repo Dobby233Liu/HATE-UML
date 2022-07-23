@@ -739,6 +739,7 @@ namespace HATE
             List<UndertaleSprite.TextureEntry> Textures_valueb
                 = new List<UndertaleSprite.TextureEntry>(nv.Textures);
             kv.Textures.Clear();
+            nv.Textures.Clear();
             foreach (var t in Textures_valueb)
                 kv.Textures.Add(t);
             foreach (var t in Textures_value)
@@ -748,6 +749,7 @@ namespace HATE
             List<UndertaleSprite.MaskEntry> CollisionMasks_valueb
                 = new List<UndertaleSprite.MaskEntry>(nv.CollisionMasks);
             kv.CollisionMasks.Clear();
+            nv.CollisionMasks.Clear();
             foreach (var t in CollisionMasks_valueb)
                 kv.CollisionMasks.Add(t);
             foreach (var t in CollisionMasks_value)
