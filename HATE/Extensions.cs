@@ -53,10 +53,9 @@ namespace HATE
         }
         public static void SelectSome(this IList<int> list, float shufflechance, Random rng)
         {
-            int[] selected = new int[list.Count];
-            list.CopyTo(selected, 0);
+            IList<int> listBak = new List<int>(list);
             list.Clear();
-            foreach (int i in selected)
+            foreach (int i in listBak)
                 if (rng.NextDouble() <= shufflechance)
                     list.Add(i);
         }
