@@ -260,7 +260,7 @@ namespace HATE
                 ints.Add(i);
             }
             ints.SelectSome(shuffleChance, random);
-            chunk.ShuffleOnlySelected(ints, GetSubfunction(chunk), random);
+            chunk.ShuffleOnlySelected(ints, GetSubfunction(chunk, _chunk), random);
             return true;
         }
 
@@ -289,7 +289,7 @@ namespace HATE
             stringList.SelectSome(shufflechance, random);
             logstream.WriteLine($"Added {stringList.Count} string pointers to music file references list.");
 
-            _pointerlist.ShuffleOnlySelected(stringList, Shuffle.GetSubfunction(_pointerlist), random);
+            _pointerlist.ShuffleOnlySelected(stringList, GetSubfunction(_pointerlist, _chunk), random);
 
             return true;
         }
@@ -308,7 +308,7 @@ namespace HATE
             }
 
             sprites.SelectSome(shufflechance, random);
-            chunk.ShuffleOnlySelected(sprites, random);
+            chunk.ShuffleOnlySelected(sprites, GetSubfunction(chunk, _chunk), random);
             logstream.WriteLine($"Shuffled {sprites.Count} assumed backgrounds out of {chunk.Count} sprites.");
 
             return true;
@@ -323,12 +323,12 @@ namespace HATE
                 UndertaleSprite pointer = chunk[i];
 
                 if (!pointer.Name.Content.Trim().StartsWith("bg_") &&
-                    (!Shuffle.FriskSpriteHandles.Contains(pointer.Name.Content.Trim()) || _friskMode))
+                    (!FriskSpriteHandles.Contains(pointer.Name.Content.Trim()) || _friskMode))
                     sprites.Add(i);
             }
 
             sprites.SelectSome(shufflechance, random);
-            chunk.ShuffleOnlySelected(sprites, random);
+            chunk.ShuffleOnlySelected(sprites, GetSubfunction(chunk, _chunk), random);
             logstream.WriteLine($"Shuffled {sprites.Count} out of {chunk.Count} sprite pointers.");
 
             return true;
@@ -425,11 +425,11 @@ namespace HATE
                 var s = _pointerlist[i];
                 var convertedString = s.Content;
 
-                if (convertedString.Length < 3 || Shuffle.IsStringBanned(convertedString))
+                if (convertedString.Length < 3 || IsStringBanned(convertedString))
                     continue;
 
                 string ch = "";
-                foreach (string chr in Shuffle.DRChoicerControlChars)
+                foreach (string chr in DRChoicerControlChars)
                 {
                     if (convertedString.Contains(chr))
                     {
@@ -448,7 +448,7 @@ namespace HATE
                 else
                 {
                     string ending = "";
-                    foreach (string ed in Shuffle.FormatChars)
+                    foreach (string ed in FormatChars)
                     {
                         if (convertedString.EndsWith(ed))
                         {
@@ -458,7 +458,7 @@ namespace HATE
                     }
                     if (ending == "")
                     {
-                        if (Shuffle.ForceShuffleReferenceChars.Any(convertedString.Contains))
+                        if (ForceShuffleReferenceChars.Any(convertedString.Contains))
                             ending = "_FORCE";
                         else
                             continue;
@@ -485,7 +485,7 @@ namespace HATE
                 stringDict[ending].SelectSome(shufflechance, random);
                 logstream.WriteLine($"Added {stringDict[ending].Count} string pointers of ending {ending} to dialogue string List.");
 
-                _pointerlist.ShuffleOnlySelected(stringDict[ending], Shuffle.GetSubfunction(_pointerlist), random);
+                _pointerlist.ShuffleOnlySelected(stringDict[ending], GetSubfunction(_pointerlist, _chunk), random);
             }
 
             return true;
@@ -828,7 +828,7 @@ namespace HATE
             kv.GMS2FrameLength = nv.GMS2FrameLength;
             nv.GMS2FrameLength = GMS2FrameLength_value;
         }
-        public static Action<int, int> GetSubfunction<T>(IList<T> list)
+        public static Action<int, int> GetSubfunction<T>(IList<T> list, UndertaleChunk chunk)
         {
             return (n, k) =>
             {
@@ -860,11 +860,33 @@ namespace HATE
                 list[n] = value;
             };
         }
-
-        public static Action<int, int> GetSubfunction(IList list)
+        public static Action<int, int> GetSubfunction(IList list, UndertaleChunk chunk)
         {
             return (n, k) =>
             {
+                if (list[n] is UndertaleString)
+                {
+                    var kv = list[k] as UndertaleString;
+                    var nv = list[n] as UndertaleString;
+                    var _value = kv.Content;
+                    kv.Content = nv.Content;
+                    kv.Content = _value;
+                    return;
+                }
+                if (list[n] is UndertaleSprite)
+                {
+                    var kv = list[k] as UndertaleSprite;
+                    var nv = list[n] as UndertaleSprite;
+                    SwapUndertaleSprite(kv, nv);
+                    return;
+                }
+                if (list[n] is UndertaleBackground)
+                {
+                    var kv = list[k] as UndertaleBackground;
+                    var nv = list[n] as UndertaleBackground;
+                    SwapUndertaleBackground(kv, nv);
+                    return;
+                }
                 var value = list[k];
                 list[k] = list[n];
                 list[n] = value;
