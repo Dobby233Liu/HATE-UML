@@ -264,7 +264,7 @@ namespace HATE
             return true;
         }
 
-        private static bool ShuffleAudio2_Shuffler(UndertaleChunk _chunk, UndertaleData data, Random random, float shufflechance, StreamWriter logstream, bool _friskMode)
+        public static bool ShuffleAudio2_Shuffler(UndertaleChunk _chunk, UndertaleData data, Random random, float shufflechance, StreamWriter logstream, bool _friskMode)
         {
             IList<UndertaleString> _pointerlist = (_chunk as UndertaleChunkSTRG)?.List;
             IList<UndertaleString> strgClone = new List<UndertaleString>(_pointerlist);

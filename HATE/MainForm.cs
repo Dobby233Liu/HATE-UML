@@ -52,7 +52,7 @@ namespace HATE
         private WindowsPrincipal windowsPrincipal;
 
         private UndertaleData Data;
-        private bool _controlState;
+        private bool _controlState = true;
 
         public MainForm()
         {
@@ -78,14 +78,9 @@ namespace HATE
                             startInfo.Arguments = "true";
                             startInfo.Verb = "runas";
                             Process.Start(startInfo);
-                            Close();
-                            return;
                         }
-                        else
-                        {
-                            Close();
-                            return;
-                        }
+                        Close();
+                        return;
                     }
                 }
             }
@@ -108,6 +103,7 @@ namespace HATE
                 else
                 {
                     MsgBoxHelpers.ShowMessage("We couldn't find any game data in this folder, check that this is in the right folder.");
+                    _controlState = true;
                     Close();
                     return;
                 }
@@ -393,6 +389,8 @@ namespace HATE
             });
 
             CorruptErrorType result = await t;
+            _logWriter.Close();
+            _logWriter = null;
             if (result == CorruptErrorType.Success)
             {
                 await SaveFile(_dataWin);
@@ -403,8 +401,6 @@ namespace HATE
                 _logWriter.WriteLine("An error ocurred.");
                 MsgBoxHelpers.ShowError("HATE.log may have described this error in detail.", "An error ocurred");
             }*/
-            _logWriter.Close();
-            _logWriter = null;
             EnableControls(true);
         }
 
