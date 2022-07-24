@@ -40,7 +40,7 @@ namespace HATE
         };
         // hack
         public static List<string> ForceShuffleReferenceChars = new List<string>{
-            "#", "&", "^", "||",
+            "#", "&", "^", /*"||",*/
             "\\[1]", "\\[2]", "\\[C]", "\\[G]", "\\[I]",
             "\\*Z", "\\*X", "\\*C", "\\*D",
             "\\X", "\\W", "\n",
@@ -91,8 +91,9 @@ namespace HATE
             "ａ", "ｂ", "ｃ", "ｄ", "ｅ", "ｆ", "ｇ", "ｈ", "ｉ", "ｊ", "ｋ", "ｌ", "ｍ", "ｎ", "ｏ", "ｐ", "ｑ", "ｒ", "ｓ", "ｔ", "ｕ", "ｖ", "ｗ", "ｘ", "ｙ", "ｚ",
             "～", "･", "ｦ", "ｧ", "ｨ", "ｩ", "ｬ", "ｭ", "ｮ", "ｯ", "ｰ", "ｱ", "ｲ", "ｳ", "ｴ", "ｵ", "ｶ", "ｷ", "ｸ", "ｹ", "ｺ", "ｻ", "ｼ", "ｽ", "ｾ", "ｿ", "ﾀ", "ﾁ", "ﾂ", "ﾃ", "ﾄ", "ﾅ", "ﾆ", "ﾈ", "ﾉ", "ﾊ", "ﾋ", "ﾌ", "ﾍ", "ﾎ", "ﾏ", "ﾐ", "ﾑ", "ﾒ", "ﾓ", "ﾔ", "ﾖ", "ﾗ", "ﾘ", "ﾙ", "ﾚ", "ﾛ", "ﾜ", "ﾝ", "ﾞ", "ﾟ",
         };
+        public static List<string> CategorizableForcedSubstring = new List<string>{ "#", "&" };
         public static string[] BannedStrings = {
-            "_", "%%", "@@",
+            "_", "@@",
             "Z}", "`}", "0000000000000000", "~~~",
             "DO NOT EDIT IN GAMEMAKER",
             "gml_", "scr_", "SCR_", "room_", "obj_", "blt_", "spr_",
@@ -141,8 +142,12 @@ namespace HATE
             "enemytalk", "enemyattack",
             "soundplay", "walkdirect",
             "showdialog", "savepadindex", "slottitle",
-            "saveslotsize", "mus/", "\\n", "--missing-string--", "lang/",
-            "0123456789+-%", "0123456789-+"
+            "saveslotsize", "\\n",
+        };
+        public static string[] BannedStringsEX = {
+            "mus/", "lang/", "0123456789+-%", "0123456789-+",
+            // DEVICE_NAMER
+            "(B)BACK", "(E)END", "(1)ひらがな", "(2)カタカナ", "(3)アルファベット", "(B)さくじょ", "(E)けってい"
         };
         public static string[] FriskSpriteHandles = {
             // UNDERTALE
@@ -425,6 +430,11 @@ namespace HATE
                 stringDict[chr] = new List<int>();
                 stringDict[chr + "_ja"] = new List<int>();
             }
+            foreach (string chr in CategorizableForcedSubstring)
+            {
+                stringDict[chr] = new List<int>();
+                stringDict[chr + "_ja"] = new List<int>();
+            }
             stringDict["_FORCE"] = new List<int>();
             stringDict["_FORCE_ja"] = new List<int>();
 
@@ -472,7 +482,18 @@ namespace HATE
                     }
                     if (ending == "")
                     {
-                        if (ForceShuffleReferenceChars.Any(convertedString.Contains))
+                        string chu = "";
+                        foreach (string chr in CategorizableForcedSubstring)
+                        {
+                            if (convertedString.Contains(chr))
+                            {
+                                chu = chr;
+                                break;
+                            }
+                        }
+                        if (chu != "")
+                            ending = chu;
+                        else if (ForceShuffleReferenceChars.Any(convertedString.Contains))
                             ending = "_FORCE";
                         else
                             continue;
@@ -1042,9 +1063,10 @@ namespace HATE
 
         public static bool IsStringBanned(string str)
         {
-            return (BannedStrings.Any(str.Contains)
+            bool bannedEX = BannedStringsEX.Any(str.Contains);
+            return ((BannedStrings.Any(str.Contains) || bannedEX)
                 && !(
-                ForceShuffleReferenceChars.Any(str.Contains)
+                (ForceShuffleReferenceChars.Any(str.Contains) && !bannedEX)
                 || DRChoicerControlChars.Any(str.Contains)
                 )
             );
