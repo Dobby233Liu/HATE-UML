@@ -107,6 +107,10 @@ public partial class MainForm : Form
 
     private void QuitEarly()
     {
+        // BUG: In WPF mode, if you do either Close() or this
+        // during initialization Eto will still attempt to show this form
+        // In WinForms mode doing Close() will cause a exception and
+        // doing this will cause the window to show for a moment then close
         Application.Instance.Quit();
     }
 
