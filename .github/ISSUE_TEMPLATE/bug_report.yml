@@ -18,7 +18,7 @@ body:
     id: steps
     attributes:
       label: Steps to reproduce the behaviour
-      description: How can we reproduce this bug? For example, doing what actions in what software causes the bug to occur?
+      description: How can we reproduce this bug? For example, doing what causes the bug to occur?
       placeholder: |
         1. Go to '...'
         2. Click on '....'
@@ -47,6 +47,14 @@ body:
       label: What version of the tool have this bug?
       description: Put in the version number of the build you experienced this bug on.
       placeholder: "Ex. 1.0.0"
+    validations:
+      required: true
+  - type: input
+    id: game
+    attributes:
+      label: Game
+      description: Put in the game you tried to corrupt.
+      placeholder: "UNDERTALE/DELTARUNE Chapter 1&2"
     validations:
       required: true
   - type: textarea
