@@ -1,8 +1,5 @@
-using System.Collections.Generic;
 using Eto.Forms;
 using Eto.Drawing;
-using System;
-using System.Reflection;
 
 namespace HATE;
 
