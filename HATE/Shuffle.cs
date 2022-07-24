@@ -152,7 +152,7 @@ namespace HATE
         };
         public static string[] BannedStringsSame = {
             "\\W", "\\Y", "\\p", " A", " B", " C", "\\W &", "%%%", "%%"
-        }
+        };
         public static string[] FriskSpriteHandles = {
             // UNDERTALE
             "spr_maincharal", "spr_maincharau", "spr_maincharar", "spr_maincharad",

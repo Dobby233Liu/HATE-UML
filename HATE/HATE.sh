@@ -1,1 +1,0 @@
-﻿dotnet $(dirname "$SCRIPT")/HATE.dll
