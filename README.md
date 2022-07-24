@@ -47,7 +47,8 @@ Currently unavaliable for techinial reasons. Try to install the Windows version 
 
 ### Linux
 
-Install the .NET 6 Runtime if you don't have it; see the [Install .NET on Linux](https://docs.microsoft.com/en-us/dotnet/core/install/linux) document on Microsoft Docs. Make sure to install `libgdiplus` too. The following dependencies would also need to be installed: `gtk3`, `webkitgtk`, `openssl`, `icu` and `libappindicator`. See [picoe/Eto/wiki/Publishing-your-App#publish-for-linux](https://github.com/picoe/Eto/wiki/Publishing-your-App#publish-for-linux)
+Install the .NET 6 Runtime if you don't have it; see the [Install .NET on Linux](https://docs.microsoft.com/en-us/dotnet/core/install/linux) document on Microsoft Docs. Make sure to install `libgdiplus` too.
+The following dependencies would also need to be installed: `gtk3`, `openssl`, and `icu`. <!--https://github.com/picoe/Eto/wiki/Publishing-your-App#publish-for-linux-->
 
 1. Move everything in the release ZIP file to the directory with the game files - the place you can find an `assets` folder in, or the place you can find a `data.win` in if you want to corrupt a Windows game (in that case, also install Wine).
 2. Tada, you're set! Execute `HATE.sh` and start messing with stuff.
