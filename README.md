@@ -70,18 +70,18 @@ The following dependencies would also need to be installed: `gtk3`, `openssl`, a
 
 ## Building
 
-In order to compile the tool yourself, the .NET Core 6 SDK is required. The source tree also contains a `UndertaleModTool` submodule which the tool uses to include the ModLib in the project; you will need to download the submodule before building.
+In order to compile the tool yourself, the .NET Core 6 SDK and PowerShell (Core or the version included with Windows) is required. The source tree also contains a `UndertaleModTool` submodule which the tool uses to include the ModLib in the project; you will need to download the submodule before building.
 
 ### Compiling Via IDE
 
 * Open HATE.sln in the IDE of your choice (Visual Studio, JetBrains Rider, Visual Studio Code etc.)
-* Select the `HATE` project.
-* Compile.
+* Select either the `HATE.WinForms` or the `HATE.Gtk` project.
+* Compile or publish.
 
 ### Compiling Via Command Line
 
 * Open a terminal and navigate to the project root.
-* Execute `dotnet publish HATE`.
+* Execute `dotnet publish HATE.WinForms` or `dotnet publish HATE.Gtk`.
   * You can also provide arguments for compiling, such as `--no-self-contained` or `-c release`.
     For a full list of arguments, consult [this document](https://docs.microsoft.com/dotnet/core/tools/dotnet-publish).
 
