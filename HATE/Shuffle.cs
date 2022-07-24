@@ -147,7 +147,8 @@ namespace HATE
         public static string[] BannedStringsEX = {
             "mus/", "lang/", "0123456789+-%", "0123456789-+",
             // DEVICE_NAMER
-            "(B)BACK", "(E)END", "(1)ひらがな", "(2)カタカナ", "(3)アルファベット", "(B)さくじょ", "(E)けってい"
+            "(B)BACK", "(E)END", "(1)ひらがな", "(2)カタカナ", "(3)アルファベット", "(B)さくじょ", "(E)けってい",
+            "\\TX \\F0 " // scr_*face
         };
         public static string[] FriskSpriteHandles = {
             // UNDERTALE
@@ -963,8 +964,8 @@ namespace HATE
             string[] bannedStrings = { "_", "||" };
             string[] bannedKeys = { "date" };
 
-            List<KeyValuePair<string, string>> good_strings = new List<KeyValuePair<string, string>>();
-            List<KeyValuePair<string, string>> final_list = new List<KeyValuePair<string, string>>();
+            Dictionary<string, string> good_strings = new Dictionary<string, string>();
+            Dictionary<string, string> final_list = new Dictionary<string, string>();
 
             foreach (KeyValuePair<string, JToken> entry in langObject)
             {
@@ -974,22 +975,21 @@ namespace HATE
                     // Do string_hash_to_newline for good measure
                     value = value.Replace("#", "\n");
                 }
-                KeyValuePair<string, string> nEntry = new KeyValuePair<string, string>(entry.Key, value);
                 if (!bannedKeys.Contains(entry.Key) && value.Length >= 3 && !IsStringBanned(value))
                 {
-                    good_strings.Add(nEntry);
+                    good_strings.Add(entry.Key, value);
                 }
                 else
                 {
-                    final_list.Add(nEntry);
+                    final_list.Add(entry.Key, value);
                 }
             }
 
             logstream.WriteLine($"Kept {good_strings.Count} good JSON string entries.");
             logstream.WriteLine($"Fastforwarded {final_list.Count} JSON string entries to the final phase.");
 
-            Dictionary<string, List<KeyValuePair<string, string>>> stringDict
-                = new Dictionary<string, List<KeyValuePair<string, string>>>();
+            Dictionary<string, Dictionary<string, string>> stringDict
+                = new Dictionary<string, Dictionary<string, string>>();
 
             foreach (KeyValuePair<string, string> s in good_strings)
             {
@@ -1005,8 +1005,8 @@ namespace HATE
                 if (ch != "")
                 {
                     if (!stringDict.ContainsKey(ch))
-                        stringDict[ch] = new List<KeyValuePair<string, string>>();
-                    stringDict[ch].Add(s);
+                        stringDict[ch] = new Dictionary<string, string>();
+                    stringDict[ch].Add(s.Key, s.Value);
                 }
                 else
                 {
@@ -1020,9 +1020,9 @@ namespace HATE
                         }
                     }
                     if (!stringDict.ContainsKey(ending))
-                        stringDict[ending] = new List<KeyValuePair<string, string>>();
+                        stringDict[ending] = new Dictionary<string, string>();
 
-                    stringDict[ending].Add(s);
+                    stringDict[ending].Add(s.Key, s.Value);
                 }
             }
 
@@ -1030,19 +1030,22 @@ namespace HATE
             {
                 logstream.WriteLine($"Added {stringDict[ending].Count} JSON string entries of ending <{ending}> to dialogue string List.");
 
-                List<int> ints = new List<int>();
-                for (int i = 0; i < stringDict[ending].Count; i++)
+                List<string> ints = new List<string>();
+                foreach (string i in stringDict[ending].Keys)
                     ints.Add(i);
                 ints.SelectSome(shufflechance, random);
-                stringDict[ending].ShuffleOnlySelected<KeyValuePair<string, string>>(ints, (n, k) => {
-                    KeyValuePair<string, string> tmp = stringDict[ending][n];
+                stringDict[ending].ShuffleOnlySelected(ints, (n, k) => {
+                    var tmp = stringDict[ending][n];
                     stringDict[ending][n] = stringDict[ending][k];
                     stringDict[ending][k] = tmp;
                 }, random);
 
-                final_list = final_list.Concat(stringDict[ending]).ToList();
+                // i love crumb sharp!!!!1111
+                final_list = final_list.Concat(stringDict[ending]).ToDictionary(x => x.Key, x => x.Value);
             }
 
+            if (!SafeMethods.DeleteFile(target_file)) return false;
+            logstream.WriteLine($"Deleted {target_file}.");
             using (FileStream out_writer = File.OpenWrite(target_file))
             {
                 using (StreamWriter out_stream = new StreamWriter(out_writer))
@@ -1051,6 +1054,9 @@ namespace HATE
                     using (JsonTextWriter jsonReader = new JsonTextWriter(out_stream))
                     {
                         var serializer = new JsonSerializer();
+                        jsonReader.IndentChar = ' ';
+                        jsonReader.Indentation = 2;
+                        serializer.Formatting = Formatting.Indented;
                         serializer.Serialize(jsonReader, final_list);
                     }
                 }

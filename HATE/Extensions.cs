@@ -20,15 +20,6 @@ namespace HATE
                 n--;
             }
         }
-        public static void ShuffleOnlySelected<T>(this IList<T> list, IList<int> selected, Random rng)
-        {
-            list.ShuffleOnlySelected(selected, (n, k) =>
-            {
-                T value = list[k];
-                list[k] = list[n];
-                list[n] = value;
-            }, rng);
-        }
         public static void ShuffleOnlySelected(this IList list, IList<int> selected, Action<int, int> swapFunc, Random rng)
         {
             int n = selected.Count - 1;
@@ -42,20 +33,24 @@ namespace HATE
                 n--;
             }
         }
-        public static void ShuffleOnlySelected(this IList list, IList<int> selected, Random rng)
+        public static void ShuffleOnlySelected<T>(this Dictionary<T, T> list, IList<string> selected, Action<string, string> swapFunc, Random rng)
         {
-            list.ShuffleOnlySelected(selected, (n, k) =>
+            int n = selected.Count - 1;
+            while (n >= 0)
             {
-                var value = list[k];
-                list[k] = list[n];
-                list[n] = value;
-            }, rng);
+                int k = rng.Next(n + 1);
+                swapFunc(selected[n], selected[k]);
+                var idx = selected[k];
+                selected[k] = selected[n];
+                selected[n] = idx;
+                n--;
+            }
         }
-        public static void SelectSome(this IList<int> list, float shufflechance, Random rng)
+        public static void SelectSome<T>(this IList<T> list, float shufflechance, Random rng)
         {
-            IList<int> listBak = new List<int>(list);
+            IList<T> listBak = new List<T>(list);
             list.Clear();
-            foreach (int i in listBak)
+            foreach (var i in listBak)
                 if (rng.NextDouble() <= shufflechance)
                     list.Add(i);
         }
