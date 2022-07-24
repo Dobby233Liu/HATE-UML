@@ -13,6 +13,7 @@
     <ApplicationIcon>icon.ico</ApplicationIcon>
     <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
     <UseWindowsForms>true</UseWindowsForms>
+    <OutputType>WinExe</OutputType>
   </PropertyGroup>
 
   <ItemGroup>
