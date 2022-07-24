@@ -466,10 +466,10 @@ namespace HATE
                 _logWriter.WriteLine($"Text seed - {timeSeed}");
             }
 
+            _random = new Random(timeSeed);
+
             _logWriter.WriteLine($"Power - {power}");
             _logWriter.WriteLine($"TruePower - {_truePower}");
-
-            _random = new Random(timeSeed);
 
             /** ENVIRONMENTAL CHECKS **/
             if (!File.Exists(_dataWin))

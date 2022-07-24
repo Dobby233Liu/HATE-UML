@@ -27,15 +27,16 @@ namespace HATE
             "\\C"
         };
         public static List<string> FormatChars = new List<string>{
-            "/%%",
             "/%%.", // SCR_TEXT_1935 in UNDERTALE
             "/%%\"", // item_desc_23_0 in UNDERTALE
+            "/%%",
             "/^",
             "/%",
             "/",
             "%%",
             "%",
             "-",
+            "/*"
         };
         // hack
         public static List<string> ForceShuffleReferenceChars = new List<string>{
@@ -236,7 +237,7 @@ namespace HATE
                 {
                     shuffler(chunk, data, random, chance, logstream, friskmode);
                     step = ComplexShuffleStep.SecondLog;
-                    logstream.WriteLine($"Shuffled chunk {chunk}.");
+                    logstream.WriteLine($"Shuffled chunk {chunk.Name}.");
                 }
                 catch (Exception ex)
                 {
@@ -414,6 +415,18 @@ namespace HATE
             IList<UndertaleString> pl_test = CleanseStringList(_pointerlist, data);
 
             Dictionary<string, List<int>> stringDict = new Dictionary<string, List<int>>();
+            foreach (string chr in DRChoicerControlChars)
+            {
+                stringDict[chr] = new List<int>();
+                stringDict[chr + "_ja"] = new List<int>();
+            }
+            foreach (string chr in FormatChars)
+            {
+                stringDict[chr] = new List<int>();
+                stringDict[chr + "_ja"] = new List<int>();
+            }
+            stringDict["_FORCE"] = new List<int>();
+            stringDict["_FORCE_ja"] = new List<int>();
 
             for (int _i = 0; _i < pl_test.Count; _i++)
             {
@@ -436,10 +449,12 @@ namespace HATE
                 }
                 if (ch != "")
                 {
-                    if (convertedString.Any(x => x > 127))
-                        ch += "_ja";
-                    if (!stringDict.ContainsKey(ch))
-                        stringDict[ch] = new List<int>();
+                    foreach (char ix in convertedString)
+                        if (ix > 127)
+                        {
+                            ch += "_ja";
+                            break;
+                        }
                     stringDict[ch].Add(i);
                 }
                 else
@@ -450,6 +465,8 @@ namespace HATE
                         if (convertedString.EndsWith(ed))
                         {
                             ending = ed;
+                            if (ending.StartsWith("/%%"))
+                                ending = "/%%";
                             break;
                         }
                     }
@@ -460,11 +477,12 @@ namespace HATE
                         else
                             continue;
                     }
-                    if (convertedString.Any(x => x > 127))
-                        ending += "_ja";
-
-                    if (!stringDict.ContainsKey(ending))
-                        stringDict[ending] = new List<int>();
+                    foreach (char ix in convertedString)
+                        if (ix > 127)
+                        {
+                            ending += "_ja";
+                            break;
+                        }
 
                     stringDict[ending].Add(i);
                 }
@@ -844,7 +862,7 @@ namespace HATE
                     var nv = list[n] as UndertaleString;
                     var _value = kv.Content;
                     kv.Content = nv.Content;
-                    kv.Content = _value;
+                    nv.Content = _value;
                     return;
                 }
                 if (list[n] is UndertaleSprite)
@@ -876,7 +894,7 @@ namespace HATE
                     var nv = list[n] as UndertaleString;
                     var _value = kv.Content;
                     kv.Content = nv.Content;
-                    kv.Content = _value;
+                    nv.Content = _value;
                     return;
                 }
                 if (list[n] is UndertaleSprite)

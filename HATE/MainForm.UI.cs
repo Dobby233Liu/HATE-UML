@@ -12,6 +12,10 @@ public class SmallSpacer : Label
 	{
 		this.Handler.Height = 10;
 	}
+	public SmallSpacer(int height)
+	{
+		this.Handler.Height = height;
+	}
 }
 	
 public partial class MainForm : Form
@@ -34,7 +38,7 @@ public partial class MainForm : Form
 		mainLayout.AddRange(
 			new SmallSpacer(),
 			label3,
-			new SmallSpacer(),
+			new SmallSpacer(5),
 			lblGameName,
 			new SmallSpacer(),
 			chbShuffleAudio,
