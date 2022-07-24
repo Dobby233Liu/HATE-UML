@@ -8,7 +8,7 @@ I heard you want to destroy the fabric of time-space continuum and bring living 
 
 **HEALTHY \[REDACTED]'S WARNING:** Using the Shuffle GFX option may cause flashing lights in-game. Please also back your saves up if you want to try this tool, as there is a chance that this tool will break them.
 
-## The original \             corruptor
+## The original              corruptor
 
 Bing gave me this page when I searched for HATE on the search engine, however this fork is not ready yet.
 So it's best to not disappoint the newcomers, I have to give them something to use.
@@ -87,6 +87,8 @@ In order to compile the tool yourself, the .NET Core 6 SDK is required. The sour
 
 ## Special Thanks
 
+* RedSpah for the original
+* Contributors of UndertaleModTool for writing the data I/O interface
 * [Miepee](https://github.com/Miepee), dude did a lot
 
 ## Source Code
