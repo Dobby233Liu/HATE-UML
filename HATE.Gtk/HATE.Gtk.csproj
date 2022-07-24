@@ -11,6 +11,9 @@
     <Company>Dobby233Liu</Company>
     <Product>HATE-UML</Product>
     <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
+    <OutputType>WinExe</OutputType>
+    <PublishSingleFile>true</PublishSingleFile>
+    <PublishTrimmed>true</PublishTrimmed>
   </PropertyGroup>
 
   <ItemGroup>
