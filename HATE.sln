@@ -5,7 +5,9 @@ VisualStudioVersion = 17.2.32630.192
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UndertaleModLib", "UndertaleModTool\UndertaleModLib\UndertaleModLib.csproj", "{0996A4EA-BD1D-4868-A1DE-8284C2F92709}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HATE", "HATE\HATE.csproj", "{F35F7E3C-D764-46C5-B21F-8DF8472E44F5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HATE", "HATE\HATE.csproj", "{F35F7E3C-D764-46C5-B21F-8DF8472E44F5}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HATE.Gtk", "HATE.Gtk\HATE.Gtk.csproj", "{B83B1C39-1FCA-4A5A-ACA2-8E17D5BE0B75}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -41,6 +43,18 @@ Global
 		{F35F7E3C-D764-46C5-B21F-8DF8472E44F5}.Release|x64.Build.0 = Release|Any CPU
 		{F35F7E3C-D764-46C5-B21F-8DF8472E44F5}.Release|x86.ActiveCfg = Release|Any CPU
 		{F35F7E3C-D764-46C5-B21F-8DF8472E44F5}.Release|x86.Build.0 = Release|Any CPU
+		{B83B1C39-1FCA-4A5A-ACA2-8E17D5BE0B75}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B83B1C39-1FCA-4A5A-ACA2-8E17D5BE0B75}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B83B1C39-1FCA-4A5A-ACA2-8E17D5BE0B75}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{B83B1C39-1FCA-4A5A-ACA2-8E17D5BE0B75}.Debug|x64.Build.0 = Debug|Any CPU
+		{B83B1C39-1FCA-4A5A-ACA2-8E17D5BE0B75}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{B83B1C39-1FCA-4A5A-ACA2-8E17D5BE0B75}.Debug|x86.Build.0 = Debug|Any CPU
+		{B83B1C39-1FCA-4A5A-ACA2-8E17D5BE0B75}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B83B1C39-1FCA-4A5A-ACA2-8E17D5BE0B75}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B83B1C39-1FCA-4A5A-ACA2-8E17D5BE0B75}.Release|x64.ActiveCfg = Release|Any CPU
+		{B83B1C39-1FCA-4A5A-ACA2-8E17D5BE0B75}.Release|x64.Build.0 = Release|Any CPU
+		{B83B1C39-1FCA-4A5A-ACA2-8E17D5BE0B75}.Release|x86.ActiveCfg = Release|Any CPU
+		{B83B1C39-1FCA-4A5A-ACA2-8E17D5BE0B75}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
