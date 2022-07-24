@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
     <RootNamespace>HATE</RootNamespace>
-    <AssemblyName>HATE.Generic</AssemblyName>
+    <AssemblyName>HATE.Shared</AssemblyName>
     <PackageId>HATE-UML</PackageId>
     <Title>HATE-UML</Title>
     <Authors>Dobby233Liu</Authors>
@@ -11,6 +11,7 @@
     <Company>Dobby233Liu</Company>
     <Product>HATE-UML</Product>
     <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
+    <OutputType>DLL</OutputType>
   </PropertyGroup>
 
   <ItemGroup>
