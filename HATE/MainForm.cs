@@ -1,6 +1,6 @@
-﻿using System;
+using System;
+using System.ComponentModel;
 using System.Diagnostics;
-using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -8,24 +8,24 @@ using System.Runtime;
 using System.Runtime.InteropServices;
 using System.Security.Principal;
 using System.Threading.Tasks;
-using System.Windows.Forms;
+using Eto.Drawing;
+using Eto.Forms;
 using UndertaleModLib;
 using UndertaleModLib.Models;
 using UndertaleModLib.Util;
 
 namespace HATE
 {
-
     public partial class MainForm : Form
     {
-        private static class Style
+        private static class OurStyle
         {
-            private static readonly Color _btnRestoreColor = Color.LimeGreen;
-            private static readonly Color _btnCorruptColor = Color.Coral;
+            private static readonly Color _btnRestoreColor = Colors.LimeGreen;
+            private static readonly Color _btnCorruptColor = Colors.Coral;
             private static readonly string _btnRestoreLabel = " -RESTORE- ";
             private static readonly string _btnCorruptLabel = " -CORRUPT- ";
-            private static readonly Color _optionSet = Color.Yellow;
-            private static readonly Color _optionUnset = Color.White;
+            private static readonly Color _optionSet = Colors.Yellow;
+            private static readonly Color _optionUnset = Colors.White;
 
             public static Color GetOptionColor(bool b) { return b ? _optionSet : _optionUnset; }
             public static Color GetCorruptColor(bool b) { return b ? _btnCorruptColor : _btnRestoreColor; }
@@ -53,13 +53,9 @@ namespace HATE
 
         private UndertaleData Data;
         private bool _controlState = true;
-
-        public MainForm()
+    
+        private async void MainForm_Load(object sender, EventArgs e)
         {
-            InitializeComponent();
-
-            MsgBoxHelpers.mainForm = this;
-
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             {
                 windowsPrincipal = new WindowsPrincipal(WindowsIdentity.GetCurrent());
@@ -70,7 +66,7 @@ namespace HATE
                     if (Directory.GetCurrentDirectory().Contains(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles)) || Directory.GetCurrentDirectory().Contains(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86)) && !IsElevated)
                     {
                         string message = $"The game is in a system protected folder and we need elevated permissions in order to mess with {_dataWin}.\nDo you allow us to get elevated permissions (if you press no this will just close the program as we can't do anything)";
-                        if (MsgBoxHelpers.ShowMessage(message, MessageBoxButtons.YesNo, MessageBoxIcon.Information) == DialogResult.Yes)
+                        if (MsgBoxHelpers.ShowMessage(message, MessageBoxButtons.YesNo, MessageBoxType.Information) == DialogResult.Yes)
                         {
                             // Restart program and run as admin
                             var exeName = Process.GetCurrentProcess().MainModule.FileName;
@@ -86,11 +82,6 @@ namespace HATE
             }
 
             _random = new Random();
-
-            EnableControls(false);
-        }
-        private async void MainForm_Load(object sender, EventArgs e)
-        {
             EnableControls(false);
             if (!File.Exists(_dataWin))
             {
@@ -114,7 +105,7 @@ namespace HATE
             {
                 var displayName = Data.GeneralInfo.DisplayName.Content.ToLower();
                 if (!(displayName.StartsWith("undertale") || displayName.StartsWith("deltarune")))
-                    this.Invoke(delegate
+                    Application.Instance.Invoke(delegate
                     {
                         MsgBoxHelpers.ShowWarning("HATE-UML's support of this game may be limited. Unless this is a mod of a Toby Fox game, DO NOT report any problems you might experience.", "Not a Toby Fox game");
                     });
@@ -122,7 +113,7 @@ namespace HATE
         }
         private void AfterDataLoad()
         {
-            this.Invoke(delegate
+            Application.Instance.Invoke(delegate
             {      
                 if (Data is not null)
                 {
@@ -163,7 +154,7 @@ namespace HATE
                                 _logWriter.WriteLine(warning);
                         }, message =>
                         {
-                            Invoke(delegate
+                            Application.Instance.Invoke(delegate
                             {
                                 lblGameName.Text = message;
                             });
@@ -216,7 +207,7 @@ namespace HATE
                     {
                         UndertaleIO.Write(stream, Data, message =>
                         {
-                            Invoke(delegate
+                            Application.Instance.Invoke(delegate
                             {
                                 lblGameName.Text = message;
                             });
@@ -301,9 +292,9 @@ namespace HATE
         public string WindowsExecPrefix
         {
             get => RuntimeInformation.IsOSPlatform(OSPlatform.Linux)
-                    || RuntimeInformation.IsOSPlatform(OSPlatform.OSX)
-                    || RuntimeInformation.IsOSPlatform(OSPlatform.FreeBSD) /* unix platforms */
-                    ? "wine " : "";
+                   || RuntimeInformation.IsOSPlatform(OSPlatform.OSX)
+                   || RuntimeInformation.IsOSPlatform(OSPlatform.FreeBSD) /* unix platforms */
+                ? "wine " : "";
         }
         public string GetGame()
         {
@@ -435,7 +426,7 @@ namespace HATE
             _friskMode = false;
 
             int timeSeed = 0;
-            string seed = Invoke(delegate { return txtSeed.Text; }).Trim();
+            string seed = Application.Instance.Invoke(delegate { return txtSeed.Text; }).Trim();
             _logWriter.WriteLine($"Seed - {seed}");
 
             if (seed.ToUpper() == "FRISK" || seed.ToUpper() == "KRIS")
@@ -446,7 +437,7 @@ namespace HATE
             {
                 timeSeed = (int)DateTime.Now.Subtract(_unixTimeZero).TotalSeconds;
 
-                Invoke(delegate { txtSeed.Text = $"#{timeSeed}"; });
+                Application.Instance.Invoke(delegate { txtSeed.Text = $"#{timeSeed}"; });
 
                 _logWriter.WriteLine($"Numeric seed - {timeSeed}");
             }
@@ -508,7 +499,7 @@ namespace HATE
             }
 
             await LoadFile(_dataWin, false);
-            this.Invoke(delegate
+            Application.Instance.Invoke(delegate
             {
                 if (Data is not null)
                 {
@@ -522,49 +513,49 @@ namespace HATE
         public void UpdateCorrupt()
         {
             _corrupt = _shuffleGFX || _shuffleText || _hitboxFix || _shuffleFont || _shuffleAudio || _shuffleBG;
-            btnCorrupt.Text = Style.GetCorruptLabel(_corrupt);
-            btnCorrupt.ForeColor = Style.GetCorruptColor(_corrupt);
+            btnCorrupt.Text = OurStyle.GetCorruptLabel(_corrupt);
+            btnCorrupt.TextColor = OurStyle.GetCorruptColor(_corrupt);
         }
 
         private void chbShuffleText_CheckedChanged(object sender, EventArgs e)
         {
-            _shuffleText = chbShuffleText.Checked;
-            chbShuffleText.ForeColor = Style.GetOptionColor(_shuffleText);
+            _shuffleText = chbShuffleText.Checked.Value;
+            chbShuffleText.TextColor = OurStyle.GetOptionColor(_shuffleText);
             UpdateCorrupt();
         }
 
         private void chbShuffleGFX_CheckedChanged(object sender, EventArgs e)
         {
-            _shuffleGFX = chbShuffleGFX.Checked;
-            chbShuffleGFX.ForeColor = Style.GetOptionColor(_shuffleGFX);
+            _shuffleGFX = chbShuffleGFX.Checked.Value;
+            chbShuffleGFX.TextColor = OurStyle.GetOptionColor(_shuffleGFX);
             UpdateCorrupt();
         }
 
         private void chbHitboxFix_CheckedChanged(object sender, EventArgs e)
         {
-            _hitboxFix = chbHitboxFix.Checked;
-            chbHitboxFix.ForeColor = Style.GetOptionColor(_hitboxFix);
+            _hitboxFix = chbHitboxFix.Checked.Value;
+            chbHitboxFix.TextColor = OurStyle.GetOptionColor(_hitboxFix);
             UpdateCorrupt();
         }
 
         private void chbShuffleFont_CheckedChanged(object sender, EventArgs e)
         {
-            _shuffleFont = chbShuffleFont.Checked;
-            chbShuffleFont.ForeColor = Style.GetOptionColor(_shuffleFont);
+            _shuffleFont = chbShuffleFont.Checked.Value;
+            chbShuffleFont.TextColor = OurStyle.GetOptionColor(_shuffleFont);
             UpdateCorrupt();
         }
 
         private void chbShuffleBG_CheckedChanged(object sender, EventArgs e)
         {
-            _shuffleBG = chbShuffleBG.Checked;
-            chbShuffleBG.ForeColor = Style.GetOptionColor(_shuffleBG);
+            _shuffleBG = chbShuffleBG.Checked.Value;
+            chbShuffleBG.TextColor = OurStyle.GetOptionColor(_shuffleBG);
             UpdateCorrupt();
         }
 
         private void chbShuffleAudio_CheckedChanged(object sender, EventArgs e)
         {
-            _shuffleAudio = chbShuffleAudio.Checked;
-            chbShuffleAudio.ForeColor = Style.GetOptionColor(_shuffleAudio);
+            _shuffleAudio = chbShuffleAudio.Checked.Value;
+            chbShuffleAudio.TextColor = OurStyle.GetOptionColor(_shuffleAudio);
             UpdateCorrupt();
         }
 
@@ -577,7 +568,7 @@ namespace HATE
         {
             txtPower.Text = string.IsNullOrWhiteSpace(txtPower.Text) ? _defaultPowerText : txtPower.Text;
         }
-        private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
+        private void MainForm_FormClosing(object sender, CancelEventArgs e)
         {
             if (!_controlState)
                 e.Cancel = true;
@@ -585,22 +576,21 @@ namespace HATE
     }
     public static class MsgBoxHelpers
     {
-        public static MainForm mainForm = null;
-        public static DialogResult ShowMessage(string message, MessageBoxButtons buttons, MessageBoxIcon icon, string caption = "HATE-UML")
+        public static DialogResult ShowMessage(string message, MessageBoxButtons buttons, MessageBoxType icon, string caption = "HATE-UML")
         {
-            return mainForm.Invoke(delegate { return MessageBox.Show(message, caption, buttons, icon); });
+            return Application.Instance.Invoke(delegate { return MessageBox.Show(message, caption, buttons, icon); });
         }
         public static DialogResult ShowMessage(string message, string caption = "HATE-UML")
         {
-            return mainForm.Invoke(delegate { return MessageBox.Show(message, caption); });
+            return Application.Instance.Invoke(delegate { return MessageBox.Show(message, caption); });
         }
         public static DialogResult ShowWarning(string message, string caption = "HATE-UML")
         {
-            return mainForm.Invoke(delegate { return MessageBox.Show(message, caption, MessageBoxButtons.OK, MessageBoxIcon.Warning); });
+            return Application.Instance.Invoke(delegate { return MessageBox.Show(message, caption, MessageBoxButtons.OK, MessageBoxType.Warning); });
         }
         public static DialogResult ShowError(string message, string caption = "HATE-UML")
         {
-            return mainForm.Invoke(delegate { return MessageBox.Show(message, caption, MessageBoxButtons.OK, MessageBoxIcon.Error); });
+            return Application.Instance.Invoke(delegate { return MessageBox.Show(message, caption, MessageBoxButtons.OK, MessageBoxType.Error); });
         }
     }
 }

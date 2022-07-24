@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.IO;
-using System.Text.RegularExpressions;
-using System.Windows.Forms;
 using UndertaleModLib;
 using System.Collections;
 using UndertaleModLib.Models;
@@ -209,8 +207,7 @@ namespace HATE
             {
                 if (!shufflefunc(chunk, data, random, shufflechance, logstream, friskmode))
                 {
-                    if (MsgBoxHelpers.mainForm != null)
-                        MsgBoxHelpers.ShowError($"Error occured while modifying chuck {chunk.Name}.");
+                    MsgBoxHelpers.ShowError($"Error occured while modifying chuck {chunk.Name}.");
                     logstream.WriteLine($"Error occured while modifying chuck {chunk.Name}.");
                     return false;
                 }

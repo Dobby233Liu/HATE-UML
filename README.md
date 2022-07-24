@@ -84,6 +84,10 @@ In order to compile the tool yourself, the .NET Core 6 SDK is required. The sour
   * You can also provide arguments for compiling, such as `--no-self-contained` or `-c release`.
     For a full list of arguments, consult [this document](https://docs.microsoft.com/dotnet/core/tools/dotnet-publish).
 
+## Special Thanks
+
+* [Miepee](https://github.com/Miepee), who was brave enough to touch the UI code and rewrite it to use the actually cross-platform [Eto](https://github.com/picoe/Eto) UI toolkit
+
 ## Source Code
 
 Source code can be found on GitHub:
