@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.Net.SDK">
 
   <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
+    <TargetFramework>net6.0-linux</TargetFramework>
     <RootNamespace>HATE.Gtk</RootNamespace>
     <AssemblyName>HATE</AssemblyName>
     <PackageId>HATE-UML.Gtk</PackageId>
@@ -22,7 +22,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\HATE\HATE.csproj" />
-    <ProjectReference Include="..\UndertaleModTool\UndertaleModLib\UndertaleModLib.csproj" />
   </ItemGroup>
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
