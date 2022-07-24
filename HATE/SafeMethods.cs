@@ -56,7 +56,7 @@ static class SafeMethods
     {
         if (!IsValidPath(dirname) || !Directory.Exists(dirname)) { return new List<string> (); }
             
-        List<string> output = new List<string>();
+        List<string> output;
         try
         {
             output = Directory.GetFiles(dirname, format, alldirs ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly).ToList();
