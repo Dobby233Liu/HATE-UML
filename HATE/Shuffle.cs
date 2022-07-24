@@ -91,7 +91,7 @@ namespace HATE
             "ａ", "ｂ", "ｃ", "ｄ", "ｅ", "ｆ", "ｇ", "ｈ", "ｉ", "ｊ", "ｋ", "ｌ", "ｍ", "ｎ", "ｏ", "ｐ", "ｑ", "ｒ", "ｓ", "ｔ", "ｕ", "ｖ", "ｗ", "ｘ", "ｙ", "ｚ",
             "～", "･", "ｦ", "ｧ", "ｨ", "ｩ", "ｬ", "ｭ", "ｮ", "ｯ", "ｰ", "ｱ", "ｲ", "ｳ", "ｴ", "ｵ", "ｶ", "ｷ", "ｸ", "ｹ", "ｺ", "ｻ", "ｼ", "ｽ", "ｾ", "ｿ", "ﾀ", "ﾁ", "ﾂ", "ﾃ", "ﾄ", "ﾅ", "ﾆ", "ﾈ", "ﾉ", "ﾊ", "ﾋ", "ﾌ", "ﾍ", "ﾎ", "ﾏ", "ﾐ", "ﾑ", "ﾒ", "ﾓ", "ﾔ", "ﾖ", "ﾗ", "ﾘ", "ﾙ", "ﾚ", "ﾛ", "ﾜ", "ﾝ", "ﾞ", "ﾟ",
         };
-        public static List<string> CategorizableForcedSubstring = new List<string>{ "#", "&", "* " };
+        public static List<string> CategorizableForcedSubstring = new List<string>{ "#", "&", "   * ", "* ", };
         public static string[] BannedStrings = {
             "_", "@@",
             "Z}", "`}", "0000000000000000", "~~~",
@@ -150,6 +150,9 @@ namespace HATE
             "(B)BACK", "(E)END", "(1)ひらがな", "(2)カタカナ", "(3)アルファベット", "(B)さくじょ", "(E)けってい",
             "\\TX \\F0 " // scr_*face
         };
+        public static string[] BannedStringsSame = {
+            "\\W", "\\Y", "\\p", " A", " B", " C", "\\W &", "%%%", "%%"
+        }
         public static string[] FriskSpriteHandles = {
             // UNDERTALE
             "spr_maincharal", "spr_maincharau", "spr_maincharar", "spr_maincharad",
@@ -1069,7 +1072,7 @@ namespace HATE
 
         public static bool IsStringBanned(string str)
         {
-            bool bannedEX = BannedStringsEX.Any(str.Contains);
+            bool bannedEX = BannedStringsEX.Any(str.Contains) || BannedStringsSame.Any(str.Equals);
             return ((BannedStrings.Any(str.Contains) || bannedEX)
                 && !(
                 (ForceShuffleReferenceChars.Any(str.Contains) && !bannedEX)
