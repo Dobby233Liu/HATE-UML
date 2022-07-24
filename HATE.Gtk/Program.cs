@@ -2,17 +2,16 @@
 using Eto.Forms;
 using HATE;
 
-namespace HATE.Gtk
+namespace HATE.Gtk;
+
+class Program
 {
-	class Program
+	/// <summary>
+	/// The main entry point for the application
+	/// </summary>
+	[STAThread]
+	static void Main()
 	{
-		/// <summary>
-		/// The main entry point for the application
-		/// </summary>
-		[STAThread]
-		static void Main()
-		{
-			new Application(Eto.Platforms.Gtk).Run(new HATE.MainForm());
-		}
+		new Application(Eto.Platforms.Gtk).Run(new HATE.MainForm());
 	}
 }
