@@ -40,8 +40,8 @@ jobs:
 
     - name: Build
       run: |
-        dotnet build HATE.WinForms -no-restore
-        dotnet build HATE.Gtk -no-restore
+        dotnet build HATE.WinForms --no-restore
+        dotnet build HATE.Gtk --no-restore
     - name: Publish
       run: |
         dotnet publish HATE.WinForms -c ${{ matrix.configuration }} -r win-x64
