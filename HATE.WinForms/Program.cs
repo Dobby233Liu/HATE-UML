@@ -2,7 +2,7 @@
 using Eto.Forms;
 using HATE;
 
-namespace HATE.Gtk
+namespace HATE.WinForms
 {
 	class Program
 	{
