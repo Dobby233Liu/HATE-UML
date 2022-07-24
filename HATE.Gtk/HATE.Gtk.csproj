@@ -13,7 +13,6 @@
     <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
     <OutputType>WinExe</OutputType>
     <PublishSingleFile>true</PublishSingleFile>
-    <PublishTrimmed>true</PublishTrimmed>
   </PropertyGroup>
 
   <ItemGroup>
