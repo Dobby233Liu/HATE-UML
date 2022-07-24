@@ -13,9 +13,9 @@ jobs:
       matrix:
         include:
         - configuration: Debug
-          cache-version: 2
+          cache-version: 3
         - configuration: Release
-          cache-version: 2
+          cache-version: 3
 
     name: Build (${{ matrix.configuration }})
     runs-on: windows-latest
@@ -45,6 +45,10 @@ jobs:
         path: |
           HATE/bin/${{ matrix.configuration }}
           HATE/obj/${{ matrix.configuration }}
+          HATE.Gtk/bin/${{ matrix.configuration }}
+          HATE.Gtk/obj/${{ matrix.configuration }}
+          HATE.WinForms/bin/${{ matrix.configuration }}
+          HATE.WinForms/obj/${{ matrix.configuration }}
           UndertaleModTool/UndertaleModLib/bin/${{ matrix.configuration }}
           UndertaleModTool/UndertaleModLib/obj/${{ matrix.configuration }}
         key: ${{ runner.os }}-${{ matrix.configuration }}-objs-v${{ matrix.cache-version }}
