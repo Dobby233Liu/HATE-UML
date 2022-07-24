@@ -3,18 +3,18 @@
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
     <RootNamespace>HATE</RootNamespace>
-    <AssemblyName>HATE</AssemblyName>
+    <AssemblyName>HATE.Generic</AssemblyName>
     <PackageId>HATE-UML</PackageId>
     <Title>HATE-UML</Title>
     <Authors>Dobby233Liu</Authors>
     <Description>HATE-UML: The UNDERTALE corruptor, but using UndertaleModLib.</Description>
     <Company>Dobby233Liu</Company>
     <Product>HATE-UML</Product>
-    <ApplicationIcon>icon.ico</ApplicationIcon>
     <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Eto.Forms" Version="2.7.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
     <PackageReference Include="Optional" Version="4.0.0" />
   </ItemGroup>

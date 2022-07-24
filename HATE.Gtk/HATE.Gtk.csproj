@@ -1,16 +1,15 @@
 ﻿<Project Sdk="Microsoft.Net.SDK">
 
   <PropertyGroup>
-    <TargetFramework>net6.0-linux</TargetFramework>
+    <TargetFramework>net6.0</TargetFramework>
     <RootNamespace>HATE.Gtk</RootNamespace>
-    <AssemblyName>HATE</AssemblyName>
+    <AssemblyName>HATE.Gtk</AssemblyName>
     <PackageId>HATE-UML.Gtk</PackageId>
     <Title>HATE-UML</Title>
     <Authors>Dobby233Liu</Authors>
     <Description>HATE-UML: The UNDERTALE corruptor, but using UndertaleModLib.</Description>
     <Company>Dobby233Liu</Company>
     <Product>HATE-UML</Product>
-    <ApplicationIcon>icon.ico</ApplicationIcon>
     <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
   </PropertyGroup>
 
