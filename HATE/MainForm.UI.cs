@@ -1,6 +1,8 @@
 using System.Collections.Generic;
 using Eto.Forms;
 using Eto.Drawing;
+using System;
+using System.Reflection;
 
 namespace HATE;
 
@@ -17,7 +19,7 @@ public partial class MainForm : Form
 	public MainForm()
 	{
 		Title = "HATE-UML";
-		MinimumSize = new Size(200, 460);
+		MinimumSize = new Size(200, 480);
 		BackgroundColor = Colors.Black;
 		
 		// GTK currently looks weird af with background colors
@@ -29,9 +31,10 @@ public partial class MainForm : Form
 
 		DynamicLayout mainLayout = new DynamicLayout();
 		mainLayout.BeginCentered();
-		mainLayout.AddSpace();
 		mainLayout.AddRange(
+			new SmallSpacer(),
 			label3,
+			new SmallSpacer(),
 			lblGameName,
 			new SmallSpacer(),
 			chbShuffleAudio,
@@ -52,9 +55,11 @@ public partial class MainForm : Form
 		mainLayout.EndCentered();
 
 		Content = mainLayout;
-			
-		// Events linkage
-		LoadComplete += MainForm_Load;
+
+		// Events
+		PreLoad += MainForm_PreLoad;
+		Load += MainForm_Load;
+		LoadComplete += MainForm_LoadComplete;
 		Closing += MainForm_FormClosing;
 		btnCorrupt.Click += button_Corrupt_Clicked;
 		chbShuffleText.CheckedChanged += chbShuffleText_CheckedChanged;
@@ -63,113 +68,100 @@ public partial class MainForm : Form
 		chbShuffleFont.CheckedChanged += chbShuffleFont_CheckedChanged;
 		chbShuffleBG.CheckedChanged += chbShuffleBG_CheckedChanged;
 		chbShuffleAudio.CheckedChanged += chbShuffleAudio_CheckedChanged;
-		txtSeed.MouseEnter += txtPower_Enter;
-		txtSeed.MouseLeave += txtPower_Leave;
-		txtPower.MouseEnter += txtPower_Enter;
-		txtPower.MouseLeave += txtPower_Leave;
+		txtSeed.GotFocus += txtPower_Enter;
+		txtSeed.LostFocus += txtPower_Leave;
+		txtPower.GotFocus += txtPower_Enter;
+		txtPower.LostFocus += txtPower_Leave;
 		btnLaunch.Click += btnLaunch_Clicked;
-
 	}
 
-	private IEnumerable<FontFamily> foo = Fonts.AvailableFontFamilies;
-		
 	private Button btnCorrupt = new Button
 	{
-		Font = new Font(SystemFont.Bold, 8.25F),
+		Text = "-CORRUPT-",
 		TextColor = Colors.Coral,
-		Text = "-CORRUPT-"
-		//CLICK
+		Font = new Font(SystemFont.Bold, 8.25F)
 	};
 	private CheckBox chbShuffleText = new CheckBox
 	{
 		Text = "Shuffle Text",
+		TextColor = Colors.White,
 		Height = 40,
-		//comic sans
-		Font = new Font(SystemFont.Bold, 14.25F),
-		//CheckedChanged
+		Font = new Font(SystemFont.Bold, 12F)
 	};
 	private CheckBox chbShuffleGFX = new CheckBox
 	{
 		Text = "Shuffle Sprites",
+		TextColor = Colors.White,
 		Height = 40,
-		// comic sans
-		Font = new Font(SystemFont.Bold, 14.25F)
-		//CheckedChanged
+		Font = new Font(SystemFont.Bold, 12F)
 	};
-	private CheckBox chbHitboxFix= new CheckBox
+	private CheckBox chbHitboxFix = new CheckBox
 	{
 		Text = "Hitbox Fix",
+		TextColor = Colors.White,
 		Height = 40,
-		// comic sans
-		Font = new Font(SystemFont.Bold, 14.25F)
-		//CheckedChanged
+		Font = new Font(SystemFont.Bold, 12F)
 	};
-	private CheckBox chbShuffleFont= new CheckBox
+	private CheckBox chbShuffleFont = new CheckBox
 	{
 		Text = "Shuffle Fonts",
+		TextColor = Colors.White,
 		Height = 40,
-		// comic sans
-		Font = new Font(SystemFont.Bold, 14.25F)
-		//CheckedChanged
+		Font = new Font(SystemFont.Bold, 12F)
 	};
-	private CheckBox chbShuffleBG= new CheckBox
+	private CheckBox chbShuffleBG = new CheckBox
 	{
 		Text = "Shuffle GFX/BG",
+		TextColor = Colors.White,
 		Height = 40,
-		// comic sans
-		Font = new Font(SystemFont.Bold, 14.25F)
-		//CheckedChanged
+		Font = new Font(SystemFont.Bold, 12F)
 	};
-	private CheckBox chbShuffleAudio= new CheckBox
+	private CheckBox chbShuffleAudio = new CheckBox
 	{
 		Text = "Shuffle Audio",
-		Height = 40,
-		// comic sans
-		Font = new Font(SystemFont.Bold, 14.25F)
-		//CheckedChanged
-	};
-	private TextBox txtSeed= new TextBox
-	{
-		BackgroundColor = Colors.Black,
 		TextColor = Colors.White,
-		//Enter
-		//Leave
+		Height = 40,
+		Font = new Font(SystemFont.Bold, 12F)
+	};
+	private TextBox txtSeed = new TextBox
+	{
+		BackgroundColor = Colors.White,
+		TextColor = Colors.White,
 	};
 	private TextBox txtPower = new TextBox
 	{
-		BackgroundColor = Colors.Black,
+		BackgroundColor = Colors.White,
 		TextColor = Colors.White,
 		Text = "0 - 255",
-		//Enter
-		//Leave
 	};
 	private Label label1 = new Label
 	{
 		Font = new Font(SystemFont.Bold, 10F),
-		Text = "Seed:"
+		Text = "Seed:",
+		TextColor = Colors.White,
 	};
-	private Label label2= new Label
+	private Label label2 = new Label
 	{
 		Font = new Font(SystemFont.Bold, 10F),
-		Text = "Power:"
+		Text = "Power:",
+		TextColor = Colors.White,
 	};
-	private Button btnLaunch= new Button
+	private Button btnLaunch = new Button
 	{
 		Font = new Font(SystemFont.Bold, 8.25F),
 		TextColor = Colors.Fuchsia,
 		Text = "-LAUNCH-"
-		//CLICK
 	};
 	private Label label3 = new Label
 	{
-			
 		Font = new Font(SystemFont.Bold, 10F),
+		TextColor = Colors.White,
 		Text = "Current Game:"
 	};
 	private Label lblGameName = new Label()
 	{
 		BackgroundColor = Colors.Black,
 		TextColor = Colors.White,
-		Text = "Loading game...",
+		Text = "Loading game..."
 	};
 }

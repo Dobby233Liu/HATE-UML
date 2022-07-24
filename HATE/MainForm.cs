@@ -52,37 +52,16 @@ namespace HATE
         private WindowsPrincipal windowsPrincipal;
 
         private UndertaleData Data;
-        private bool _controlState = true;
-    
-        private async void MainForm_Load(object sender, EventArgs e)
+
+        private bool _controlEnabled = true;
+
+        private void MainForm_PreLoad(object sender, EventArgs e)
         {
-            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-            {
-                windowsPrincipal = new WindowsPrincipal(WindowsIdentity.GetCurrent());
-
-                //This is so it doesn't keep starting the program over and over in case something messes up
-                if (Process.GetProcessesByName("HATE").Length == 1)
-                {
-                    if (Directory.GetCurrentDirectory().Contains(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles)) || Directory.GetCurrentDirectory().Contains(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86)) && !IsElevated)
-                    {
-                        string message = $"The game is in a system protected folder and we need elevated permissions in order to mess with {_dataWin}.\nDo you allow us to get elevated permissions (if you press no this will just close the program as we can't do anything)";
-                        if (MsgBoxHelpers.ShowMessage(message, MessageBoxButtons.YesNo, MessageBoxType.Information) == DialogResult.Yes)
-                        {
-                            // Restart program and run as admin
-                            var exeName = Process.GetCurrentProcess().MainModule.FileName;
-                            ProcessStartInfo startInfo = new ProcessStartInfo(exeName);
-                            startInfo.Arguments = "true";
-                            startInfo.Verb = "runas";
-                            Process.Start(startInfo);
-                        }
-                        Close();
-                        return;
-                    }
-                }
-            }
-
             _random = new Random();
-            EnableControls(false);
+        }
+
+        private void MainForm_Load(object sender, EventArgs e)
+        {
             if (!File.Exists(_dataWin))
             {
                 if (File.Exists("game.ios"))
@@ -94,21 +73,53 @@ namespace HATE
                 else
                 {
                     MsgBoxHelpers.ShowMessage("We couldn't find any game data in this folder, check that this is in the right folder.");
-                    _controlState = true;
-                    Close();
+                    QuitEarly();
                     return;
                 }
             }
+
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            {
+                windowsPrincipal = new WindowsPrincipal(WindowsIdentity.GetCurrent());
+
+                //This is so it doesn't keep starting the program over and over in case something messes up
+                if (Process.GetProcessesByName("HATE").Length == 1)
+                {
+                    if (!IsElevated &&
+                        (Directory.GetCurrentDirectory().StartsWith(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles))
+                        || Directory.GetCurrentDirectory().StartsWith(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86))))
+                    {
+                        string message = $"The game is in a protected folder, and we need elevated permissions in order to mess with {_dataWin}.\nDo you allow us to get elevated permissions? If you choose not to, the application will close.";
+                        if (MsgBoxHelpers.ShowMessage(message, MessageBoxButtons.YesNo, MessageBoxType.Information) == DialogResult.Yes)
+                        {
+                            // Restart program and run as admin
+                            var exeName = Process.GetCurrentProcess().MainModule.FileName;
+                            ProcessStartInfo startInfo = new ProcessStartInfo(exeName);
+                            startInfo.Verb = "runas";
+                            Process.Start(startInfo);
+                        }
+                        QuitEarly();
+                        return;
+                    }
+                }
+            }
+        }
+
+        private void QuitEarly()
+        {
+            Application.Instance.Quit();
+        }
+
+        private async void MainForm_LoadComplete(object sender, EventArgs e)
+        {
+            EnableControls(false);
             await LoadFile(_dataWin, true);
             AfterDataLoad();
             if (Data is not null)
             {
                 var displayName = Data.GeneralInfo.DisplayName.Content.ToLower();
                 if (!(displayName.StartsWith("undertale") || displayName.StartsWith("deltarune")))
-                    Application.Instance.Invoke(delegate
-                    {
-                        MsgBoxHelpers.ShowWarning("HATE-UML's support of this game may be limited. Unless this is a mod of a Toby Fox game, DO NOT report any problems you might experience.", "Not a Toby Fox game");
-                    });
+                    MsgBoxHelpers.ShowWarning("HATE-UML's support of this game may be limited. Unless this is a mod of a Toby Fox game, DO NOT report any problems you might experience.", "Not a Toby Fox game");
             }
         }
         private void AfterDataLoad()
@@ -118,10 +129,17 @@ namespace HATE
                 if (Data is not null)
                 {
                     EnableControls(true);
-                    lblGameName.Text = Data.GeneralInfo.DisplayName.Content;
+                    SetGameName(Data.GeneralInfo.DisplayName.Content);
                 }
                 UpdateCorrupt();
             });
+        }
+
+        private void SetGameName(string content)
+        {
+            if (Eto.Platform.Instance.IsWinForms)
+                content = content.Replace("&", "&&");
+            lblGameName.Text = content;
         }
 
         private void DisposeGameData()
@@ -156,7 +174,7 @@ namespace HATE
                         {
                             Application.Instance.Invoke(delegate
                             {
-                                lblGameName.Text = message;
+                                SetGameName(message);
                             });
                             if (_logWriter != null)
                                 _logWriter.WriteLine(message);
@@ -209,7 +227,7 @@ namespace HATE
                         {
                             Application.Instance.Invoke(delegate
                             {
-                                lblGameName.Text = message;
+                                SetGameName(message);
                             });
                             if (_logWriter != null)
                                 _logWriter.WriteLine(message);
@@ -397,7 +415,7 @@ namespace HATE
 
         public void EnableControls(bool state)
         {
-            _controlState = state;
+            _controlEnabled = state;
             btnCorrupt.Enabled = state;
             btnLaunch.Enabled = state;
             chbShuffleText.Enabled = state;
@@ -503,7 +521,7 @@ namespace HATE
             {
                 if (Data is not null)
                 {
-                    lblGameName.Text = Data.GeneralInfo.DisplayName.Content;
+                    SetGameName(Data.GeneralInfo.DisplayName.Content);
                 }
             });
 
@@ -568,9 +586,10 @@ namespace HATE
         {
             txtPower.Text = string.IsNullOrWhiteSpace(txtPower.Text) ? _defaultPowerText : txtPower.Text;
         }
+
         private void MainForm_FormClosing(object sender, CancelEventArgs e)
         {
-            if (!_controlState)
+            if (!_controlEnabled)
                 e.Cancel = true;
         }
     }

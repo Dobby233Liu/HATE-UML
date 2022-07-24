@@ -15,15 +15,40 @@
     <Description>HATE-UML: The UNDERTALE corruptor, but using UndertaleModLib.</Description>
     <Company />
     <Product>HATE-UML</Product>
+    <ApplicationIcon>icon.ico</ApplicationIcon>
   </PropertyGroup>
 
   <ItemGroup>
+    <Content Include="icon.ico" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Eto.Platform.Windows" Version="2.7.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
     <PackageReference Include="Optional" Version="4.0.0" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\UndertaleModTool\UndertaleModLib\UndertaleModLib.csproj"/>
+    <ProjectReference Include="..\UndertaleModTool\UndertaleModLib\UndertaleModLib.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="Resources.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Update="Resources.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Resources\" />
   </ItemGroup>
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">

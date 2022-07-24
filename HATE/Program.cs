@@ -11,7 +11,7 @@ namespace HATE
 		[STAThread]
 		static void Main()
 		{
-			new Application(Eto.Platform.Detect).Run(new MainForm());
+			new Application(Eto.Platforms.WinForms).Run(new MainForm());
 		}
 	}
 }
