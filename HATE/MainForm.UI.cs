@@ -19,7 +19,7 @@ public partial class MainForm : Form
 	public MainForm()
 	{
 		Title = "HATE-UML";
-		MinimumSize = new Size(200, 480);
+		MinimumSize = new Size(200, 485);
 		BackgroundColor = Colors.Black;
 		
 		// GTK currently looks weird af with background colors
@@ -126,12 +126,10 @@ public partial class MainForm : Form
 	private TextBox txtSeed = new TextBox
 	{
 		BackgroundColor = Colors.White,
-		TextColor = Colors.White,
 	};
 	private TextBox txtPower = new TextBox
 	{
 		BackgroundColor = Colors.White,
-		TextColor = Colors.White,
 		Text = "0 - 255",
 	};
 	private Label label1 = new Label

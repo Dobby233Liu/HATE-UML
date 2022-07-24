@@ -433,7 +433,7 @@ namespace HATE
             _logWriter.WriteLine("-------------- Session at: " + DateTime.Now.ToLongDateString() + " " + DateTime.Now.ToLongTimeString() + "\n");
 
             byte power;
-            if (!byte.TryParse(txtPower.Text, out power) && _corrupt)
+            if (!byte.TryParse(Application.Instance.Invoke(delegate { return txtPower.Text; }), out power) && _corrupt)
             {
                 MsgBoxHelpers.ShowError("Please set Power to a number between 0 and 255 and try again.");
                 return false;

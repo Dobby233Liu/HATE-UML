@@ -767,9 +767,17 @@ namespace HATE
             kv.Textures.Clear();
             nv.Textures.Clear();
             foreach (var t in Textures_valueb)
-                kv.Textures.Add(t);
+            {
+                var te = new UndertaleSprite.TextureEntry();
+                te.Texture = t.Texture;
+                kv.Textures.Add(te);
+            }
             foreach (var t in Textures_value)
-                nv.Textures.Add(t);
+            {
+                var te = new UndertaleSprite.TextureEntry();
+                te.Texture = t.Texture;
+                nv.Textures.Add(te);
+            }
             List<UndertaleSprite.MaskEntry> CollisionMasks_value
                 = new List<UndertaleSprite.MaskEntry>(kv.CollisionMasks);
             List<UndertaleSprite.MaskEntry> CollisionMasks_valueb
