@@ -6,7 +6,7 @@ body:
   - type: markdown
     attributes:
       value: |
-        Before submitting this issue, please try to search for this bug in the issues before creating this bug report.
+        Please try to search for this bug in the issues before creating this bug report.
   - type: textarea
     id: issue
     attributes:
