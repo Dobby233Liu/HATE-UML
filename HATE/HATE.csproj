@@ -11,7 +11,7 @@
     <Company>Dobby233Liu</Company>
     <Product>HATE-UML</Product>
     <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
-    <OutputType>Module</OutputType>
+    <OutputType>Library</OutputType>
   </PropertyGroup>
 
   <ItemGroup>
