@@ -1,6 +1,5 @@
 ﻿using System;
 using Eto.Forms;
-using HATE;
 
 namespace HATE.WinForms
 {
