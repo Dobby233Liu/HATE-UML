@@ -35,7 +35,8 @@ static class Shuffle
         "%%",
         "%",
         "-",
-        "/*"
+        "/*",
+        "~1" // gml_Object_obj_readable_room1_Other_10 room_dw_city_spamton_shop_exterior
     };
     // hack
     public static List<string> ForceShuffleReferenceChars = new List<string>{
