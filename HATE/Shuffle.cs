@@ -206,6 +206,12 @@ static class Shuffle
         "spr_doorAny", "spr_doorE", "spr_doorF", "spr_doorW",
         "spr_doorE_ch1", "spr_doorF_ch1", "spr_doorW_ch1"
     };
+    public static string[] SoundBlacklist =
+    {
+        // breaks musicial sections of DELTARUNE ch2
+        "cyber.ogg", "cyber_battle_prelude.ogg",
+        "cyber_battle_backing", "cyber_battle_backing_solo"
+    };
 
     public static bool ShuffleChunk(UndertaleChunk chunk, UndertaleData data, Random random, float shuffleChance, StreamWriter logStream,
                                     bool friskMode, Func<UndertaleChunk, UndertaleData, Random, float, StreamWriter, bool, bool> shuffleFunc)
@@ -270,6 +276,23 @@ static class Shuffle
         return true;
     }
 
+    public static bool ShuffleAudio_Shuffler(UndertaleChunk _chunk, UndertaleData data, Random random, float shuffleChance, StreamWriter logStream, bool friskMode)
+    {
+        IList<UndertaleSound> _pointerlist = (_chunk as UndertaleChunkSOND)?.List;
+        IList<int> soundList = new List<int>();
+
+        for (int i = 0; i < _pointerlist.Count; i++)
+        {
+            if (!SoundBlacklist.Contains(_pointerlist[i].Name.Content))
+                soundList.Add(i);
+        }
+        soundList.SelectSome(shuffleChance, random);
+        logStream.WriteLine($"Added {soundList.Count} pointers to sound list.");
+
+        _pointerlist.ShuffleOnlySelected(soundList, GetSubfunction(_pointerlist, _chunk), random);
+
+        return true;
+    }
     public static bool ShuffleAudio2_Shuffler(UndertaleChunk _chunk, UndertaleData data, Random random, float shuffleChance, StreamWriter logStream, bool friskMode)
     {
         IList<UndertaleString> _pointerlist = (_chunk as UndertaleChunkSTRG)?.List;
@@ -288,7 +311,8 @@ static class Shuffle
             var i = _pointerlist.IndexOf(utString);
             string s = utString.Content;
             if ((s.EndsWith(".ogg") || s.EndsWith(".wav") || s.EndsWith(".mp3"))
-                && !s.StartsWith("music/") /* UNDERTALE */)
+                && !s.StartsWith("music/") /* UNDERTALE */
+                && !SoundBlacklist.Contains(s))
                 stringList.Add(i);
         }
 

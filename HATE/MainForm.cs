@@ -124,6 +124,7 @@ public partial class MainForm : Form
             var displayName = Data.GeneralInfo.DisplayName.Content.ToLower();
             if (!(displayName.StartsWith("undertale") || displayName.StartsWith("deltarune")))
                 MsgBoxHelpers.ShowWarning("HATE-UML's support of this game may be limited. Unless this is a mod of a Toby Fox game, DO NOT report any problems you might experience.", "Not a Toby Fox game");
+            DisposeGameData();
         }
     }
     private void AfterDataLoad()
@@ -408,6 +409,7 @@ public partial class MainForm : Form
         {
             await SaveFile(_dataWin);
             AfterDataLoad();
+            DisposeGameData();
         }
         /*else if (result == CorruptErrorType.Failure)
         {
