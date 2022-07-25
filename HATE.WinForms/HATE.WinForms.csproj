@@ -12,8 +12,10 @@
     <Product>HATE-UML</Product>
     <ApplicationIcon>icon.ico</ApplicationIcon>
     <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
-    <UseWindowsForms>true</UseWindowsForms>
     <OutputType>WinExe</OutputType>
+    <PublishSingleFile>true</PublishSingleFile>
+    <UseWindowsForms>True</UseWindowsForms>
+    <PlatformTarget>x64</PlatformTarget>
   </PropertyGroup>
 
   <ItemGroup>
@@ -52,7 +54,7 @@
     <ProjectReference Include="..\UndertaleModTool\UndertaleModLib\UndertaleModLib.csproj" />
   </ItemGroup>
 
-  <Target Name="AfterPublish">
+  <Target Name="AfterPublish" AfterTargets="MSDeployPublish">
     <Exec Command="powershell $(SolutionDir)scripts/CopyFilesAfterPublish.ps1 -SolutionDir &quot;$(SolutionDir)&quot; -TargetDir &quot;$(TargetDir)&quot;" />
   </Target>
   

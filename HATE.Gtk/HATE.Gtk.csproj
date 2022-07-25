@@ -23,7 +23,7 @@
     <ProjectReference Include="..\HATE\HATE.csproj" />
   </ItemGroup>
   
-  <Target Name="AfterPublish">
+  <Target Name="AfterPublish" AfterTargets="MSDeployPublish">
     <Exec Command="powershell $(SolutionDir)scripts/CopyFilesAfterPublish.ps1 -SolutionDir &quot;$(SolutionDir)&quot; -TargetDir &quot;$(TargetDir)&quot;" />
   </Target>
   
