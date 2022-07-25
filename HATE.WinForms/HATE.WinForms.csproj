@@ -52,8 +52,8 @@
     <ProjectReference Include="..\UndertaleModTool\UndertaleModLib\UndertaleModLib.csproj" />
   </ItemGroup>
 
-  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="if exist $(SolutionDir)README.md copy $(SolutionDir)README.md $(TargetDir) /y&#xD;&#xA;if exist $(SolutionDir)COPYING.txt copy $(SolutionDir)COPYING.txt $(TargetDir) /y&#xD;&#xA;if exist $(SolutionDir)LICENSE.MIT.txt copy $(SolutionDir)LICENSE.MIT.txt $(TargetDir) /y" />
+  <Target Name="AfterPublish">
+    <Exec Command="powershell $(SolutionDir)scripts/CopyFilesAfterPublish.ps1 -SolutionDir &quot;$(SolutionDir)&quot; -TargetDir &quot;$(TargetDir)&quot;" />
   </Target>
   
 </Project>
