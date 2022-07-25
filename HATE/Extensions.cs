@@ -14,9 +14,7 @@ public static class Extensions
         {
             int k = rng.Next(n + 1);
             swapFunc(selected[n], selected[k]);
-            int idx = selected[k];
-            selected[k] = selected[n];
-            selected[n] = idx;
+            (selected[k], selected[n]) = (selected[n], selected[k]);
             n--;
         }
     }
@@ -27,9 +25,7 @@ public static class Extensions
         {
             int k = rng.Next(n + 1);
             swapFunc(selected[n], selected[k]);
-            int idx = selected[k];
-            selected[k] = selected[n];
-            selected[n] = idx;
+            (selected[k], selected[n]) = (selected[n], selected[k]);
             n--;
         }
     }
@@ -40,18 +36,16 @@ public static class Extensions
         {
             int k = rng.Next(n + 1);
             swapFunc(selected[n], selected[k]);
-            var idx = selected[k];
-            selected[k] = selected[n];
-            selected[n] = idx;
+            (selected[k], selected[n]) = (selected[n], selected[k]);
             n--;
         }
     }
-    public static void SelectSome<T>(this IList<T> list, float shufflechance, Random rng)
+    public static void SelectSome<T>(this IList<T> list, float shuffleChance, Random rng)
     {
         IList<T> listBak = new List<T>(list);
         list.Clear();
         foreach (var i in listBak)
-            if (rng.NextDouble() <= shufflechance)
+            if (rng.NextDouble() <= shuffleChance)
                 list.Add(i);
     }
 }

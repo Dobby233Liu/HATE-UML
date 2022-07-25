@@ -14,7 +14,6 @@ namespace HATE;
 
 static class Shuffle
 {
-    public const int WordSize = 4;
     public static List<string> DRChoicerControlChars = new List<string>{
         "\\\\C1",
         "\\\\C2",
@@ -208,30 +207,30 @@ static class Shuffle
         "spr_doorE_ch1", "spr_doorF_ch1", "spr_doorW_ch1"
     };
 
-    public static bool ShuffleChunk(UndertaleChunk chunk, UndertaleData data, Random random, float shufflechance, StreamWriter logstream,
-                                    bool friskmode, Func<UndertaleChunk, UndertaleData, Random, float, StreamWriter, bool, bool> shufflefunc)
+    public static bool ShuffleChunk(UndertaleChunk chunk, UndertaleData data, Random random, float shuffleChance, StreamWriter logStream,
+                                    bool friskMode, Func<UndertaleChunk, UndertaleData, Random, float, StreamWriter, bool, bool> shuffleFunc)
     {
         if (random == null)
             throw new ArgumentNullException(nameof(random));
         try
         {
-            if (!shufflefunc(chunk, data, random, shufflechance, logstream, friskmode))
+            if (!shuffleFunc(chunk, data, random, shuffleChance, logStream, friskMode))
             {
                 MsgBoxHelpers.ShowError($"Error occured while modifying chuck {chunk.Name}.");
-                logstream.WriteLine($"Error occured while modifying chuck {chunk.Name}.");
+                logStream.WriteLine($"Error occured while modifying chuck {chunk.Name}.");
                 return false;
             }
         }
         catch (Exception e)
         {
-            logstream.Write($"Caught exception during modification of chuck {chunk.Name}. -> {e}");
+            logStream.Write($"Caught exception during modification of chuck {chunk.Name}. -> {e}");
             throw;
         }
         return true;
     }
-    public static bool ShuffleChunk(UndertaleChunk chunk, UndertaleData data, Random random, float shufflechance, StreamWriter logstream, bool friskmode)
+    public static bool ShuffleChunk(UndertaleChunk chunk, UndertaleData data, Random random, float shuffleChance, StreamWriter logStream, bool friskMode)
     {
-        return ShuffleChunk(chunk, data, random, shufflechance, logstream, friskmode, SimpleShuffle);
+        return ShuffleChunk(chunk, data, random, shuffleChance, logStream, friskMode, SimpleShuffle);
     }
 
     enum ComplexShuffleStep : byte { Shuffling, SecondLog }
@@ -239,18 +238,18 @@ static class Shuffle
     public static Func<UndertaleChunk, UndertaleData, Random, float, StreamWriter, bool, bool> ComplexShuffle(
         Func<UndertaleChunk, UndertaleData, Random, float, StreamWriter, bool, bool> shuffler)
     {
-        return (UndertaleChunk chunk, UndertaleData data, Random random, float chance, StreamWriter logstream, bool friskmode) =>
+        return (UndertaleChunk chunk, UndertaleData data, Random random, float chance, StreamWriter logStream, bool friskMode) =>
         {
             ComplexShuffleStep step = ComplexShuffleStep.Shuffling;
             try
             {
-                shuffler(chunk, data, random, chance, logstream, friskmode);
+                shuffler(chunk, data, random, chance, logStream, friskMode);
                 step = ComplexShuffleStep.SecondLog;
-                logstream.WriteLine($"Shuffled chunk {chunk.Name}.");
+                logStream.WriteLine($"Shuffled chunk {chunk.Name}.");
             }
             catch (Exception ex)
             {
-                logstream.WriteLine($"Caught exception [{ex}] while modifying chunk, during step {step}.");
+                logStream.WriteLine($"Caught exception [{ex}] while modifying chunk, during step {step}.");
                 throw;
             }
 
@@ -271,37 +270,37 @@ static class Shuffle
         return true;
     }
 
-    public static bool ShuffleAudio2_Shuffler(UndertaleChunk _chunk, UndertaleData data, Random random, float shufflechance, StreamWriter logstream, bool _friskMode)
+    public static bool ShuffleAudio2_Shuffler(UndertaleChunk _chunk, UndertaleData data, Random random, float shuffleChance, StreamWriter logStream, bool friskMode)
     {
         IList<UndertaleString> _pointerlist = (_chunk as UndertaleChunkSTRG)?.List;
-        IList<UndertaleString> strgClone = new List<UndertaleString>(_pointerlist);
+        IList<UndertaleString> stringClone = new List<UndertaleString>(_pointerlist);
         foreach (var func in data.Sounds)
         {
-            strgClone.Remove(func.Name);
-            strgClone.Remove(func.Type);
-            strgClone.Remove(func.File);
+            stringClone.Remove(func.Name);
+            stringClone.Remove(func.Type);
+            stringClone.Remove(func.File);
         }
 
         IList<int> stringList = new List<int>();
 
-        for (int _i = 0; _i < strgClone.Count; _i++)
+        foreach (var utString in stringClone)
         {
-            var i = _pointerlist.IndexOf(strgClone[_i]);
-            string s = strgClone[_i].Content;
+            var i = _pointerlist.IndexOf(utString);
+            string s = utString.Content;
             if ((s.EndsWith(".ogg") || s.EndsWith(".wav") || s.EndsWith(".mp3"))
                 && !s.StartsWith("music/") /* UNDERTALE */)
                 stringList.Add(i);
         }
 
-        stringList.SelectSome(shufflechance, random);
-        logstream.WriteLine($"Added {stringList.Count} string pointers to music file references list.");
+        stringList.SelectSome(shuffleChance, random);
+        logStream.WriteLine($"Added {stringList.Count} string pointers to music file references list.");
 
         _pointerlist.ShuffleOnlySelected(stringList, GetSubfunction(_pointerlist, _chunk), random);
 
         return true;
     }
 
-    public static bool ShuffleBG2_Shuffler(UndertaleChunk _chunk, UndertaleData data, Random random, float shufflechance, StreamWriter logstream, bool _friskMode)
+    public static bool ShuffleBG2_Shuffler(UndertaleChunk _chunk, UndertaleData data, Random random, float shuffleChance, StreamWriter logStream, bool friskMode)
     {
         IList<UndertaleSprite> chunk = (_chunk as UndertaleChunkSPRT)?.List;
         List<int> sprites = new List<int>();
@@ -314,13 +313,13 @@ static class Shuffle
                 sprites.Add(i);
         }
 
-        sprites.SelectSome(shufflechance, random);
+        sprites.SelectSome(shuffleChance, random);
         chunk.ShuffleOnlySelected(sprites, GetSubfunction(chunk, _chunk), random);
-        logstream.WriteLine($"Shuffled {sprites.Count} assumed backgrounds out of {chunk.Count} sprites.");
+        logStream.WriteLine($"Shuffled {sprites.Count} assumed backgrounds out of {chunk.Count} sprites.");
 
         return true;
     }
-    public static bool ShuffleGFX_Shuffler(UndertaleChunk _chunk, UndertaleData data, Random random, float shufflechance, StreamWriter logstream, bool _friskMode)
+    public static bool ShuffleGFX_Shuffler(UndertaleChunk _chunk, UndertaleData data, Random random, float shuffleChance, StreamWriter logStream, bool friskMode)
     {
         IList<UndertaleSprite> chunk = (_chunk as UndertaleChunkSPRT)?.List;
         List<int> sprites = new List<int>();
@@ -330,22 +329,22 @@ static class Shuffle
             UndertaleSprite pointer = chunk[i];
 
             if (!pointer.Name.Content.Trim().StartsWith("bg_") &&
-                (!FriskSpriteHandles.Contains(pointer.Name.Content.Trim()) || _friskMode))
+                (!FriskSpriteHandles.Contains(pointer.Name.Content.Trim()) || friskMode))
                 sprites.Add(i);
         }
 
-        sprites.SelectSome(shufflechance, random);
+        sprites.SelectSome(shuffleChance, random);
         chunk.ShuffleOnlySelected(sprites, GetSubfunction(chunk, _chunk), random);
-        logstream.WriteLine($"Shuffled {sprites.Count} out of {chunk.Count} sprite pointers.");
+        logStream.WriteLine($"Shuffled {sprites.Count} out of {chunk.Count} sprite pointers.");
 
         return true;
     }
 
-    public static bool HitboxFix_Shuffler(UndertaleChunk _chunk, UndertaleData data, Random random, float shufflechance, StreamWriter logstream, bool _friskMode)
+    public static bool HitboxFix_Shuffler(UndertaleChunk _chunk, UndertaleData data, Random random, float shuffleChance, StreamWriter logStream, bool friskMode)
     {
-        IList<UndertaleSprite> pointerlist = (_chunk as UndertaleChunkSPRT)?.List;
+        IList<UndertaleSprite> pointerList = (_chunk as UndertaleChunkSPRT)?.List;
         TextureWorker worker = new TextureWorker();
-        foreach (UndertaleSprite sprite in pointerlist)
+        foreach (UndertaleSprite sprite in pointerList)
         {
             // based on ImportGraphics.csx
             sprite.CollisionMasks.Clear();
@@ -353,7 +352,7 @@ static class Shuffle
             // for Undertale BNP
             if (texPageItem == null)
             {
-                logstream.WriteLine($"Texture 0 of sprite {sprite.Name.Content} is null.");
+                logStream.WriteLine($"Texture 0 of sprite {sprite.Name.Content} is null.");
                 continue;
             }
             // spr_hotlandmissle
@@ -376,7 +375,7 @@ static class Shuffle
             }
             catch (InvalidDataException ex)
             {
-                logstream.WriteLine($"Caught InvalidDataException while modifying the hitbox of {sprite.Name.Content}. {ex.Message}");
+                logStream.WriteLine($"Caught InvalidDataException while modifying the hitbox of {sprite.Name.Content}. {ex.Message}");
                 continue;
             }
             int width = (((int)sprite.Width + 7) / 8) * 8;
@@ -405,19 +404,18 @@ static class Shuffle
                 }
             }
             UndertaleSprite.MaskEntry newEntry = new UndertaleSprite.MaskEntry();
-            int numBytes;
-            numBytes = maskingBitArray.Length / 8;
+            int numBytes = maskingBitArray.Length / 8;
             byte[] bytes = new byte[numBytes];
             tempBitArray.CopyTo(bytes, 0);
             newEntry.Data = bytes;
             sprite.CollisionMasks.Add(newEntry);
         }
-        logstream.WriteLine($"Wrote {pointerlist.Count} collision boxes.");
+        logStream.WriteLine($"Wrote {pointerList.Count} collision boxes.");
 
         return true;
     }
 
-    public static bool ShuffleText_Shuffler(UndertaleChunk _chunk, UndertaleData data, Random random, float shufflechance, StreamWriter logstream, bool _friskMode)
+    public static bool ShuffleText_Shuffler(UndertaleChunk _chunk, UndertaleData data, Random random, float shuffleChance, StreamWriter logStream, bool friskMode)
     {
         IList<UndertaleString> _pointerlist = (_chunk as UndertaleChunkSTRG)?.List;
 
@@ -442,9 +440,9 @@ static class Shuffle
         stringDict["_FORCE"] = new List<int>();
         stringDict["_FORCE_ja"] = new List<int>();
 
-        for (int _i = 0; _i < pl_test.Count; _i++)
+        foreach (var pointer in pl_test)
         {
-            var i = _pointerlist.IndexOf(pl_test[_i]);
+            var i = _pointerlist.IndexOf(pointer);
 
             var s = _pointerlist[i];
             var convertedString = s.Content;
@@ -453,47 +451,34 @@ static class Shuffle
                 continue;
 
             string ch = "";
-            foreach (string chr in DRChoicerControlChars)
+            foreach (string chr in DRChoicerControlChars.Where(chr => convertedString.Contains(chr)))
             {
-                if (convertedString.Contains(chr))
-                {
-                    ch = chr;
-                    break;
-                }
+                ch = chr;
+                break;
             }
             if (ch != "")
             {
-                foreach (char ix in convertedString)
-                    if (ix > 127)
-                    {
-                        ch += "_ja";
-                        break;
-                    }
+                if (convertedString.Any(ix => ix > 127))
+                    ch += "_ja";
                 stringDict[ch].Add(i);
             }
             else
             {
                 string ending = "";
-                foreach (string ed in FormatChars)
+                foreach (string ed in FormatChars.Where(ed => convertedString.EndsWith(ed)))
                 {
-                    if (convertedString.EndsWith(ed))
-                    {
-                        ending = ed;
-                        if (ending.StartsWith("/%%"))
-                            ending = "/%%";
-                        break;
-                    }
+                    ending = ed;
+                    if (ending.StartsWith("/%%"))
+                        ending = "/%%";
+                    break;
                 }
                 if (ending == "")
                 {
                     string chu = "";
-                    foreach (string chr in CategorizableForcedSubstring)
+                    foreach (string chr in CategorizableForcedSubstring.Where(chr => convertedString.Contains(chr)))
                     {
-                        if (convertedString.Contains(chr))
-                        {
-                            chu = chr;
-                            break;
-                        }
+                        chu = chr;
+                        break;
                     }
                     if (chu != "")
                         ending = chu;
@@ -502,28 +487,23 @@ static class Shuffle
                     else
                         continue;
                 }
-                foreach (char ix in convertedString)
-                    if (ix > 127)
-                    {
-                        ending += "_ja";
-                        break;
-                    }
+                if (convertedString.Any(ix => ix > 127))
+                    ending += "_ja";
 
                 stringDict[ending].Add(i);
             }
 
-            if (data.IsGameMaker2())
-            {
-                // Do string_hash_to_newline for good measure
-                s.Content = s.Content.Replace("#", "\n");
-                convertedString = s.Content;
-            }
+            if (!data.IsGameMaker2())
+                continue;
+            // Do string_hash_to_newline for good measure
+            s.Content = s.Content.Replace("#", "\n");
+            convertedString = s.Content;
         }
 
         foreach (string ending in stringDict.Keys)
         {
-            stringDict[ending].SelectSome(shufflechance, random);
-            logstream.WriteLine($"Added {stringDict[ending].Count} string pointers of ending {ending} to dialogue string List.");
+            stringDict[ending].SelectSome(shuffleChance, random);
+            logStream.WriteLine($"Added {stringDict[ending].Count} string pointers of ending {ending} to dialogue string List.");
 
             _pointerlist.ShuffleOnlySelected(stringDict[ending], GetSubfunction(_pointerlist, _chunk), random);
         }
@@ -578,32 +558,31 @@ static class Shuffle
         {
             pl_test.Remove(func.Name);
             pl_test.Remove(func.Caption);
-            if (data.IsGameMaker2())
+            if (!data.IsGameMaker2())
+                continue;
+            foreach (var layer in func.Layers)
             {
-                foreach (var layer in func.Layers)
+                pl_test.Remove(layer.LayerName);
+                if (layer.EffectType != null)
+                    pl_test.Remove(layer.EffectType);
+                if (layer.EffectData != null)
                 {
-                    pl_test.Remove(layer.LayerName);
-                    if (layer.EffectType != null)
-                        pl_test.Remove(layer.EffectType);
-                    if (layer.EffectData != null)
+                    pl_test.Remove(layer.EffectData.EffectType);
+                    foreach (var prop in layer.EffectData.Properties)
                     {
-                        pl_test.Remove(layer.EffectData.EffectType);
-                        foreach (var prop in layer.EffectData.Properties)
-                        {
-                            pl_test.Remove(prop.Name);
-                            pl_test.Remove(prop.Value);
-                        }
-                    }
-                    if (layer.AssetsData != null)
-                    {
-                        if (layer.AssetsData.Sprites != null)
-                            foreach (var asset in layer.AssetsData.Sprites)
-                                pl_test.Remove(asset.Name);
-                        if (layer.AssetsData.Sequences != null)
-                            foreach (var asset in layer.AssetsData.Sequences)
-                                pl_test.Remove(asset.Name);
+                        pl_test.Remove(prop.Name);
+                        pl_test.Remove(prop.Value);
                     }
                 }
+                if (layer.AssetsData == null)
+                    continue;
+                if (layer.AssetsData.Sprites != null)
+                    foreach (var asset in layer.AssetsData.Sprites)
+                        pl_test.Remove(asset.Name);
+                if (layer.AssetsData.Sequences == null)
+                    continue;
+                foreach (var asset in layer.AssetsData.Sequences)
+                    pl_test.Remove(asset.Name);
             }
         }
         foreach (var func in data.GameObjects)
@@ -749,73 +728,37 @@ static class Shuffle
 
     private static void SwapUndertaleSprite(UndertaleSprite kv, UndertaleSprite nv)
     {
-        var Name_value = kv.Name;
-        kv.Name = nv.Name;
-        nv.Name = Name_value;
-        var Width_value = kv.Width;
-        kv.Width = nv.Width;
-        nv.Width = Width_value;
-        var Height_value = kv.Height;
-        kv.Height = nv.Height;
-        nv.Height = Height_value;
-        var MarginLeft_value = kv.MarginLeft;
-        kv.MarginLeft = nv.MarginLeft;
-        nv.MarginLeft = MarginLeft_value;
-        var MarginRight_value = kv.MarginRight;
-        kv.MarginRight = nv.MarginRight;
-        nv.MarginRight = MarginRight_value;
-        var MarginTop_value = kv.MarginTop;
-        kv.MarginTop = nv.MarginTop;
-        nv.MarginTop = MarginTop_value;
-        var MarginBottom_value = kv.MarginBottom;
-        kv.MarginBottom = nv.MarginBottom;
-        nv.MarginBottom = MarginBottom_value;
-        var V2Sequence_value = kv.V2Sequence;
-        kv.V2Sequence = nv.V2Sequence;
-        nv.V2Sequence = V2Sequence_value;
-        var OriginX_value = kv.OriginX;
-        kv.OriginX = nv.OriginX;
-        nv.OriginX = OriginX_value;
-        var OriginY_value = kv.OriginY;
-        kv.OriginY = nv.OriginY;
-        nv.OriginY = OriginY_value;
-        var GMS2PlaybackSpeed_value = kv.GMS2PlaybackSpeed;
-        kv.GMS2PlaybackSpeed = nv.GMS2PlaybackSpeed;
-        nv.GMS2PlaybackSpeed = GMS2PlaybackSpeed_value;
-        var GMS2PlaybackSpeedType_value = kv.GMS2PlaybackSpeedType;
-        kv.GMS2PlaybackSpeedType = nv.GMS2PlaybackSpeedType;
-        nv.GMS2PlaybackSpeedType = GMS2PlaybackSpeedType_value;
-        var SSpriteType_value = kv.SSpriteType;
-        kv.SSpriteType = nv.SSpriteType;
-        nv.SSpriteType = SSpriteType_value;
-        var SpineJSON_value = kv.SpineJSON;
-        kv.SpineJSON = nv.SpineJSON;
-        nv.SpineJSON = SpineJSON_value;
-        var SpineAtlas_value = kv.SpineAtlas;
-        kv.SpineAtlas = nv.SpineAtlas;
-        nv.SpineAtlas = SpineAtlas_value;
-        var SpineTextures_value = kv.SpineTextures;
-        kv.SpineTextures = nv.SpineTextures;
-        nv.SpineTextures = SpineTextures_value;
-        var YYSWF_value = kv.YYSWF;
-        kv.YYSWF = nv.YYSWF;
-        nv.YYSWF = YYSWF_value;
-        var V3NineSlice_value = kv.V3NineSlice;
-        kv.V3NineSlice = nv.V3NineSlice;
-        nv.V3NineSlice = V3NineSlice_value;
-        List<UndertaleSprite.TextureEntry> Textures_value
+        (kv.Name, nv.Name) = (nv.Name, kv.Name);
+        (kv.Width, nv.Width) = (nv.Width, kv.Width);
+        (kv.Height, nv.Height) = (nv.Height, kv.Height);
+        (kv.MarginLeft, nv.MarginLeft) = (nv.MarginLeft, kv.MarginLeft);
+        (kv.MarginRight, nv.MarginRight) = (nv.MarginRight, kv.MarginRight);
+        (kv.MarginTop, nv.MarginTop) = (nv.MarginTop, kv.MarginTop);
+        (kv.MarginBottom, nv.MarginBottom) = (nv.MarginBottom, kv.MarginBottom);
+        (kv.V2Sequence, nv.V2Sequence) = (nv.V2Sequence, kv.V2Sequence);
+        (kv.OriginX, nv.OriginX) = (nv.OriginX, kv.OriginX);
+        (kv.OriginY, nv.OriginY) = (nv.OriginY, kv.OriginY);
+        (kv.GMS2PlaybackSpeed, nv.GMS2PlaybackSpeed) = (nv.GMS2PlaybackSpeed, kv.GMS2PlaybackSpeed);
+        (kv.GMS2PlaybackSpeedType, nv.GMS2PlaybackSpeedType) = (nv.GMS2PlaybackSpeedType, kv.GMS2PlaybackSpeedType);
+        (kv.SSpriteType, nv.SSpriteType) = (nv.SSpriteType, kv.SSpriteType);
+        (kv.SpineJSON, nv.SpineJSON) = (nv.SpineJSON, kv.SpineJSON);
+        (kv.SpineAtlas, nv.SpineAtlas) = (nv.SpineAtlas, kv.SpineAtlas);
+        (kv.SpineTextures, nv.SpineTextures) = (nv.SpineTextures, kv.SpineTextures);
+        (kv.YYSWF, nv.YYSWF) = (nv.YYSWF, kv.YYSWF);
+        (kv.V3NineSlice, nv.V3NineSlice) = (nv.V3NineSlice, kv.V3NineSlice);
+        List<UndertaleSprite.TextureEntry> texturesValue
             = new List<UndertaleSprite.TextureEntry>(kv.Textures);
-        List<UndertaleSprite.TextureEntry> Textures_valueb
+        List<UndertaleSprite.TextureEntry> texturesValueb
             = new List<UndertaleSprite.TextureEntry>(nv.Textures);
         kv.Textures.Clear();
         nv.Textures.Clear();
-        foreach (var t in Textures_valueb)
+        foreach (var t in texturesValueb)
         {
             var te = new UndertaleSprite.TextureEntry();
             te.Texture = t.Texture;
             kv.Textures.Add(te);
         }
-        foreach (var t in Textures_value)
+        foreach (var t in texturesValue)
         {
             var te = new UndertaleSprite.TextureEntry();
             te.Texture = t.Texture;
@@ -831,82 +774,56 @@ static class Shuffle
             kv.CollisionMasks.Add(t);
         foreach (var t in CollisionMasks_value)
             nv.CollisionMasks.Add(t);
-        var Transparent_value = kv.Transparent;
-        kv.Transparent = nv.Transparent;
-        nv.Transparent = Transparent_value;
-        var Smooth_value = kv.Smooth;
-        kv.Smooth = nv.Smooth;
-        nv.Smooth = Smooth_value;
-        var BBoxMode_value = kv.BBoxMode;
-        kv.BBoxMode = nv.BBoxMode;
-        nv.BBoxMode = BBoxMode_value;
-        var SepMasks_value = kv.SepMasks;
-        kv.SepMasks = nv.SepMasks;
-        nv.SepMasks = SepMasks_value;
+        (kv.Transparent, nv.Transparent) = (nv.Transparent, kv.Transparent);
+        (kv.Smooth, nv.Smooth) = (nv.Smooth, kv.Smooth);
+        (kv.BBoxMode, nv.BBoxMode) = (nv.BBoxMode, kv.BBoxMode);
+        (kv.SepMasks, nv.SepMasks) = (nv.SepMasks, kv.SepMasks);
     }
     private static void SwapUndertaleBackground(UndertaleBackground kv, UndertaleBackground nv)
     {
-        var Name_value = kv.Name;
-        kv.Name = nv.Name;
-        nv.Name = Name_value;
-        var Transparent_value = kv.Transparent;
-        kv.Transparent = nv.Transparent;
-        nv.Transparent = Transparent_value;
-        var Smooth_value = kv.Smooth;
-        kv.Smooth = nv.Smooth;
-        nv.Smooth = Smooth_value;
-        var Texture_value = kv.Texture;
-        kv.Texture = nv.Texture;
-        nv.Texture = Texture_value;
-        var GMS2TileWidth_value = kv.GMS2TileWidth;
-        kv.GMS2TileWidth = nv.GMS2TileWidth;
-        nv.GMS2TileWidth = GMS2TileWidth_value;
-        var GMS2TileHeight_value = kv.GMS2TileHeight;
-        kv.GMS2TileHeight = nv.GMS2TileHeight;
-        nv.GMS2TileHeight = GMS2TileHeight_value;
-        var GMS2OutputBorderX_value = kv.GMS2OutputBorderX;
-        kv.GMS2OutputBorderX = nv.GMS2OutputBorderX;
-        nv.GMS2OutputBorderX = GMS2OutputBorderX_value;
-        var GMS2OutputBorderY_value = kv.GMS2OutputBorderY;
-        kv.GMS2OutputBorderY = nv.GMS2OutputBorderY;
-        nv.GMS2OutputBorderY = GMS2OutputBorderY_value;
-        var GMS2TileColumns_value = kv.GMS2TileColumns;
-        kv.GMS2TileColumns = nv.GMS2TileColumns;
-        nv.GMS2TileColumns = GMS2TileColumns_value;
-        var GMS2FrameLength_value = kv.GMS2FrameLength;
-        kv.GMS2FrameLength = nv.GMS2FrameLength;
-        nv.GMS2FrameLength = GMS2FrameLength_value;
+        (kv.Name, nv.Name) = (nv.Name, kv.Name);
+        (kv.Transparent, nv.Transparent) = (nv.Transparent, kv.Transparent);
+        (kv.Smooth, nv.Smooth) = (nv.Smooth, kv.Smooth);
+        (kv.Texture, nv.Texture) = (nv.Texture, kv.Texture);
+        (kv.GMS2TileWidth, nv.GMS2TileWidth) = (nv.GMS2TileWidth, kv.GMS2TileWidth);
+        (kv.GMS2TileHeight, nv.GMS2TileHeight) = (nv.GMS2TileHeight, kv.GMS2TileHeight);
+        (kv.GMS2OutputBorderX, nv.GMS2OutputBorderX) = (nv.GMS2OutputBorderX, kv.GMS2OutputBorderX);
+        (kv.GMS2OutputBorderY, nv.GMS2OutputBorderY) = (nv.GMS2OutputBorderY, kv.GMS2OutputBorderY);
+        (kv.GMS2TileColumns, nv.GMS2TileColumns) = (nv.GMS2TileColumns, kv.GMS2TileColumns);
+        (kv.GMS2FrameLength, nv.GMS2FrameLength) = (nv.GMS2FrameLength, kv.GMS2FrameLength);
     }
     public static Action<int, int> GetSubfunction<T>(IList<T> list, UndertaleChunk chunk)
     {
         return (n, k) =>
         {
-            if (list[n] is UndertaleString)
+            switch (list[n])
             {
-                var kv = list[k] as UndertaleString;
-                var nv = list[n] as UndertaleString;
-                var _value = kv.Content;
-                kv.Content = nv.Content;
-                nv.Content = _value;
-                return;
+                case UndertaleString:
+                {
+                    var kv = list[k] as UndertaleString;
+                    var nv = list[n] as UndertaleString;
+                    var _value = kv.Content;
+                    kv.Content = nv.Content;
+                    nv.Content = _value;
+                    return;
+                }
+                case UndertaleSprite:
+                {
+                    var kv = list[k] as UndertaleSprite;
+                    var nv = list[n] as UndertaleSprite;
+                    SwapUndertaleSprite(kv, nv);
+                    return;
+                }
+                case UndertaleBackground:
+                {
+                    var kv = list[k] as UndertaleBackground;
+                    var nv = list[n] as UndertaleBackground;
+                    SwapUndertaleBackground(kv, nv);
+                    return;
+                }
+                default: (list[k], list[n]) = (list[n], list[k]);
+                    break;
             }
-            if (list[n] is UndertaleSprite)
-            {
-                var kv = list[k] as UndertaleSprite;
-                var nv = list[n] as UndertaleSprite;
-                SwapUndertaleSprite(kv, nv);
-                return;
-            }
-            if (list[n] is UndertaleBackground)
-            {
-                var kv = list[k] as UndertaleBackground;
-                var nv = list[n] as UndertaleBackground;
-                SwapUndertaleBackground(kv, nv);
-                return;
-            }
-            var value = list[k];
-            list[k] = list[n];
-            list[n] = value;
         };
     }
     public static Action<int, int> GetSubfunction(IList list, UndertaleChunk chunk)
@@ -936,15 +853,13 @@ static class Shuffle
                 SwapUndertaleBackground(kv, nv);
                 return;
             }
-            var value = list[k];
-            list[k] = list[n];
-            list[n] = value;
+            (list[k], list[n]) = (list[n], list[k]);
         };
     }
 
     public static Func<UndertaleChunk, UndertaleData, Random, float, StreamWriter, bool, bool> SimpleShuffle = ComplexShuffle(SimpleShuffler);
 
-    public static bool JSONStringShuffle(string resource_file, string target_file, UndertaleData data, Random random, float shufflechance, StreamWriter logstream)
+    public static bool JSONStringShuffle(string resource_file, string target_file, UndertaleData data, Random random, float shuffleChance, StreamWriter logStream)
     {
         if (random == null)
             throw new ArgumentNullException(nameof(random));
@@ -953,18 +868,17 @@ static class Shuffle
 
         using (StreamReader stream = File.OpenText(resource_file))
         {
-            logstream.WriteLine($"Opened {resource_file}.");
+            logStream.WriteLine($"Opened {resource_file}.");
             using (JsonTextReader jsonReader = new JsonTextReader(stream))
             {
                 var serializer = new JsonSerializer();
                 langObject = serializer.Deserialize<JObject>(jsonReader);
             }
         }
-        logstream.WriteLine($"Closed {resource_file}.");
+        logStream.WriteLine($"Closed {resource_file}.");
 
-        logstream.WriteLine($"Gathered {langObject.Count} JSON String Entries. ");
+        logStream.WriteLine($"Gathered {langObject.Count} JSON String Entries. ");
 
-        string[] bannedStrings = { "_", "||" };
         string[] bannedKeys = { "date" };
 
         Dictionary<string, string> good_strings = new Dictionary<string, string>();
@@ -988,8 +902,8 @@ static class Shuffle
             }
         }
 
-        logstream.WriteLine($"Kept {good_strings.Count} good JSON string entries.");
-        logstream.WriteLine($"Fastforwarded {final_list.Count} JSON string entries to the final phase.");
+        logStream.WriteLine($"Kept {good_strings.Count} good JSON string entries.");
+        logStream.WriteLine($"Fastforwarded {final_list.Count} JSON string entries to the final phase.");
 
         Dictionary<string, Dictionary<string, string>> stringDict
             = new Dictionary<string, Dictionary<string, string>>();
@@ -997,13 +911,10 @@ static class Shuffle
         foreach (KeyValuePair<string, string> s in good_strings)
         {
             string ch = "";
-            foreach (string chr in DRChoicerControlChars)
+            foreach (string chr in DRChoicerControlChars.Where(chr => s.Value.Contains(chr)))
             {
-                if (s.Value.Contains(chr))
-                {
-                    ch = chr;
-                    break;
-                }
+                ch = chr;
+                break;
             }
             if (ch != "")
             {
@@ -1014,13 +925,10 @@ static class Shuffle
             else
             {
                 string ending = "";
-                foreach (string ed in FormatChars)
+                foreach (string ed in FormatChars.Where(ed => s.Value.EndsWith(ed)))
                 {
-                    if (s.Value.EndsWith(ed))
-                    {
-                        ending = ed;
-                        break;
-                    }
+                    ending = ed;
+                    break;
                 }
                 if (!stringDict.ContainsKey(ending))
                     stringDict[ending] = new Dictionary<string, string>();
@@ -1031,16 +939,14 @@ static class Shuffle
 
         foreach (string ending in stringDict.Keys)
         {
-            logstream.WriteLine($"Added {stringDict[ending].Count} JSON string entries of ending <{ending}> to dialogue string List.");
+            logStream.WriteLine($"Added {stringDict[ending].Count} JSON string entries of ending <{ending}> to dialogue string List.");
 
             List<string> ints = new List<string>();
             foreach (string i in stringDict[ending].Keys)
                 ints.Add(i);
-            ints.SelectSome(shufflechance, random);
+            ints.SelectSome(shuffleChance, random);
             stringDict[ending].ShuffleOnlySelected(ints, (n, k) => {
-                var tmp = stringDict[ending][n];
-                stringDict[ending][n] = stringDict[ending][k];
-                stringDict[ending][k] = tmp;
+                (stringDict[ending][n], stringDict[ending][k]) = (stringDict[ending][k], stringDict[ending][n]);
             }, random);
 
             // i love crumb sharp!!!!1111
@@ -1048,12 +954,12 @@ static class Shuffle
         }
 
         if (!SafeMethods.DeleteFile(target_file)) return false;
-        logstream.WriteLine($"Deleted {target_file}.");
+        logStream.WriteLine($"Deleted {target_file}.");
         using (FileStream out_writer = File.OpenWrite(target_file))
         {
             using (StreamWriter out_stream = new StreamWriter(out_writer))
             {
-                logstream.WriteLine($"Opened {target_file}.");
+                logStream.WriteLine($"Opened {target_file}.");
                 using (JsonTextWriter jsonReader = new JsonTextWriter(out_stream))
                 {
                     var serializer = new JsonSerializer();
@@ -1065,7 +971,7 @@ static class Shuffle
             }
         }
 
-        logstream.WriteLine($"Closed {target_file}.");
+        logStream.WriteLine($"Closed {target_file}.");
 
         return true;
     }
