@@ -139,10 +139,6 @@ static class Shuffle
         "temp_save_failed", "filech",
         "enter_button_assign",
         "mainbig", "comicsans", "tinynoelle", "dotumche", "noelle_cropped", "leftmid", "rightmid", "bottommid",
-        "enemytalk", "enemyattack",
-        "soundplay", "walkdirect",
-        "showdialog", "savepadindex", "slottitle",
-        "saveslotsize", "\\n",
     };
     public static string[] BannedStringsEX = {
         "\\TX \\F0 " // scr_*face
@@ -152,6 +148,10 @@ static class Shuffle
         "mus/", "lang/", "0123456789+-%", "0123456789-+",
         // DEVICE_NAMER
         "(B)BACK", "(E)END", "(1)ひらがな", "(2)カタカナ", "(3)アルファベット", "(B)さくじょ", "(E)けってい",
+        "\\n", "enemytalk", "enemyattack",
+        "soundplay", "walkdirect",
+        "showdialog", "savepadindex", "slottitle",
+        "saveslotsize",
     };
     public static string[] FriskSpriteHandles = {
         // UNDERTALE
