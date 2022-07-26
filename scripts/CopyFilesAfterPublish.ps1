@@ -20,14 +20,14 @@ function Copy-Item-IfExists {
             continue
         }
         Copy-Item -Force -Path $file -Destination $Destination
-        Write-Host "$file -> $Destination"
+        Write-Host "${file} -> ${Destination}"
     }
 }
 
 $files = @(
-    (Join-Path $SolutionDir README.md),
-    (Join-Path $SolutionDir COPYING.txt),
-    (Join-Path $SolutionDir LICENSE.MIT.txt)
+    (Join-Path $SolutionDir "README.md"),
+    (Join-Path $SolutionDir "COPYING.txt"),
+    (Join-Path $SolutionDir "LICENSE.MIT.txt")
 )
 
 Copy-Item-IfExists $files $TargetDir
