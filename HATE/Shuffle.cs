@@ -40,7 +40,7 @@ static class Shuffle
     };
     // hack
     public static List<string> ForceShuffleReferenceChars = new List<string>{
-        "#", "&", "^", /*"||",*/
+        "#", "&", "^", "||",
         "\\[1]", "\\[2]", "\\[C]", "\\[G]", "\\[I]",
         "\\*Z", "\\*X", "\\*C", "\\*D",
         "\\X", "\\W", "\n",
@@ -139,19 +139,19 @@ static class Shuffle
         "temp_save_failed", "filech",
         "enter_button_assign",
         "mainbig", "comicsans", "tinynoelle", "dotumche", "noelle_cropped", "leftmid", "rightmid", "bottommid",
-        "enemytalk", "enemyattack",
-        "soundplay", "walkdirect",
-        "showdialog", "savepadindex", "slottitle",
-        "saveslotsize", "\\n",
     };
     public static string[] BannedStringsEX = {
-        "mus/", "lang/", "0123456789+-%", "0123456789-+",
-        // DEVICE_NAMER
-        "(B)BACK", "(E)END", "(1)ひらがな", "(2)カタカナ", "(3)アルファベット", "(B)さくじょ", "(E)けってい",
         "\\TX \\F0 " // scr_*face
     };
     public static string[] BannedStringsSame = {
-        "\\W", "\\Y", "\\p", " A", " B", " C", "\\W &", "%%%", "%%"
+        "\\W", "\\Y", "\\p", " A", " B", " C", "\\W &", "%%%", "%%", "||",
+        "mus/", "lang/", "0123456789+-%", "0123456789-+",
+        // DEVICE_NAMER
+        "(B)BACK", "(E)END", "(1)ひらがな", "(2)カタカナ", "(3)アルファベット", "(B)さくじょ", "(E)けってい",
+        "\\n", "enemytalk", "enemyattack",
+        "soundplay", "walkdirect",
+        "showdialog", "savepadindex", "slottitle",
+        "saveslotsize",
     };
     public static string[] FriskSpriteHandles = {
         // UNDERTALE
