@@ -25,7 +25,7 @@
   </ItemGroup>
 
   <Target Name="AfterPublishCustom" AfterTargets="Publish">
-    <Exec Command="powershell $(SolutionDir)scripts/CopyFilesAfterPublish.ps1 -SolutionDir &quot;$(SolutionDir)/&quot; -TargetDir &quot;$(TargetDir)/&quot;" />
+    <Exec Command="powershell $(SolutionDir)scripts/CopyFilesAfterPublish.ps1 -SolutionDir &quot;$(SolutionDir)\&quot; -TargetDir &quot;$(TargetDir)\&quot;" />
   </Target>
   
 </Project>
