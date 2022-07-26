@@ -44,5 +44,5 @@ jobs:
         dotnet build HATE.Gtk --no-restore
     - name: Publish
       run: |
-        dotnet publish HATE.WinForms -c ${{ matrix.configuration }} -r win-x64
-        dotnet publish HATE.Gtk -c ${{ matrix.configuration }} -r linux-x64 
+        dotnet publish HATE.WinForms -c ${{ matrix.configuration }} -r win-x64 --no-self-contained
+        dotnet publish HATE.Gtk -c ${{ matrix.configuration }} -r linux-x64 --no-self-contained
