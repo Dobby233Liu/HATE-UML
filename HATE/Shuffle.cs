@@ -490,10 +490,8 @@ static class Shuffle
         stringDict["_FORCE"] = new List<int>();
         stringDict["_FORCE_ja"] = new List<int>();
 
-        foreach (var pointer in pl_test)
+        for (var i = 0; i < pl_test.Count; i++)
         {
-            var i = _pointerlist.IndexOf(pointer);
-
             var s = _pointerlist[i];
             var convertedString = s.Content;
 
