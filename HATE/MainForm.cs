@@ -456,26 +456,26 @@ public partial class MainForm : Form
 
         int timeSeed = 0;
         string seed = Application.Instance.Invoke(delegate { return txtSeed.Text; }).Trim();
-        _logWriter.WriteLine($"Seed - {seed}");
+        _logWriter.WriteLine($"Specified seed - {seed}");
 
         if (seed.ToUpper() == "FRISK" || seed.ToUpper() == "KRIS")
+        {
             _friskMode = true;
+            _logWriter.WriteLine($"Frisk mode");
+        }
 
         /* checking # for: Now it will change the corruption every time you press the button */
         if (seed == "" || seed.StartsWith('#'))
         {
             timeSeed = (int)DateTime.Now.Subtract(_unixTimeZero).TotalSeconds;
-
             Application.Instance.Invoke(delegate { txtSeed.Text = $"#{timeSeed}"; });
-
-            _logWriter.WriteLine($"Numeric seed - {timeSeed}");
         }
         else if (!int.TryParse(seed, out timeSeed))
         {
             timeSeed = seed.GetHashCode();
-
-            _logWriter.WriteLine($"Text seed - {timeSeed}");
         }
+
+        _logWriter.WriteLine($"Using seed - {timeSeed}");
 
         _random = new Random(timeSeed);
 

@@ -712,26 +712,39 @@ static partial class Shuffle
         if (random == null)
             throw new ArgumentNullException(nameof(random));
 
-        JObject langObject;
+        JObject langObject = null;
 
         using (StreamReader stream = File.OpenText(resource_file))
         {
             logStream.WriteLine($"Opened {resource_file}.");
+            var desSuccessful = true;
             using (JsonTextReader jsonReader = new JsonTextReader(stream))
             {
                 var serializer = new JsonSerializer();
-                langObject = serializer.Deserialize<JObject>(jsonReader);
+                try
+                {
+                    langObject = serializer.Deserialize<JObject>(jsonReader);
+                } catch (JsonSerializationException exc)
+                {
+                    logStream.WriteLine($"Error while deserializing file: {exc.Message}");
+                    desSuccessful = false;
+                }
+            }
+            logStream.WriteLine($"Closed {resource_file}.");
+            if (!desSuccessful)
+            {
+                return false;
             }
         }
-        logStream.WriteLine($"Closed {resource_file}.");
 
-        logStream.WriteLine($"Gathered {langObject.Count} JSON String Entries. ");
-
-        if (langObject.First.Type is not JTokenType.String)
+        if (langObject == null) return false;
+        if (langObject.First.Type is not JTokenType.Property || langObject.First.Value<JToken>().Type is not JTokenType.String)
         {
             logStream.WriteLine($"File {resource_file} malformed, skipping.");
             return true;
         }
+
+        logStream.WriteLine($"Gathered {langObject.Count} JSON String Entries. ");
 
         string[] bannedKeys = { "date" };
 
