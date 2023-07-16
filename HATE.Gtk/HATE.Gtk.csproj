@@ -14,6 +14,7 @@
     <OutputType>WinExe</OutputType>
     <PublishSingleFile>true</PublishSingleFile>
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
+    <Platforms>AnyCPU;x64</Platforms>
   </PropertyGroup>
 
   <ItemGroup>
@@ -25,7 +26,7 @@
   </ItemGroup>
 
   <Target Name="AfterPublishCustom" AfterTargets="Publish">
-    <Exec Command="powershell $(SolutionDir)scripts/CopyFilesAfterPublish.ps1 -SolutionDir &quot;$(SolutionDir)\&quot; -TargetDir &quot;$(TargetDir)\&quot;" />
+    <Exec Command="powershell $(SolutionDir)scripts/CopyFilesAfterPublish.ps1 -SolutionDir &quot;$(SolutionDir)\&quot; -TargetDir &quot;$(PublishDir)\&quot;" />
   </Target>
   
 </Project>

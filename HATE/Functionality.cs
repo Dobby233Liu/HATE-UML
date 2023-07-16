@@ -40,9 +40,9 @@ public static class Functionality
     public static bool ShuffleText_Func(UndertaleData data, Random random, float chance, StreamWriter logStream, bool friskMode)
     {
         bool success = true;
-        if (Directory.Exists("./lang") && SafeMethods.GetFiles("lang").Count > 0)
+        if (Directory.Exists("./lang") && SafeMethods.GetFiles("lang", format: "*.json").Count > 0)
         {
-            foreach (string path in SafeMethods.GetFiles("lang"))
+            foreach (string path in SafeMethods.GetFiles("lang", format:"*.json"))
                 success = success && Shuffle.JSONStringShuffle(path, path, data, random, chance, logStream);
         }
         return success && Shuffle.ShuffleChunk(data.FORM.Chunks.GetValueOrDefault("STRG"), data, random, chance, logStream, friskMode, Shuffle.ComplexShuffle(Shuffle.ShuffleText_Shuffler));

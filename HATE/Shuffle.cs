@@ -9,6 +9,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using UndertaleModLib.Util;
 using System.Drawing;
+using System.Reflection;
 
 namespace HATE;
 
@@ -294,27 +295,33 @@ static class Shuffle
 
         return true;
     }
-    public static bool ShuffleAudio2_Shuffler(UndertaleChunk _chunk, UndertaleData data, Random random, float shuffleChance, StreamWriter logStream, bool friskMode)
+
+    private static IEnumerable<UndertaleString> ShuffleAudio2_Strings(UndertaleData data, IList<UndertaleString> list)
     {
-        IList<UndertaleString> _pointerlist = (_chunk as UndertaleChunkSTRG)?.List;
-        IList<UndertaleString> stringClone = new List<UndertaleString>(_pointerlist);
-        foreach (var func in data.Sounds)
+        List<UndertaleString> soundStrings = new();
+        foreach (var sound in data.Sounds)
         {
-            stringClone.Remove(func.Name);
-            stringClone.Remove(func.Type);
-            stringClone.Remove(func.File);
+            soundStrings.Add(sound.Name);
+            soundStrings.Add(sound.Type);
+            soundStrings.Add(sound.File);
         }
-
-        IList<int> stringList = new List<int>();
-
-        foreach (var utString in stringClone)
+        foreach (var str in list)
         {
-            var i = _pointerlist.IndexOf(utString);
-            string s = utString.Content;
+            string s = str.Content;
             if ((s.EndsWith(".ogg") || s.EndsWith(".wav") || s.EndsWith(".mp3"))
                 && !s.StartsWith("music/") /* UNDERTALE */
                 && !SoundBlacklist.Contains(s))
-                stringList.Add(i);
+                yield return str;
+        }
+    }
+    public static bool ShuffleAudio2_Shuffler(UndertaleChunk _chunk, UndertaleData data, Random random, float shuffleChance, StreamWriter logStream, bool friskMode)
+    {
+        IList<UndertaleString> _pointerlist = (_chunk as UndertaleChunkSTRG)?.List;
+        IList<int> stringList = new List<int>();
+        foreach (var str in ShuffleAudio2_Strings(data, _pointerlist))
+        {
+            var i = _pointerlist.IndexOf(str);
+            stringList.Add(i);
         }
 
         stringList.SelectSome(shuffleChance, random);
@@ -325,17 +332,21 @@ static class Shuffle
         return true;
     }
 
+    private static IEnumerable<UndertaleSprite> ShuffleBG2_Sprites(IList<UndertaleSprite> list)
+    {
+        foreach (var i in list)
+        {
+            if (i.Name.Content.Trim().StartsWith("bg_"))
+                yield return i;
+        }
+    }
     public static bool ShuffleBG2_Shuffler(UndertaleChunk _chunk, UndertaleData data, Random random, float shuffleChance, StreamWriter logStream, bool friskMode)
     {
         IList<UndertaleSprite> chunk = (_chunk as UndertaleChunkSPRT)?.List;
         List<int> sprites = new List<int>();
-
-        for (int i = 0; i < chunk.Count; i++)
+        foreach (var i in ShuffleBG2_Sprites(chunk))
         {
-            UndertaleSprite pointer = chunk[i];
-
-            if (pointer.Name.Content.Trim().StartsWith("bg_"))
-                sprites.Add(i);
+            sprites.Add(chunk.IndexOf(i));
         }
 
         sprites.SelectSome(shuffleChance, random);
@@ -344,18 +355,22 @@ static class Shuffle
 
         return true;
     }
+    private static IEnumerable<UndertaleSprite> ShuffleGFX_Sprites(IList<UndertaleSprite> list, bool friskMode)
+    {
+        foreach (var i in list)
+        {
+            if (!i.Name.Content.Trim().StartsWith("bg_") &&
+                (!FriskSpriteHandles.Contains(i.Name.Content.Trim()) || friskMode))
+                yield return i;
+        }
+    }
     public static bool ShuffleGFX_Shuffler(UndertaleChunk _chunk, UndertaleData data, Random random, float shuffleChance, StreamWriter logStream, bool friskMode)
     {
         IList<UndertaleSprite> chunk = (_chunk as UndertaleChunkSPRT)?.List;
         List<int> sprites = new List<int>();
-
-        for (int i = 0; i < chunk.Count; i++)
+        foreach (var i in ShuffleGFX_Sprites(chunk, friskMode))
         {
-            UndertaleSprite pointer = chunk[i];
-
-            if (!pointer.Name.Content.Trim().StartsWith("bg_") &&
-                (!FriskSpriteHandles.Contains(pointer.Name.Content.Trim()) || friskMode))
-                sprites.Add(i);
+            sprites.Add(chunk.IndexOf(i));
         }
 
         sprites.SelectSome(shuffleChance, random);
@@ -380,6 +395,11 @@ static class Shuffle
                 logStream.WriteLine($"Texture 0 of sprite {sprite.Name.Content} is null.");
                 continue;
             }
+            var texPage = texPageItem.TexturePage;
+            var remainingSizeW = Math.Max(0, texPage.TextureData.Width - texPageItem.SourceX);
+            var remainingSizeH = Math.Max(0, texPage.TextureData.Height - texPageItem.SourceY);
+            texPageItem.SourceWidth = (ushort)Math.Min(texPageItem.SourceWidth, remainingSizeW);
+            texPageItem.SourceHeight = (ushort)Math.Min(texPageItem.SourceHeight, remainingSizeH);
             // spr_hotlandmissle
             if (texPageItem.BoundingWidth != sprite.Width || texPageItem.BoundingHeight != sprite.Height)
             {
@@ -401,6 +421,11 @@ static class Shuffle
             catch (InvalidDataException ex)
             {
                 logStream.WriteLine($"Caught InvalidDataException while modifying the hitbox of {sprite.Name.Content}. {ex.Message}");
+                continue;
+            }
+            catch (OutOfMemoryException ex)
+            {
+                logStream.WriteLine($"Caught OutOfMemoryException while modifying the hitbox of {sprite.Name.Content}. {ex.Message}");
                 continue;
             }
             int width = (((int)sprite.Width + 7) / 8) * 8;
@@ -541,7 +566,7 @@ static class Shuffle
         var pl_test = new List<UndertaleString>(pointerlist);
         pl_test.Remove(data.GeneralInfo.FileName);
         pl_test.Remove(data.GeneralInfo.Name);
-        pl_test.Remove(data.GeneralInfo.DisplayName);
+        //pl_test.Remove(data.GeneralInfo.DisplayName);
         pl_test.Remove(data.GeneralInfo.Config);
         foreach (var func in data.Options.Constants)
         {
@@ -667,8 +692,8 @@ static class Shuffle
                         pl_test.Remove(track.GMAnimCurveString);
                         if (track.ModelName.Content == "GMStringTrack")
                             foreach (var i in (track.Keyframes as UndertaleSequence.StringKeyframes).List)
-                            foreach (KeyValuePair<int, UndertaleSequence.StringData> kvp in i.Channels)
-                                pl_test.Remove(kvp.Value.Value);
+                                foreach (KeyValuePair<int, UndertaleSequence.StringKeyframes.Data> kvp in i.Channels)
+                                    pl_test.Remove(kvp.Value.Value);
                         if (track.Tracks != null)
                             foreach (var subtrack in track.Tracks)
                                 loop(subtrack);
@@ -903,6 +928,12 @@ static class Shuffle
         logStream.WriteLine($"Closed {resource_file}.");
 
         logStream.WriteLine($"Gathered {langObject.Count} JSON String Entries. ");
+
+        if (langObject.First.Type is not JTokenType.String)
+        {
+            logStream.WriteLine($"File {resource_file} malformed, skipping.");
+            return true;
+        }
 
         string[] bannedKeys = { "date" };
 

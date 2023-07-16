@@ -52,6 +52,7 @@ public partial class MainForm : Form
     private WindowsPrincipal windowsPrincipal;
 
     private UndertaleData Data;
+    private string PossibleFileName;
 
     private bool _controlEnabled = true;
 
@@ -72,7 +73,7 @@ public partial class MainForm : Form
                 _dataWin = "game.unx";
             else
             {
-                MsgBoxHelpers.ShowMessage("We couldn't find any game data in this folder, check that this is in the right folder.");
+                MsgBoxHelpers.ShowMessage("We couldn't find any game data in this folder, check if HATE is in the right folder.");
                 QuitEarly();
                 return;
             }
@@ -123,7 +124,8 @@ public partial class MainForm : Form
         {
             var displayName = Data.GeneralInfo.DisplayName.Content.ToLower();
             if (!(displayName.StartsWith("undertale") || displayName.StartsWith("deltarune")))
-                MsgBoxHelpers.ShowWarning("HATE-UML's support of this game may be limited. Unless this is a mod of a Toby Fox game, DO NOT report any problems you might experience.", "Not a Toby Fox game");
+                MsgBoxHelpers.ShowWarning("HATE-UML's support for this game may be limited. Unless this is a mod of a Toby Fox game, DO NOT report any problems you might experience.", "Not a Toby Fox game");
+            PossibleFileName = Data.GeneralInfo.FileName?.Content;
             DisposeGameData();
         }
     }
@@ -240,8 +242,7 @@ public partial class MainForm : Form
                 }
 
                 UndertaleEmbeddedTexture.TexData.ClearSharedStream();
-                if (Data.UseQoiFormat)
-                    QoiConverter.ClearSharedBuffer();
+                QoiConverter.ClearSharedBuffer();
             }
             catch (Exception e)
             {
@@ -314,31 +315,35 @@ public partial class MainForm : Form
 
     public string WindowsExecPrefix
     {
-    get => RuntimeInformation.IsOSPlatform(OSPlatform.Linux)
-           || RuntimeInformation.IsOSPlatform(OSPlatform.OSX)
-           || RuntimeInformation.IsOSPlatform(OSPlatform.FreeBSD) /* unix platforms */
-        ? "wine " : "";
+        get => RuntimeInformation.IsOSPlatform(OSPlatform.Linux)
+               || RuntimeInformation.IsOSPlatform(OSPlatform.OSX)
+               || RuntimeInformation.IsOSPlatform(OSPlatform.FreeBSD) /* unix platforms */
+            ? "wine " : "";
     }
     public string GetGame()
     {
-        if (File.Exists("runner")) { return "runner"; }
-        else if (File.Exists(Data.GeneralInfo.FileName + ".exe")) { return $"{Data.GeneralInfo.FileName}.exe"; }
-        else
+        try
         {
-            var dir = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-            foreach (string file in SafeMethods.GetFiles(dir))
+            if (File.Exists("runner")) { return "runner"; }
+            else if (PossibleFileName is not null && File.Exists(PossibleFileName + ".exe")) { return $"{PossibleFileName}.exe"; }
+            else
             {
-                if (Path.GetFileNameWithoutExtension(file) != "HATE" && file.EndsWith(".exe"))
+                var dir = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+                foreach (string file in SafeMethods.GetFiles(dir))
                 {
-                    var executable = Path.GetFileName(file);
-                    return executable;
+                    if (Path.GetFileNameWithoutExtension(file) != "HATE" && file.EndsWith(".exe"))
+                    {
+                        var executable = Path.GetFileName(file);
+                        return executable;
+                    }
+                }
+                if (dir.IndexOf(".app") >= 0)
+                {
+                    return dir.Substring(0, dir.IndexOf(".app") + ".app".Length);
                 }
             }
-            if (dir.IndexOf(".app") >= 0)
-            {
-                return dir.Substring(0, dir.IndexOf(".app") + ".app".Length);
-            }
         }
+        catch { }
         return "";
     }
 
@@ -347,7 +352,7 @@ public partial class MainForm : Form
         EnableControls(false);
 
         string game = GetGame();
-        if (game != "")
+        if (game is not null && game != "")
         {
             bool wine = game.EndsWith(".exe") && WindowsExecPrefix.Length > 0;
             ProcessStartInfo processStartInfo = new ProcessStartInfo(wine ? WindowsExecPrefix : game)

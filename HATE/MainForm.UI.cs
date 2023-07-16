@@ -20,7 +20,7 @@ public partial class MainForm : Form
 	public MainForm()
 	{
 		Title = "HATE-UML";
-		MinimumSize = new Size(200, 485);
+		MinimumSize = new Size(220, 485);
 		BackgroundColor = Colors.Black;
 		
 		// GTK currently looks weird af with background colors
@@ -76,12 +76,6 @@ public partial class MainForm : Form
 		btnLaunch.Click += btnLaunch_Clicked;
 	}
 
-	private Button btnCorrupt = new Button
-	{
-		Text = "-CORRUPT-",
-		TextColor = Colors.Coral,
-		Font = new Font(SystemFont.Bold, 8.25F)
-	};
 	private CheckBox chbShuffleText = new CheckBox
 	{
 		Text = "Shuffle Text",
@@ -145,12 +139,18 @@ public partial class MainForm : Form
 		Text = "Power:",
 		TextColor = Colors.White,
 	};
-	private Button btnLaunch = new Button
+	private Button btnCorrupt = new Button
+	{
+		Text = "-CORRUPT-",
+		TextColor = Colors.Coral,
+		Font = new Font(SystemFont.Bold, 8.25F)
+    };
+    private Button btnLaunch = new Button
 	{
 		Font = new Font(SystemFont.Bold, 8.25F),
 		TextColor = Colors.Fuchsia,
 		Text = "-LAUNCH-"
-	};
+    };
 	private Label label3 = new Label
 	{
 		Font = new Font(SystemFont.Bold, 10F),
